@@ -1,0 +1,110 @@
+{
+  "chest": [  // 胸肌
+    "Barbell Bench Press",  // 卧推
+    "Dumbbell Bench Press",  // 哑铃卧推
+    "Incline Bench Press",  // 上斜卧推
+    "Decline Bench Press",  // 下斜卧推
+    "Dumbbell Fly",  // 哑铃飞鸟
+    "Incline Dumbbell Fly",  // 上斜哑铃飞鸟
+    "Push-ups",  // 俯卧撑
+    "Dips",  // 双杠臂屈伸
+    "Pec Deck Fly",  // 蝴蝶机夹胸
+    "Floor Press"  // 哑铃地板卧推
+  ],
+  "back": [  // 背肌
+    "Pull-ups",  // 引体向上
+    "Lat Pulldown",  // 高位下拉
+    "Barbell Row",  // 杠铃划船
+    "One-arm Dumbbell Row",  // 哑铃单臂划船
+    "T-bar Row",  // T 杠划船
+    "Reverse Fly",  // 反向飞鸟
+    "Upright Row",  // 直立划船
+    "Deadlift",  // 硬拉
+    "Cable Seated Row",  // 下拉绳索划船
+    "Reverse Grip Pull-up"  // 反手引体向上
+  ],
+  "legs": [  // 腿部
+    "Squat",  // 深蹲
+    "Lunge",  // 弓步蹲
+    "Romanian Deadlift",  // 罗马尼亚硬拉
+    "Leg Press",  // 腿举
+    "Leg Curl",  // 弯举腿
+    "Stiff-leg Deadlift",  // 直腿硬拉
+    "Bulgarian Split Squat",  // 保加利亚分腿蹲
+    "Box Jump",  // 跳箱
+    "Banded Side Step",  // 弹力带侧步
+    "Single-leg Glute Bridge"  // 单腿臀桥
+  ],
+  "shoulders": [  // 肩部
+    "Dumbbell Shoulder Press",  // 哑铃推举
+    "Barbell Overhead Press",  // 杠铃推举
+    "Lateral Raise",  // 侧平举
+    "Front Raise",  // 前平举
+    "Rear Delt Fly",  // 俯身后平举
+    "Arnold Press",  // 阿诺德推举
+    "Incline Reverse Fly",  // 倾斜俯身飞鸟
+    "Face Pull",  // 绳索面拉
+    "Dumbbell Shrug",  // 哑铃耸肩
+    "Single-arm Dumbbell Press"  // 单臂哑铃推举
+  ],
+  "biceps": [  // 二头肌
+    "Dumbbell Curl",  // 哑铃弯举
+    "Barbell Curl",  // 杠铃弯举
+    "Concentration Curl",  // 集中弯举
+    "Preacher Curl",  // 牧师凳弯举
+    "Incline Dumbbell Curl",  // 斜板哑铃弯举
+    "Reverse Curl",  // 反手弯举
+    "EZ Bar Curl",  // Z 杠弯举
+    "Alternating Dumbbell Curl",  // 交替哑铃弯举
+    "Cable Curl",  // 绳索弯举
+    "Hammer Curl"  // 哑铃锤式弯举
+  ],
+  "triceps": [  // 三头肌
+    "Close-grip Bench Press",  // 窄握卧推
+    "Cable Pushdown",  // 绳索下压
+    "Dumbbell Overhead Extension",  // 哑铃后屈伸
+    "Bench Dips",  // 俯身臂屈伸
+    "Lying Barbell Tricep Extension",  // 仰卧杠铃臂屈伸
+    "One-arm Cable Pushdown",  // 单臂绳索下压
+    "Overhead Dumbbell Extension",  // 哑铃颈后伸
+    "Close-grip Push-ups",  // 俯卧撑窄距
+    "Barbell Overhead Extension",  // 杠铃颈后臂屈伸
+    "Tricep Kickback"  // 俯身臂屈伸机
+  ],
+  "calves": [  // 小腿
+    "Standing Calf Raise",  // 站姿提踵
+    "Seated Calf Raise",  // 坐姿提踵
+    "Single-leg Calf Raise",  // 单腿提踵
+    "Dumbbell Calf Raise",  // 哑铃提踵
+    "Weighted Calf Raise",  // 负重提踵
+    "Jump Rope",  // 跳绳
+    "Box Calf Jump",  // 跳箱小腿跳
+    "Toe Walk",  // 踮脚行走
+    "Incline Treadmill Walk",  // 跑步机坡度走
+    "Banded Calf Raise"  // 弹力带提踵
+  ],
+  "glutes": [  // 臀部
+    "Glute Bridge",  // 臀桥
+    "Single-leg Glute Bridge",  // 单腿臀桥
+    "Romanian Deadlift",  // 罗马尼亚硬拉
+    "Lunge",  // 弓步蹲
+    "Bulgarian Split Squat",  // 保加利亚分腿蹲
+    "Hip Thrust",  // 臀推
+    "Banded Side Walk",  // 弹力带侧步
+    "Squat",  // 深蹲
+    "Kickbacks",  // 臀部踢腿
+    "Box Jump"  // 跳箱
+  ],
+  "abs": [  // 腹肌
+    "Crunches",  // 仰卧卷腹
+    "Russian Twist",  // 俄罗斯转体
+    "Hanging Leg Raise",  // 悬垂举腿
+    "Plank",  // 平板支撑
+    "Side Plank",  // 侧平板支撑
+    "Ab Wheel Rollout",  // 腹肌轮
+    "Bicycle Crunches",  // 交替卷腹
+    "Leg Raise",  // 仰卧抬腿
+    "Reverse Crunch",  // 反向卷腹
+    "V-up"  // 山羊式卷腹
+  ]
+}

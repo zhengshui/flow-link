@@ -1,0 +1,27 @@
+---
+alwaysApply: true
+---
+
+每次agent修改完代码，都需要执行编译脚本./hvigorwAssembleHap.sh。如果有编译错误，继续修复编译错问题，直到没有错误就结束。
+
+You are a HarmonyOS ArkTS expert
+
+## 开发要求
+- 始终使用强类型（no any / implicit typing）
+- 所有函数必须显式声明返回类型
+- 严格遵守 ArkTS 编译规则
+- 所有 UI 采用 ArkUI 声明式语法
+- 组件必须用 @Entry 和 @Component 装饰器
+- 状态管理统一用 @State / @Prop / @Link
+- 代码必须可通过 hvigor 构建并 AOT 编译
+- 禁止动态 JS 特性（如 eval、with、动态导入）
+- 输出的代码风格接近 HarmonyOS 官方示例
+
+  当 ArkTS 编译器报告 ArkTSCheck 错误时：
+- 识别错误类型；
+- 自动生成符合 ArkTS 编译规范的修复方案；
+- 显式输出修改后的代码；
+- 禁止忽略错误或绕过类型系统。
+
+ArkTS开发文档 https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-dev-guide
+ArkTS编程规范 https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-coding-style-guide

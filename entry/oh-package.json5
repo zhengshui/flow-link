@@ -1,0 +1,12 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "FitEasy - 健身易应用主模块",
+  "main": "",
+  "author": "FitEasy Team",
+  "license": "MIT",
+  "dependencies": {
+    "@tbs/common": "file:../common"
+  }
+}
+

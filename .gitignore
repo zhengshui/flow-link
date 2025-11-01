@@ -1,0 +1,55 @@
+# HarmonyOS build output
+build/
+.preview/
+*/build/
+**/build/
+**/.preview/
+
+# Hvigor
+.hvigor/
+.idea/
+
+# Node modules
+node_modules/
+oh_modules/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local configuration
+local.properties
+signing-configs.json
+
+# Build artifacts
+*.hap
+*.app
+*.har
+*.tgz
+
+# Intermediate files
+*/intermediates/
+**/intermediates/
+*/outputs/
+**/outputs/
+*/cache/
+**/cache/
+*/generated/
+**/generated/
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+
+# Test output
+test-results/
+coverage/
+
