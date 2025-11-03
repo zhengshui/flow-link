@@ -1,7 +1,7 @@
 # FitEasy (健身易) - 后端API接口文档
 
-**版本**: v1.0.0
-**更新日期**: 2025-11-01
+**版本**: v1.1.0
+**更新日期**: 2025-11-03
 **基础URL**: `https://api.fiteasy.com` (待定)
 
 ---
@@ -62,7 +62,14 @@ Authorization: Bearer {access_token}
   "username": "string",      // 用户名（4-20字符）
   "password": "string",      // 密码（6-20字符）
   "nickname": "string",      // 昵称（可选）
-  "email": "string"          // 邮箱（可选）
+  "email": "string",         // 邮箱（可选）
+  "phone": "string",         // 手机号（可选）
+  "gender": "string",        // 性别：男/女（可选）
+  "age": 0,                  // 年龄（可选）
+  "height": 0,               // 身高cm（可选）
+  "weight": 0,               // 体重kg（可选）
+  "targetWeight": 0,         // 目标体重kg（可选）
+  "fitnessGoal": "string"    // 健身目标：增肌/减脂/力量提升/耐力提升/综合健身（可选）
 }
 ```
 
@@ -72,12 +79,13 @@ Authorization: Bearer {access_token}
   "code": 200,
   "message": "注册成功",
   "data": {
-    "userId": 1,
-    "username": "testuser",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "role": "user"
   }
 }
 ```
+
+**说明**: 注册成功后返回访问令牌，客户端应保存token并调用 `GET /api/user/info` 获取完整用户信息
 
 ---
 
@@ -99,14 +107,13 @@ Authorization: Bearer {access_token}
   "code": 200,
   "message": "登录成功",
   "data": {
-    "userId": 1,
-    "username": "testuser",
-    "nickname": "健身达人",
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "avatarUrl": "https://cdn.fiteasy.com/avatar/1.jpg"
+    "role": "user"
   }
 }
 ```
+
+**说明**: 登录成功后返回访问令牌和用户角色（user/admin），客户端应保存token并调用 `GET /api/user/info` 获取完整用户信息
 
 ---
 
@@ -148,7 +155,14 @@ Authorization: Bearer {access_token}
     "nickname": "健身达人",
     "avatarUrl": "https://cdn.fiteasy.com/avatar/1.jpg",
     "email": "test@example.com",
-    "createdAt": "2025-01-01 10:00:00"
+    "phone": "13800138000",
+    "gender": "男",
+    "age": 28,
+    "height": 175,
+    "weight": 70,
+    "targetWeight": 68,
+    "fitnessGoal": "增肌",
+    "joinDate": "2025-01-01"
   }
 }
 ```
@@ -166,9 +180,18 @@ Authorization: Bearer {access_token}
 {
   "nickname": "string",      // 昵称（可选）
   "avatarUrl": "string",     // 头像URL（可选）
-  "email": "string"          // 邮箱（可选）
+  "email": "string",         // 邮箱（可选）
+  "phone": "string",         // 手机号（可选）
+  "gender": "string",        // 性别：男/女（可选）
+  "age": 0,                  // 年龄（可选）
+  "height": 0,               // 身高cm（可选）
+  "weight": 0,               // 体重kg（可选）
+  "targetWeight": 0,         // 目标体重kg（可选）
+  "fitnessGoal": "string"    // 健身目标（可选）
 }
 ```
+
+**说明**: 所有字段均为可选，只需传入需要更新的字段
 
 **响应示例**:
 ```json
@@ -970,7 +993,39 @@ Authorization: Bearer {access_token}
 
 ## 版本历史
 
-- **v1.0.0** (2025-11-01) - 初始版本，包含核心功能接口
+### v1.1.0 (2025-11-03)
+
+**重要更新** - 用户模型完善
+
+1. **用户注册接口增强** (`POST /api/auth/register`)
+   - 新增可选字段：phone, gender, age, height, weight, targetWeight, fitnessGoal
+   - 支持注册时填写完整的个人信息和健身目标
+
+2. **认证响应格式优化**
+   - 登录和注册接口统一返回 `{token, role}` 格式
+   - 移除冗余的用户信息字段，使用 `GET /api/user/info` 获取完整信息
+   - 提高安全性和接口设计一致性
+
+3. **用户信息模型完善** (`GET /api/user/info`)
+   - 新增字段：phone（手机号）、gender（性别）、age（年龄）
+   - 新增字段：height（身高cm）、weight（体重kg）、targetWeight（目标体重kg）
+   - 新增字段：fitnessGoal（健身目标）、joinDate（加入日期）
+   - 将 createdAt 改为 joinDate，语义更明确
+
+4. **用户信息更新接口增强** (`PUT /api/user/info`)
+   - 支持更新所有个人信息字段（除id和username外）
+   - 包括：身体数据、健身目标等关键健身应用字段
+
+**向后兼容性**:
+- 注册接口新增字段均为可选，不影响现有客户端
+- 用户信息更新接口新增字段均为可选
+- 建议客户端尽快升级以支持完整的用户信息管理
+
+---
+
+### v1.0.0 (2025-11-01)
+
+- 初始版本，包含核心功能接口
 
 ---
 
