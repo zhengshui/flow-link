@@ -65,7 +65,7 @@ struct RegisterPage {
         // 返回登录页
         router.back();
       } else {
-        toast(res.message);
+        toast(res.message ?? '注册失败');
       }
     } catch (err) {
       console.error('注册失败:', JSON.stringify(err));

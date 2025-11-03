@@ -350,8 +350,11 @@ export struct DashboardPage {
       .backgroundColor('#007AFF')
       .borderRadius(8)
       .onClick(() => {
-        // TODO: 跳转到添加训练页面
-        console.info('点击快速添加训练')
+        router.pushUrl({
+          url: 'pages/AddTrainingPage'
+        }).catch((err: Error) => {
+          console.error('跳转失败:', JSON.stringify(err));
+        });
       })
   }
 

@@ -6,7 +6,7 @@ export * from './TextUtil'
 
 export { ScreenUtils } from './ScreenUtil';
 
-export { initDataPreference, commonStorage } from './StorageUtils'
+export { initDataPreference, commonStorage, StorageUtils } from './StorageUtils'
 
 export * from './ComponentUtils'
 

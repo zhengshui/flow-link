@@ -6,9 +6,6 @@
 import { ResponseResult } from '../http/response';
 import { LoginData, UserInfoData } from '../model/AuthModel';
 
-/**
- * 模拟异步请求延迟
- */
 export async function mockDelay(ms: number = 500): Promise<void> {
   return new Promise<void>((resolve: () => void) => {
     setTimeout((): void => {
@@ -17,57 +14,30 @@ export async function mockDelay(ms: number = 500): Promise<void> {
   });
 }
 
-/**
- * 模拟用户数据库
- */
-const mockUsers: Map<string, { password: string, userInfo: UserInfoData }> = new Map([
-  ['admin', {
-    password: '123456',
-    userInfo: new UserInfoData(
-      1,
-      'admin',
-      '健身管理员',
-      '',
-      'admin@fiteasy.com',
-      '13800138000',
-      '男',
-      28,
-      175,
-      70,
-      68,
-      '增肌',
-      '2024-01-01'
-    )
-  }],
-  ['test', {
-    password: '123456',
-    userInfo: new UserInfoData(
-      2,
-      'test',
-      '测试用户',
-      '',
-      'test@fiteasy.com',
-      '13900139000',
-      '女',
-      25,
-      165,
-      55,
-      50,
-      '减脂',
-      '2024-02-01'
-    )
-  }]
-]);
+class UserRecord {
+  username: string = ''
+  password: string = ''
+  userInfo: UserInfoData = new UserInfoData()
 
-/**
- * 当前登录的用户信息
- */
+  constructor(username: string, password: string, userInfo: UserInfoData) {
+    this.username = username;
+    this.password = password;
+    this.userInfo = userInfo;
+  }
+}
+
+const mockUsers: UserRecord[] = [
+  new UserRecord('admin', '123456', new UserInfoData(
+    1, 'admin', '健身管理员', '', 'admin@fiteasy.com', '13800138000', '男', 28, 175, 70, 68, '增肌', '2024-01-01'
+  )),
+  new UserRecord('test', '123456', new UserInfoData(
+    2, 'test', '测试用户', '', 'test@fiteasy.com', '13900139000', '女', 25, 165, 55, 50, '减脂', '2024-02-01'
+  ))
+];
+
 let currentUser: UserInfoData | null = null;
 
 export class MockAuthService {
-  /**
-   * 用户登录
-   */
   static async login(username: string, password: string): Promise<ResponseResult> {
     await mockDelay(800);
 
@@ -79,17 +49,22 @@ export class MockAuthService {
       };
     }
 
-    const userData: { password: string, userInfo: UserInfoData } | undefined = mockUsers.get(username);
+    let foundUser: UserRecord | null = null;
+    for (let i: number = 0; i < mockUsers.length; i++) {
+      if (mockUsers[i].username === username) {
+        foundUser = mockUsers[i];
+        break;
+      }
+    }
 
-    if (userData && userData.password === password) {
+    if (foundUser !== null && foundUser.password === password) {
       const timestamp: number = Date.now();
       const loginData: LoginData = new LoginData(
         `fiteasy_token_${timestamp}_${username}`,
         username === 'admin' ? 'admin' : 'user'
       );
 
-      // 保存当前用户信息
-      currentUser = userData.userInfo;
+      currentUser = foundUser.userInfo;
 
       return {
         code: 0,
@@ -105,9 +80,6 @@ export class MockAuthService {
     }
   }
 
-  /**
-   * 用户注册
-   */
   static async register(
     username: string,
     password: string,
@@ -124,36 +96,22 @@ export class MockAuthService {
       };
     }
 
-    if (mockUsers.has(username)) {
-      return {
-        code: 2002,
-        message: '用户名已存在',
-        data: null
-      };
+    for (let i: number = 0; i < mockUsers.length; i++) {
+      if (mockUsers[i].username === username) {
+        return {
+          code: 2002,
+          message: '用户名已存在',
+          data: null
+        };
+      }
     }
 
-    // 创建新用户
-    const newUserId: number = mockUsers.size + 1;
+    const newUserId: number = mockUsers.length + 1;
     const newUser: UserInfoData = new UserInfoData(
-      newUserId,
-      username,
-      nickname,
-      '',
-      email,
-      '',
-      '',
-      0,
-      0,
-      0,
-      0,
-      '',
-      MockAuthService.getTodayString()
+      newUserId, username, nickname, '', email, '', '', 0, 0, 0, 0, '', MockAuthService.getTodayString()
     );
 
-    mockUsers.set(username, {
-      password: password,
-      userInfo: newUser
-    });
+    mockUsers.push(new UserRecord(username, password, newUser));
 
     return {
       code: 0,
@@ -162,9 +120,6 @@ export class MockAuthService {
     };
   }
 
-  /**
-   * 获取用户信息
-   */
   static async getUserInfo(): Promise<ResponseResult> {
     await mockDelay(500);
 
@@ -183,9 +138,6 @@ export class MockAuthService {
     };
   }
 
-  /**
-   * 更新用户信息
-   */
   static async updateUserInfo(userInfo: UserInfoData): Promise<ResponseResult> {
     await mockDelay(500);
 
@@ -197,13 +149,13 @@ export class MockAuthService {
       };
     }
 
-    // 更新当前用户信息
     currentUser = userInfo;
 
-    // 更新 mockUsers 中的数据
-    const userData: { password: string, userInfo: UserInfoData } | undefined = mockUsers.get(currentUser.username);
-    if (userData) {
-      userData.userInfo = userInfo;
+    for (let i: number = 0; i < mockUsers.length; i++) {
+      if (mockUsers[i].username === currentUser.username) {
+        mockUsers[i].userInfo = userInfo;
+        break;
+      }
     }
 
     return {
@@ -213,14 +165,9 @@ export class MockAuthService {
     };
   }
 
-  /**
-   * 登出
-   */
   static async logout(): Promise<ResponseResult> {
     await mockDelay(300);
-
     currentUser = null;
-
     return {
       code: 0,
       message: '登出成功',
@@ -228,9 +175,6 @@ export class MockAuthService {
     };
   }
 
-  /**
-   * 获取今天日期字符串
-   */
   static getTodayString(): string {
     const today: Date = new Date();
     const year: number = today.getFullYear();

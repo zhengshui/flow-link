@@ -1,6 +1,9 @@
 {
   "src": [
     "home/HomePage",
-    "pages/ExerciseDetailPage"
+    "pages/LoginPage",
+    "pages/RegisterPage",
+    "pages/ExerciseDetailPage",
+    "pages/AddTrainingPage"
   ]
 }

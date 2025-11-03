@@ -59,8 +59,13 @@ class Storage{
    * @param defaultValue
    * @returns string
    */
-  getStringValueSync(key: string, defaultValue: string) {
-    return this.preferences?.getSync(key, defaultValue) as string
+  getStringValueSync(key: string, defaultValue: string): string {
+    if (this.preferences === null) {
+      console.warn('StorageUtils: preferences not initialized, returning defaultValue');
+      return defaultValue;
+    }
+    const value = this.preferences.getSync(key, defaultValue);
+    return value as string;
   }
 
   /**
@@ -69,11 +74,18 @@ class Storage{
    * @param defaultValue
    * @returns Array<string>
    */
-  getArrayStringValueSync(key: string, defaultValue: Array<string>) {
-    return this.preferences?.getSync(key, defaultValue) as Array<string>
+  getArrayStringValueSync(key: string, defaultValue: Array<string>): Array<string> {
+    if (this.preferences === null) {
+      console.warn('StorageUtils: preferences not initialized, returning defaultValue');
+      return defaultValue;
+    }
+    const value = this.preferences.getSync(key, defaultValue);
+    return value as Array<string>;
   }
 }
 export const commonStorage = new Storage('common_storage')
+
+export const StorageUtils = commonStorage
 
 export function initDataPreference() {
   commonStorage.initStorage()

@@ -55,7 +55,7 @@ struct LoginPage {
           console.error('跳转失败:', JSON.stringify(err));
         });
       } else {
-        toast(res.message);
+        toast(res.message ?? '登录失败');
       }
     } catch (err) {
       console.error('登录失败:', JSON.stringify(err));
