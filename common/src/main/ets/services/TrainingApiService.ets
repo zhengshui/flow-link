@@ -22,7 +22,7 @@ export class TrainingApiService {
   }
   /**
    * 获取训练记录列表
-   * GET /training-records?page=1&pageSize=20&startDate=xxx&endDate=xxx&planId=xxx
+   * GET /training/records?page=1&pageSize=20&startDate=xxx&endDate=xxx&planId=xxx
    */
   static async getTrainingRecords(
     page: number = 1,
@@ -32,7 +32,7 @@ export class TrainingApiService {
     planId: number = 0
   ): Promise<ResponseResult> {
     try {
-      let url: string = `/training-records?page=${page}&pageSize=${pageSize}`;
+      let url: string = `/training/records?page=${page}&pageSize=${pageSize}`;
 
       if (startDate) {
         url += `&startDate=${startDate}`;
@@ -79,12 +79,12 @@ export class TrainingApiService {
 
   /**
    * 获取单条训练记录
-   * GET /training-records/{recordId}
+   * GET /training/records/{recordId}
    */
   static async getTrainingRecord(recordId: string): Promise<ResponseResult> {
     try {
       const response: ResponseResult = await requestApiCall(
-        `/training-records/${recordId}`,
+        `/training/records/${recordId}`,
         http.RequestMethod.GET
       );
 
@@ -105,7 +105,7 @@ export class TrainingApiService {
 
   /**
    * 创建训练记录
-   * POST /training-records
+   * POST /training/records
    */
   static async createTrainingRecord(record: TrainingRecordModel): Promise<ResponseResult> {
     try {
@@ -143,7 +143,7 @@ export class TrainingApiService {
       requestData['exercises'] = exercisesArray;
 
       const response: ResponseResult = await requestApiCall(
-        '/training-records',
+        '/training/records',
         http.RequestMethod.POST,
         requestData
       );
@@ -165,7 +165,7 @@ export class TrainingApiService {
 
   /**
    * 更新训练记录
-   * PUT /training-records/{recordId}
+   * PUT /training/records/{recordId}
    */
   static async updateTrainingRecord(recordId: string, record: TrainingRecordModel): Promise<ResponseResult> {
     try {
@@ -203,7 +203,7 @@ export class TrainingApiService {
       requestData['exercises'] = exercisesArray;
 
       const response: ResponseResult = await requestApiCall(
-        `/training-records/${recordId}`,
+        `/training/records/${recordId}`,
         http.RequestMethod.PUT,
         requestData
       );
@@ -220,12 +220,12 @@ export class TrainingApiService {
 
   /**
    * 删除训练记录
-   * DELETE /training-records/{recordId}
+   * DELETE /training/records/{recordId}
    */
   static async deleteTrainingRecord(recordId: string): Promise<ResponseResult> {
     try {
       const response: ResponseResult = await requestApiCall(
-        `/training-records/${recordId}`,
+        `/training/records/${recordId}`,
         http.RequestMethod.DELETE
       );
 

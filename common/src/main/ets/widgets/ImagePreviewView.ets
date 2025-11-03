@@ -29,7 +29,7 @@ export struct ImagePreviewView {
   build() {
     Stack({ alignContent: Alignment.Top }) {
       Image(this.imageUrl)
-        .alt($r('app.media.common_preview_img'))//接口有返回图片就使用接口的，否则使用本地固定图片展示
+        .alt($r('app.media.foreground'))//接口有返回图片就使用接口的，否则使用本地固定图片展示
         .width(this.windowWidth)
         .height(this.windowHeight)
         .objectFit(ImageFit.Contain)

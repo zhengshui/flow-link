@@ -36,10 +36,18 @@ struct LoginPage {
         const loginData: LoginData = res.data as LoginData;
         const token: string = loginData.token;
 
+        console.log('[LoginPage] Received token:', token ? `${token.substring(0, 20)}...` : 'EMPTY');
+
         // 保存 token
         StorageUtils.saveValueSync(StorageConst.TOKEN, token);
+        console.log('[LoginPage] Token saved to storage');
+
+        // 验证 token 是否保存成功
+        const savedToken: string = StorageUtils.getStringValueSync(StorageConst.TOKEN, '');
+        console.log('[LoginPage] Token read back:', savedToken ? `${savedToken.substring(0, 20)}...` : 'EMPTY');
 
         // 获取用户信息
+        console.log('[LoginPage] Calling getUserInfo...');
         const userInfoRes: ResponseResult = await AuthApiService.getUserInfo();
         if (userInfoRes.code === 0 && userInfoRes.data) {
           const userInfo: UserInfoData = userInfoRes.data as UserInfoData;
@@ -80,10 +88,13 @@ struct LoginPage {
     Column({ space: 20 }) {
       // 顶部Logo和标题
       Column({ space: 16 }) {
+
         // Logo
-        Text('💪')
-          .fontSize(80)
+        Image($r('app.media.foreground'))
+          .width(100)
+          .height(100)
           .margin({ top: 80 })
+          .objectFit(ImageFit.Contain)
 
         // 应用名称
         Text('FitEasy')
@@ -151,21 +162,6 @@ struct LoginPage {
           .onClick(() => {
             this.goToRegister();
           })
-      }
-
-      // 测试账号提示
-      Column({ space: 8 }) {
-        Text('测试账号')
-          .fontSize(12)
-          .fontColor('#999999')
-
-        Text('用户名: admin 或 test')
-          .fontSize(11)
-          .fontColor('#CCCCCC')
-
-        Text('密码: 123456')
-          .fontSize(11)
-          .fontColor('#CCCCCC')
       }
       .margin({ top: 40 })
     }

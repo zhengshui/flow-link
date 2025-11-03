@@ -23,7 +23,7 @@ export class PlanApiService {
   }
   /**
    * 获取计划模板列表 (公开接口,无需认证)
-   * GET /plan-templates?page=1&pageSize=20&goal=xxx&level=xxx
+   * GET /templates?page=1&pageSize=20&goal=xxx&level=xxx
    */
   static async getPlanTemplates(
     page: number = 1,
@@ -32,7 +32,7 @@ export class PlanApiService {
     level: string = ''
   ): Promise<ResponseResult> {
     try {
-      let url: string = `/plan-templates?page=${page}&pageSize=${pageSize}`;
+      let url: string = `/templates?page=${page}&pageSize=${pageSize}`;
 
       if (goal) {
         url += `&goal=${goal}`;
@@ -76,12 +76,12 @@ export class PlanApiService {
 
   /**
    * 获取单个计划模板详情
-   * GET /plan-templates/{templateId}
+   * GET /templates/{templateId}
    */
   static async getPlanTemplate(templateId: string): Promise<ResponseResult> {
     try {
       const response: ResponseResult = await requestApiCall(
-        `/plan-templates/${templateId}`,
+        `/templates/${templateId}`,
         http.RequestMethod.GET
       );
 
@@ -102,7 +102,7 @@ export class PlanApiService {
 
   /**
    * 获取用户健身计划列表
-   * GET /fitness-plans?page=1&pageSize=20&status=xxx
+   * GET /plans?page=1&pageSize=20&status=xxx
    */
   static async getFitnessPlans(
     page: number = 1,
@@ -110,7 +110,7 @@ export class PlanApiService {
     status: string = ''
   ): Promise<ResponseResult> {
     try {
-      let url: string = `/fitness-plans?page=${page}&pageSize=${pageSize}`;
+      let url: string = `/plans?page=${page}&pageSize=${pageSize}`;
 
       if (status) {
         url += `&status=${status}`;
@@ -151,12 +151,12 @@ export class PlanApiService {
 
   /**
    * 获取单个健身计划详情
-   * GET /fitness-plans/{planId}
+   * GET /plans/{planId}
    */
   static async getFitnessPlan(planId: string): Promise<ResponseResult> {
     try {
       const response: ResponseResult = await requestApiCall(
-        `/fitness-plans/${planId}`,
+        `/plans/${planId}`,
         http.RequestMethod.GET
       );
 
@@ -177,7 +177,7 @@ export class PlanApiService {
 
   /**
    * 基于模板创建健身计划
-   * POST /fitness-plans/from-template
+   * POST /plans/from-template
    */
   static async createPlanFromTemplate(templateId: number, startDate: string, name: string = ''): Promise<ResponseResult> {
     try {
@@ -191,7 +191,7 @@ export class PlanApiService {
       }
 
       const response: ResponseResult = await requestApiCall(
-        '/fitness-plans/from-template',
+        '/plans/from-template',
         http.RequestMethod.POST,
         requestData
       );
@@ -213,7 +213,7 @@ export class PlanApiService {
 
   /**
    * 创建自定义健身计划
-   * POST /fitness-plans/custom
+   * POST /plans/custom
    */
   static async createCustomPlan(plan: FitnessPlanModel): Promise<ResponseResult> {
     try {
@@ -258,7 +258,7 @@ export class PlanApiService {
       };
 
       const response: ResponseResult = await requestApiCall(
-        '/fitness-plans/custom',
+        '/plans/custom',
         http.RequestMethod.POST,
         requestData
       );
@@ -280,7 +280,7 @@ export class PlanApiService {
 
   /**
    * 标记训练日为已完成
-   * POST /fitness-plans/{planId}/complete-day
+   * POST /plans/{planId}/complete-day
    */
   static async completePlanDay(planId: string, dayNumber: number, recordId: number = 0): Promise<ResponseResult> {
     try {
@@ -293,7 +293,7 @@ export class PlanApiService {
       }
 
       const response: ResponseResult = await requestApiCall(
-        `/fitness-plans/${planId}/complete-day`,
+        `/plans/${planId}/complete-day`,
         http.RequestMethod.POST,
         requestData
       );
@@ -315,7 +315,7 @@ export class PlanApiService {
 
   /**
    * 更新计划状态
-   * PUT /fitness-plans/{planId}/status
+   * PUT /plans/{planId}/status
    */
   static async updatePlanStatus(planId: string, status: string): Promise<ResponseResult> {
     try {
@@ -323,7 +323,7 @@ export class PlanApiService {
         'status': status
       };
       const response: ResponseResult = await requestApiCall(
-        `/fitness-plans/${planId}/status`,
+        `/plans/${planId}/status`,
         http.RequestMethod.PUT,
         requestData
       );
@@ -340,12 +340,12 @@ export class PlanApiService {
 
   /**
    * 删除健身计划
-   * DELETE /fitness-plans/{planId}
+   * DELETE /plans/{planId}
    */
   static async deleteFitnessPlan(planId: string): Promise<ResponseResult> {
     try {
       const response: ResponseResult = await requestApiCall(
-        `/fitness-plans/${planId}`,
+        `/plans/${planId}`,
         http.RequestMethod.DELETE
       );
 

@@ -31,7 +31,7 @@ export class AuthApiService {
         'password': password
       };
       const response: ResponseResult = await requestApiCall(
-        '/login',
+        '/auth/login',
         http.RequestMethod.POST,
         loginData
       );
@@ -57,7 +57,7 @@ export class AuthApiService {
 
   /**
    * 用户注册
-   * POST /signup
+   * POST /auth/register
    */
   static async register(
     username: string,
@@ -105,7 +105,7 @@ export class AuthApiService {
       }
 
       const response: ResponseResult = await requestApiCall(
-        '/signup',
+        '/auth/register',
         http.RequestMethod.POST,
         requestData
       );

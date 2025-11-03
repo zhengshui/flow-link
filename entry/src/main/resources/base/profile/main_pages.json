@@ -4,6 +4,10 @@
     "pages/LoginPage",
     "pages/RegisterPage",
     "pages/ExerciseDetailPage",
-    "pages/AddTrainingPage"
+    "pages/AddTrainingPage",
+    "pages/ProfileEditPage",
+    "pages/ThemeSettingsPage",
+    "pages/ReminderSettingsPage",
+    "pages/AboutPage"
   ]
 }

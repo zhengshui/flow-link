@@ -5,13 +5,17 @@
 
 import {
   TrainingRecordModel,
-  MockDataService,
+  TrainingApiService,
+  StatsApiService,
+  PlanApiService,
   DailyStatsModel,
   FitnessPlanModel,
   PlanTemplateModel,
+  TrainingStatsModel,
   toast
 } from '@tbs/common';
 import { router } from '@kit.ArkUI';
+import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
 @Component
 export struct DashboardPage {
@@ -22,6 +26,7 @@ export struct DashboardPage {
   @State weekTotalWeight: number = 0
   @State myPlan: FitnessPlanModel | null = null
   @State recommendedTemplates: PlanTemplateModel[] = []
+  @State isLoading: boolean = false
 
   aboutToAppear(): void {
     this.loadData();
@@ -30,74 +35,97 @@ export struct DashboardPage {
   /**
    * 加载数据
    */
-  loadData(): void {
-    // 获取所有训练记录
-    const allRecords: TrainingRecordModel[] = MockDataService.getMockTrainingRecords();
-
-    // 获取今天的训练记录
-    const today: string = MockDataService.getTodayString();
-    for (let i: number = 0; i < allRecords.length; i++) {
-      if (allRecords[i].date === today) {
-        this.todayRecord = allRecords[i];
-        break;
-      }
+  async loadData(): Promise<void> {
+    this.isLoading = true;
+    try {
+      // 并行加载所有数据
+      await Promise.all([
+        this.loadWeekStats(),
+        this.loadTodayRecord(),
+        this.loadMyPlan(),
+        this.loadRecommendedTemplates()
+      ]);
+    } catch (err) {
+      console.error('加载数据失败:', JSON.stringify(err));
+      toast('数据加载失败');
+    } finally {
+      this.isLoading = false;
     }
+  }
 
-    // 获取本周统计数据
-    const weekStatsData: DailyStatsModel[] = [];
-    let totalCount: number = 0;
-    let totalDuration: number = 0;
-    let totalWeight: number = 0;
+  /**
+   * 加载本周统计数据
+   */
+  async loadWeekStats(): Promise<void> {
+    try {
+      const res: ResponseResult = await StatsApiService.getTrainingStats('week');
+      if (res.code === 0 && res.data) {
+        const stats: TrainingStatsModel = res.data as TrainingStatsModel;
+        this.weekStats = stats.dailyStats;
+        this.weekTotalCount = stats.totalTrainingCount;
+        this.weekTotalDuration = stats.totalDuration;
+        this.weekTotalWeight = stats.totalWeight;
+      }
+    } catch (err) {
+      console.error('加载本周统计失败:', JSON.stringify(err));
+    }
+  }
 
-    for (let i: number = 6; i >= 0; i--) {
-      const dateStr: string = MockDataService.getDaysAgo(i);
-      let found: boolean = false;
+  /**
+   * 加载今天的训练记录
+   */
+  async loadTodayRecord(): Promise<void> {
+    try {
+      const today: Date = new Date();
+      const todayStr: string = today.getFullYear() + '-' +
+        (today.getMonth() + 1).toString().padStart(2, '0') + '-' +
+        today.getDate().toString().padStart(2, '0');
 
-      for (let j: number = 0; j < allRecords.length; j++) {
-        const record: TrainingRecordModel = allRecords[j];
-        if (record.date === dateStr) {
-          weekStatsData.push(new DailyStatsModel(
-            dateStr,
-            1,
-            record.duration,
-            record.totalWeight,
-            record.totalSets,
-            record.caloriesBurned
-          ));
-          totalCount++;
-          totalDuration += record.duration;
-          totalWeight += record.totalWeight;
-          found = true;
-          break;
+      const res: ResponseResult = await TrainingApiService.getTrainingRecords(1, 10, todayStr, todayStr);
+      if (res.code === 0 && res.data) {
+        const apiData: Record<string, Object> = res.data as Record<string, Object>;
+        const recordsArray: Object[] = apiData['records'] as Object[] ?? [];
+        if (recordsArray.length > 0) {
+          this.todayRecord = recordsArray[0] as TrainingRecordModel;
         }
       }
+    } catch (err) {
+      console.error('加载今日训练失败:', JSON.stringify(err));
+    }
+  }
 
-      if (!found) {
-        weekStatsData.push(new DailyStatsModel(dateStr, 0, 0, 0, 0, 0));
+  /**
+   * 加载我的训练计划
+   */
+  async loadMyPlan(): Promise<void> {
+    try {
+      const res: ResponseResult = await PlanApiService.getFitnessPlans(1, 10, '进行中');
+      if (res.code === 0 && res.data) {
+        const apiData: Record<string, Object> = res.data as Record<string, Object>;
+        const plansArray: Object[] = apiData['plans'] as Object[] ?? [];
+        if (plansArray.length > 0) {
+          this.myPlan = plansArray[0] as FitnessPlanModel;
+        }
       }
+    } catch (err) {
+      console.error('加载训练计划失败:', JSON.stringify(err));
     }
+  }
 
-    this.weekStats = weekStatsData;
-    this.weekTotalCount = totalCount;
-    this.weekTotalDuration = totalDuration;
-    this.weekTotalWeight = totalWeight;
-
-    // 获取我的训练计划（进行中的）
-    const allPlans: FitnessPlanModel[] = MockDataService.getMockUserPlans();
-    for (let i: number = 0; i < allPlans.length; i++) {
-      if (allPlans[i].status === '进行中') {
-        this.myPlan = allPlans[i];
-        break;
+  /**
+   * 加载推荐模板
+   */
+  async loadRecommendedTemplates(): Promise<void> {
+    try {
+      const res: ResponseResult = await PlanApiService.getPlanTemplates(1, 2);
+      if (res.code === 0 && res.data) {
+        const apiData: Record<string, Object> = res.data as Record<string, Object>;
+        const templatesArray: Object[] = apiData['templates'] as Object[] ?? [];
+        this.recommendedTemplates = templatesArray as PlanTemplateModel[];
       }
+    } catch (err) {
+      console.error('加载推荐模板失败:', JSON.stringify(err));
     }
-
-    // 获取推荐的训练模板（取前2个）
-    const allTemplates: PlanTemplateModel[] = MockDataService.getMockPlanTemplates();
-    const recommended: PlanTemplateModel[] = [];
-    for (let i: number = 0; i < allTemplates.length && i < 2; i++) {
-      recommended.push(allTemplates[i]);
-    }
-    this.recommendedTemplates = recommended;
   }
 
   build() {

@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ArkTS开发文档 https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-dev-guide
 ArkTS编程规范 https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-coding-style-guide
 
-- **Bundle Name**: com.fiteasy.harmonyos
+- **Bundle Name**: com.shui.fiteasy
 - **Version**: 1.0.0
 - **Tech Stack**: ArkTS + HarmonyOS 5.0.0+ (API Level 12)
 - **SDK**: Compatible SDK 5.0.4(16), Target SDK 6.0.0(20)

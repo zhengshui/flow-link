@@ -3,22 +3,25 @@
  * 用户信息、设置、分享等
  */
 
-import { UserInfoData, StorageConst, StorageUtils, toast } from '@tbs/common';
+import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult } from '@tbs/common';
 import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
+import http from '@ohos.net.http';
 
 @Component
 export struct ProfilePage {
   @State userInfo: UserInfoData | null = null
+  @State isLoading: boolean = false
 
   aboutToAppear(): void {
     this.loadUserInfo();
   }
 
   /**
-   * 加载用户信息
+   * 加载用户信息（优先从API获取，失败则从本地读取）
    */
-  loadUserInfo(): void {
+  async loadUserInfo(): Promise<void> {
+    // 先从本地读取
     const userInfoStr: string = StorageUtils.getStringValueSync(StorageConst.USER_INFO, '');
     if (userInfoStr.length > 0) {
       try {
@@ -26,6 +29,39 @@ export struct ProfilePage {
       } catch (err) {
         console.error('解析用户信息失败:', JSON.stringify(err));
       }
+    }
+
+    // 从API获取最新信息
+    await this.fetchUserInfoFromApi();
+  }
+
+  /**
+   * 从API获取用户信息
+   */
+  async fetchUserInfoFromApi(): Promise<void> {
+    if (this.isLoading) {
+      return;
+    }
+
+    this.isLoading = true;
+
+    try {
+      const response: ResponseResult = await requestApiCall(
+        '/api/user/info',
+        http.RequestMethod.GET,
+        undefined
+      );
+
+      if (response.code === 200 && response.data !== null) {
+        // 更新本地存储
+        StorageUtils.saveValueSync(StorageConst.USER_INFO, JSON.stringify(response.data));
+        // 更新界面
+        this.userInfo = response.data as UserInfoData;
+      }
+    } catch (err) {
+      console.error('获取用户信息失败:', JSON.stringify(err));
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -82,31 +118,28 @@ export struct ProfilePage {
           // 功能菜单
           Column({ space: 0 }) {
             this.MenuItem('个人资料', '编辑个人信息', () => {
-              toast('个人资料编辑功能开发中...');
+              router.pushUrl({
+                url: 'pages/ProfileEditPage'
+              }).catch((err: Error) => {
+                console.error('跳转失败:', JSON.stringify(err));
+              });
             })
             this.MenuDivider()
-            this.MenuItem('主题设置', '浅色模式', () => {
-              toast('主题设置功能开发中...');
+            this.MenuItem('主题设置', this.getThemeDisplay(), () => {
+              router.pushUrl({
+                url: 'pages/ThemeSettingsPage'
+              }).catch((err: Error) => {
+                console.error('跳转失败:', JSON.stringify(err));
+              });
             })
             this.MenuDivider()
-            this.MenuItem('训练提醒', '未设置', () => {
-              toast('训练提醒功能开发中...');
+            this.MenuItem('训练提醒', this.getReminderDisplay(), () => {
+              router.pushUrl({
+                url: 'pages/ReminderSettingsPage'
+              }).catch((err: Error) => {
+                console.error('跳转失败:', JSON.stringify(err));
+              });
             })
-            this.MenuDivider()
-            this.MenuItem('数据导出', 'CSV/PDF', () => {
-              toast('数据导出功能开发中...');
-            })
-          }
-          .width('100%')
-          .backgroundColor(Color.White)
-          .borderRadius(12)
-          .margin({ left: 16, right: 16 })
-
-          // AI助手预留入口
-          Column({ space: 0 }) {
-            this.MenuItem('AI 训练助手', '敬请期待', () => {
-              toast('AI训练助手即将上线');
-            }, true)
           }
           .width('100%')
           .backgroundColor(Color.White)
@@ -116,7 +149,11 @@ export struct ProfilePage {
           // 关于
           Column({ space: 0 }) {
             this.MenuItem('关于 FitEasy', 'v1.0.0', () => {
-              toast('FitEasy v1.0.0 - 让健身更简单');
+              router.pushUrl({
+                url: 'pages/AboutPage'
+              }).catch((err: Error) => {
+                console.error('跳转失败:', JSON.stringify(err));
+              });
             })
           }
           .width('100%')
@@ -197,8 +234,38 @@ export struct ProfilePage {
     .borderRadius(12)
     .alignItems(VerticalAlign.Center)
     .onClick(() => {
-      toast('编辑个人资料功能开发中...');
+      router.pushUrl({
+        url: 'pages/ProfileEditPage'
+      }).catch((err: Error) => {
+        console.error('跳转失败:', JSON.stringify(err));
+      });
     })
+  }
+
+  /**
+   * 获取主题显示文本
+   */
+  getThemeDisplay(): string {
+    const theme: string = StorageUtils.getStringValueSync('app_theme', 'light');
+    if (theme === 'dark') {
+      return '深色模式';
+    } else if (theme === 'auto') {
+      return '跟随系统';
+    }
+    return '浅色模式';
+  }
+
+  /**
+   * 获取提醒显示文本
+   */
+  getReminderDisplay(): string {
+    const enabledStr: string = StorageUtils.getStringValueSync('reminder_enabled', 'false');
+    const enabled: boolean = enabledStr === 'true';
+    if (enabled) {
+      const time: string = StorageUtils.getStringValueSync('reminder_time', '18:00');
+      return '已设置 ' + time;
+    }
+    return '未设置';
   }
 
   @Builder

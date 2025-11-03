@@ -1,6 +1,7 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import { GlobalContext, initDataPreference } from '@tbs/common';
 
 const DOMAIN: number = 0x0000;
 const TAG: string = 'FitEasy';
@@ -12,7 +13,14 @@ export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     // 设置颜色模式
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
-    hilog.info(DOMAIN, TAG, 'Ability onCreate');
+
+    // 初始化全局上下文
+    GlobalContext.getContext().setObject('context', this.context);
+
+    // 初始化数据存储
+    initDataPreference();
+
+    hilog.info(DOMAIN, TAG, 'Ability onCreate - Storage initialized');
   }
 
   onDestroy(): void {

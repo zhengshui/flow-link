@@ -4,18 +4,21 @@
  */
 
 import {
-  MockDataService,
+  StatsApiService,
   TrainingStatsModel,
   DailyStatsModel,
   MuscleGroupStatsModel,
-  StatsPeriodConst
+  StatsPeriodConst,
+  toast
 } from '@tbs/common';
+import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
 @Component
 export struct StatsPage {
   @State currentPeriod: string = StatsPeriodConst.WEEK
   @State stats: TrainingStatsModel | null = null
   @State muscleGroupStats: MuscleGroupStatsModel[] = []
+  @State isLoading: boolean = false
 
   aboutToAppear(): void {
     this.loadData();
@@ -24,9 +27,51 @@ export struct StatsPage {
   /**
    * 加载数据
    */
-  loadData(): void {
-    this.stats = MockDataService.getMockTrainingStats(this.currentPeriod);
-    this.muscleGroupStats = MockDataService.getMockMuscleGroupStats();
+  async loadData(): Promise<void> {
+    this.isLoading = true;
+    try {
+      await Promise.all([
+        this.loadTrainingStats(),
+        this.loadMuscleGroupStats()
+      ]);
+    } catch (err) {
+      console.error('加载统计数据失败:', JSON.stringify(err));
+      toast('数据加载失败');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * 加载训练统计
+   */
+  async loadTrainingStats(): Promise<void> {
+    try {
+      const res: ResponseResult = await StatsApiService.getTrainingStats(this.currentPeriod);
+      if (res.code === 0 && res.data) {
+        this.stats = res.data as TrainingStatsModel;
+      } else {
+        toast(res.message ?? '加载失败');
+      }
+    } catch (err) {
+      console.error('加载训练统计失败:', JSON.stringify(err));
+    }
+  }
+
+  /**
+   * 加载肌群统计
+   */
+  async loadMuscleGroupStats(): Promise<void> {
+    try {
+      const res: ResponseResult = await StatsApiService.getMuscleGroupStats(this.currentPeriod);
+      if (res.code === 0 && res.data) {
+        this.muscleGroupStats = res.data as MuscleGroupStatsModel[];
+      } else {
+        toast(res.message ?? '加载失败');
+      }
+    } catch (err) {
+      console.error('加载肌群统计失败:', JSON.stringify(err));
+    }
   }
 
   /**

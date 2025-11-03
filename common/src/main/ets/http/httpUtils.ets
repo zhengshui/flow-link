@@ -10,14 +10,18 @@ export function requestApiCall(url: string,
   data?: Record<string, number | boolean | string | Object | undefined>,
   headers?: Record<string, string>,
 ): Promise<ResponseResult> {
-  const BASE_URL = 'http://localhost:8080/api'
+  const BASE_URL = 'http://192.168.2.93:8080/api'
   const httpRequest = http.createHttp();
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
   }
   const token = commonStorage.getStringValueSync(StorageConst.TOKEN, "")
+  console.log('[httpUtils] Token from storage:', token ? `${token.substring(0, 20)}...` : 'EMPTY')
   if (token) {
     defaultHeaders['Authorization'] = `Bearer ${token}`
+    console.log('[httpUtils] Authorization header added')
+  } else {
+    console.warn('[httpUtils] No token found in storage')
   }
 
   const finalHeaders: Record<string, string> = {};
@@ -38,13 +42,16 @@ export function requestApiCall(url: string,
   });
   let response: ResponseResult = new ResponseResult();
   return responseResult.then((value: http.HttpResponse) => {
+    console.log('[httpUtils] HTTP status:', value.responseCode, 'URL:', BASE_URL + url);
+
     if (value.responseCode === 200) {
       let res: ResponseResult = JSON.parse(`${value.result}`);
-      console.log('res呀呀呀', res.code, res.message)
+      console.log('[httpUtils] Response code:', res.code, 'message:', res.message)
       response.data = res.data;
       response.code = res.code;
       response.message = res.message;
       if (res.code === 401 || (res.message && res.message.includes('token is expired'))) {
+        console.warn('[httpUtils] Token expired or unauthorized, redirecting to login');
         commonStorage.deleteValueSync(StorageConst.TOKEN)
         commonStorage.deleteValueSync(StorageConst.USER_INFO)
 
@@ -52,7 +59,18 @@ export function requestApiCall(url: string,
         router.clear();
         router.replaceUrl({ url: 'pages/LoginPage' })
       }
+    } else if (value.responseCode === 401) {
+      // HTTP 401 - 未授权
+      console.error('[httpUtils] HTTP 401 Unauthorized');
+      response.message = '未授权，请重新登录';
+      response.code = 401;
+      // 清除 token 并跳转登录
+      commonStorage.deleteValueSync(StorageConst.TOKEN)
+      commonStorage.deleteValueSync(StorageConst.USER_INFO)
+      router.clear();
+      router.replaceUrl({ url: 'pages/LoginPage' })
     } else {
+      console.error('[httpUtils] HTTP error:', value.responseCode);
       response.message = '请求错误';
       response.code = 400;
     }

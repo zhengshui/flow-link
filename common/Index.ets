@@ -7,15 +7,12 @@ export * from './src/main/ets/widgets'
 export * from './src/main/ets/manager'
 
 export * from './src/main/ets/utils'
-export { MockDataService } from './src/main/ets/utils/MockDataService'
-export { ActionDataService } from './src/main/ets/utils/ActionDataService'
-export { MockAuthService } from './src/main/ets/utils/MockAuthService'
 
-// Real API Services
-export { AuthApiService } from './src/main/ets/utils/AuthApiService'
-export { TrainingApiService } from './src/main/ets/utils/TrainingApiService'
-export { PlanApiService } from './src/main/ets/utils/PlanApiService'
-export { StatsApiService, PersonalRecordModel, CalendarDayModel } from './src/main/ets/utils/StatsApiService'
+export { ActionDataService } from './src/main/ets/services/ActionDataService'
+export { AuthApiService } from './src/main/ets/services/AuthApiService'
+export { TrainingApiService } from './src/main/ets/services/TrainingApiService'
+export { PlanApiService } from './src/main/ets/services/PlanApiService'
+export { StatsApiService, PersonalRecordModel, CalendarDayModel } from './src/main/ets/services/StatsApiService'
 
 export { CommonDataSource } from './src/main/ets/model/CommonDataSource'
 export { LoginData, UserInfoData } from './src/main/ets/model/AuthModel'

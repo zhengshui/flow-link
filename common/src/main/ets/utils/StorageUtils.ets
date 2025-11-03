@@ -32,12 +32,14 @@ class Storage{
    * @param value
    */
   saveValueSync(key: string, value: preferences.ValueType) {
-    this.preferences?.putSync(key, value)
-    this.preferences?.flush((err: BusinessError) => {
-      if (err) {
-        console.error(`${this.name} file flush error :${err.message ?? ""}`)
-      }
-    })
+    try {
+      this.preferences?.putSync(key, value)
+      // 同步刷新到磁盘
+      this.preferences?.flushSync()
+      console.log(`[Storage] Saved ${key} successfully`)
+    } catch (err) {
+      console.error(`[Storage] Failed to save ${key}:`, JSON.stringify(err))
+    }
   }
 
   /**
@@ -45,12 +47,14 @@ class Storage{
    * @param key
    */
   deleteValueSync(key: string) {
-    this.preferences?.deleteSync(key)
-    this.preferences?.flush((err: BusinessError) => {
-      if (err) {
-        console.error(`${this.name} file flush error :${err.message ?? ""}`)
-      }
-    })
+    try {
+      this.preferences?.deleteSync(key)
+      // 同步刷新到磁盘
+      this.preferences?.flushSync()
+      console.log(`[Storage] Deleted ${key} successfully`)
+    } catch (err) {
+      console.error(`[Storage] Failed to delete ${key}:`, JSON.stringify(err))
+    }
   }
 
   /**

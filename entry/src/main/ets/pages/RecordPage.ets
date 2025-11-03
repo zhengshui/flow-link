@@ -3,12 +3,14 @@
  * 按日期列表显示训练记录，支持添加、修改和删除
  */
 
-import { TrainingRecordModel, MockDataService, toast, ExerciseModel } from '@tbs/common';
+import { TrainingRecordModel, TrainingApiService, toast, ExerciseModel } from '@tbs/common';
 import { promptAction } from '@kit.ArkUI';
+import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
 @Component
 export struct RecordPage {
   @State records: TrainingRecordModel[] = []
+  @State isLoading: boolean = false
 
   aboutToAppear(): void {
     this.loadRecords();
@@ -17,23 +19,48 @@ export struct RecordPage {
   /**
    * 加载训练记录
    */
-  loadRecords(): void {
-    this.records = MockDataService.getMockTrainingRecords();
+  async loadRecords(): Promise<void> {
+    this.isLoading = true;
+    try {
+      const res: ResponseResult = await TrainingApiService.getTrainingRecords(1, 100);
+      if (res.code === 0 && res.data) {
+        const apiData: Record<string, Object> = res.data as Record<string, Object>;
+        const recordsArray: Object = apiData['records'] ?? [];
+        this.records = recordsArray as TrainingRecordModel[];
+      } else {
+        toast(res.message ?? '加载失败');
+      }
+    } catch (err) {
+      console.error('加载训练记录失败:', JSON.stringify(err));
+      toast('加载失败，请重试');
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   /**
    * 删除训练记录
    */
-  deleteRecord(recordId: number): void {
-    // 过滤掉要删除的记录
-    const newRecords: TrainingRecordModel[] = [];
-    for (let i: number = 0; i < this.records.length; i++) {
-      if (this.records[i].id !== recordId) {
-        newRecords.push(this.records[i]);
+  async deleteRecord(recordId: number): Promise<void> {
+    try {
+      const res: ResponseResult = await TrainingApiService.deleteTrainingRecord(recordId.toString());
+      if (res.code === 0) {
+        // 从列表中移除已删除的记录
+        const newRecords: TrainingRecordModel[] = [];
+        for (let i: number = 0; i < this.records.length; i++) {
+          if (this.records[i].id !== recordId) {
+            newRecords.push(this.records[i]);
+          }
+        }
+        this.records = newRecords;
+        toast('删除成功');
+      } else {
+        toast(res.message ?? '删除失败');
       }
+    } catch (err) {
+      console.error('删除训练记录失败:', JSON.stringify(err));
+      toast('删除失败，请重试');
     }
-    this.records = newRecords;
-    toast('删除成功');
   }
 
   /**
