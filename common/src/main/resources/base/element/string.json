@@ -14,23 +14,11 @@
     },
     {
       "name": "EntryAbility_label",
-      "value": "土拨鼠充电"
-    },
-    {
-      "name": "charge",
-      "value": "充电"
-    },
-    {
-      "name": "scan",
-      "value": "扫码"
+      "value": "健身易"
     },
     {
       "name": "mine",
       "value": "我的"
-    },
-    {
-      "name": "welcome_login_groundhog",
-      "value": "欢迎登录123土拨鼠充电平台"
     },
     {
       "name": "please_select_the_tenant",
@@ -101,10 +89,6 @@
       "value": "验证码:666666"
     },
     {
-      "name": "welcome_register_groundhog",
-      "value": "欢迎注册土拨鼠充电平台"
-    },
-    {
       "name": "search_content",
       "value": "请输入搜索内容"
     },
@@ -117,44 +101,12 @@
       "value": "暂无数据"
     },
     {
-      "name": "selection_of_charging_pile",
-      "value": "充电桩选择"
-    },
-    {
-      "name": "fast_charge",
-      "value": "快充"
-    },
-    {
-      "name": "180KW",
-      "value": "180KW"
-    },
-    {
-      "name": "0V",
-      "value": "0V"
-    },
-    {
-      "name": "national_standard",
-      "value": "国标"
-    },
-    {
       "name": "idle",
       "value": "空闲"
     },
     {
       "name": "faults",
       "value": "故障"
-    },
-    {
-      "name": "charging_in_progress",
-      "value": "充电中"
-    },
-    {
-      "name": "pile_number",
-      "value": "桩编号："
-    },
-    {
-      "name": "station_name",
-      "value": "站名称："
     },
     {
       "name": "agreement",
@@ -185,10 +137,6 @@
       "value": "隐私设置"
     },
     {
-      "name": "order",
-      "value": "充电订单"
-    },
-    {
       "name": "service",
       "value": "客服中心"
     },
@@ -205,20 +153,8 @@
       "value": "已完成"
     },
     {
-      "name": "pile_code",
-      "value": "充电桩编号:"
-    },
-    {
-      "name": "charge_name",
-      "value": "充电站名:"
-    },
-    {
       "name": "price",
       "value": "价格:"
-    },
-    {
-      "name": "order_status",
-      "value": "订单状态:"
     },
     {
       "name": "start_time",
@@ -227,10 +163,6 @@
     {
       "name": "end_time",
       "value": "结束时间:"
-    },
-    {
-      "name": "stop_charge",
-      "value": "停止充电"
     },
     {
       "name": "permission_approximately_location",
@@ -242,7 +174,7 @@
     },
     {
       "name": "base_camera_permission_des",
-      "value": "用于扫码功能"
+      "value": "用于拍照和录像功能"
     },
     {
       "name": "base_consent_permission_des",
@@ -281,18 +213,6 @@
       "value": "确定"
     },
     {
-      "name": "charging_period",
-      "value": "充电时段"
-    },
-    {
-      "name": "price_yuan",
-      "value": "价格（元/度)"
-    },
-    {
-      "name": "pile_number_1",
-      "value": "桩编号"
-    },
-    {
       "name": "privacy_settings_address",
       "value": "开启访问位置信息权限"
     },
@@ -302,7 +222,7 @@
     },
     {
       "name": "privacy_settings_camera_description",
-      "value": "扫一扫、用于定位充电桩充电使用"
+      "value": "用于拍照、录制训练视频"
     },
     {
       "name": "privacy_settings_camera",
@@ -317,64 +237,16 @@
       "value": "去设置"
     },
     {
-      "name": "stop_charge_success",
-      "value": "停止充电成功"
-    },
-    {
-      "name": "stop_charge_fail",
-      "value": "停止充电失败"
-    },
-    {
-      "name": "load_order_error",
-      "value": "加载订单失败"
-    },
-    {
       "name": "please_search_content",
       "value": "请输入搜索内容"
-    },
-    {
-      "name": "rates",
-      "value": "收费标准"
-    },
-    {
-      "name": "charge_success",
-      "value": "充电成功"
-    },
-    {
-      "name": "charge_rule",
-      "value": "收费规则 >>"
-    },
-    {
-      "name": "charge_time",
-      "value": "充电时长"
-    },
-    {
-      "name": "fill_and_stop",
-      "value": "充满即止 >>"
-    },
-    {
-      "name": "charge_in",
-      "value": "充电 ing"
     },
     {
       "name": "log_out",
       "value": "退出登录"
     },
     {
-      "name": "charge_balance",
-      "value": "充电余额"
-    },
-    {
       "name": "registered_successfully",
       "value": "注册成功"
-    },
-    {
-      "name": "scan_success",
-      "value": "扫码成功"
-    },
-    {
-      "name": "scan_barQR_code",
-      "value": "请扫描条码/二维码"
     }
   ]
 }

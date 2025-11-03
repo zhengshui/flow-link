@@ -1,6 +1,6 @@
 import http from '@ohos.net.http';
 import { commonStorage } from '../../../../Index';
-import { RoutePageConst, StorageConst } from '../manager';
+import { StorageConst } from '../manager';
 import { ResponseResult } from './response';
 import { router } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
@@ -50,7 +50,7 @@ export function requestApiCall(url: string,
 
         // 跳转到登录页面
         router.clear();
-        router.replaceUrl({ url: RoutePageConst.LoginPage })
+        router.replaceUrl({ url: 'pages/LoginPage' })
       }
     } else {
       response.message = '请求错误';
