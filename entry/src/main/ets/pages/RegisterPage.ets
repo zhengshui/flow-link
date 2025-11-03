@@ -3,7 +3,7 @@
  * 新用户注册
  */
 
-import { MockAuthService, toast } from '@tbs/common';
+import { AuthApiService, toast } from '@tbs/common';
 import { router } from '@kit.ArkUI';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
@@ -53,7 +53,7 @@ struct RegisterPage {
     this.isLoading = true;
 
     try {
-      const res: ResponseResult = await MockAuthService.register(
+      const res: ResponseResult = await AuthApiService.register(
         this.username,
         this.password,
         this.nickname,

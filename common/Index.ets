@@ -11,6 +11,12 @@ export { MockDataService } from './src/main/ets/utils/MockDataService'
 export { ActionDataService } from './src/main/ets/utils/ActionDataService'
 export { MockAuthService } from './src/main/ets/utils/MockAuthService'
 
+// Real API Services
+export { AuthApiService } from './src/main/ets/utils/AuthApiService'
+export { TrainingApiService } from './src/main/ets/utils/TrainingApiService'
+export { PlanApiService } from './src/main/ets/utils/PlanApiService'
+export { StatsApiService, PersonalRecordModel, CalendarDayModel } from './src/main/ets/utils/StatsApiService'
+
 export { CommonDataSource } from './src/main/ets/model/CommonDataSource'
 export { LoginData, UserInfoData } from './src/main/ets/model/AuthModel'
 export { ExerciseModel, MuscleGroupConst } from './src/main/ets/model/ExerciseModel'

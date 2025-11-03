@@ -10,7 +10,7 @@ export function requestApiCall(url: string,
   data?: Record<string, number | boolean | string | Object | undefined>,
   headers?: Record<string, string>,
 ): Promise<ResponseResult> {
-  const BASE_URL = 'https://charging.lusson.xyz'
+  const BASE_URL = 'http://localhost:8080/api'
   const httpRequest = http.createHttp();
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export function requestApiCall(url: string,
   return responseResult.then((value: http.HttpResponse) => {
     if (value.responseCode === 200) {
       let res: ResponseResult = JSON.parse(`${value.result}`);
-      console.log('lucy++ res呀呀呀', res.code, res.message)
+      console.log('res呀呀呀', res.code, res.message)
       response.data = res.data;
       response.code = res.code;
       response.message = res.message;
@@ -58,7 +58,7 @@ export function requestApiCall(url: string,
     }
     return response;
   }).catch((error: BusinessError) => {
-    console.log('lucy++ httpUtils error', JSON.stringify(error))
+    console.log('httpUtils error', JSON.stringify(error))
     response.message = error.message;
     response.code = error.code;
     return response;

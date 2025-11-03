@@ -63,14 +63,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "charge",
-      "srcPath": "./feature/charge",
-    },
-    {
-      "name": "mine",
-      "srcPath": "./feature/mine",
     }
   ]
 }

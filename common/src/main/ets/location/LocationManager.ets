@@ -13,7 +13,7 @@ class LocationManager {
       return await permissionManager.checkPermissions(PermissionConst.locationPermissions) &&
       geoLocationManager.isLocationEnabled();
     } catch (e) {
-      console.log(`lucy== hasLocationPermissions, ${JSON.stringify(e)}`)
+      console.log(`hasLocationPermissions, ${JSON.stringify(e)}`)
       return false;
     }
   }

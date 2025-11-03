@@ -3,7 +3,7 @@
  * 用户信息、设置、分享等
  */
 
-import { UserInfoData, StorageConst, StorageUtils, MockAuthService, toast } from '@tbs/common';
+import { UserInfoData, StorageConst, StorageUtils, toast } from '@tbs/common';
 import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
 
@@ -48,22 +48,17 @@ export struct ProfilePage {
       ]
     }).then((data: promptAction.ShowDialogSuccessResponse) => {
       if (data.index === 1) {
-        // 清除登录信息
+        // 清除登录信息 (后端无需logout接口, 客户端直接清除token即可)
         StorageUtils.deleteValueSync(StorageConst.TOKEN);
         StorageUtils.deleteValueSync(StorageConst.USER_INFO);
 
-        // 调用登出接口
-        MockAuthService.logout().then(() => {
-          toast('已退出登录');
+        toast('已退出登录');
 
-          // 跳转到登录页
-          router.replaceUrl({
-            url: 'pages/LoginPage'
-          }).catch((err: Error) => {
-            console.error('跳转失败:', JSON.stringify(err));
-          });
+        // 跳转到登录页
+        router.replaceUrl({
+          url: 'pages/LoginPage'
         }).catch((err: Error) => {
-          console.error('登出失败:', JSON.stringify(err));
+          console.error('跳转失败:', JSON.stringify(err));
         });
       }
     }).catch(() => {

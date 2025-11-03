@@ -3,7 +3,7 @@
  * 支持账号密码登录
  */
 
-import { MockAuthService, LoginData, StorageConst, StorageUtils, toast, UserInfoData } from '@tbs/common';
+import { AuthApiService, LoginData, StorageConst, StorageUtils, toast, UserInfoData } from '@tbs/common';
 import { router } from '@kit.ArkUI';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
@@ -30,7 +30,7 @@ struct LoginPage {
     this.isLoading = true;
 
     try {
-      const res: ResponseResult = await MockAuthService.login(this.username, this.password);
+      const res: ResponseResult = await AuthApiService.login(this.username, this.password);
 
       if (res.code === 0 && res.data) {
         const loginData: LoginData = res.data as LoginData;
@@ -40,7 +40,7 @@ struct LoginPage {
         StorageUtils.saveValueSync(StorageConst.TOKEN, token);
 
         // 获取用户信息
-        const userInfoRes: ResponseResult = await MockAuthService.getUserInfo();
+        const userInfoRes: ResponseResult = await AuthApiService.getUserInfo();
         if (userInfoRes.code === 0 && userInfoRes.data) {
           const userInfo: UserInfoData = userInfoRes.data as UserInfoData;
           StorageUtils.saveValueSync(StorageConst.USER_INFO, userInfo);
