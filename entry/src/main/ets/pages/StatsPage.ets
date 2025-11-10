@@ -92,9 +92,10 @@ export struct StatsPage {
       }
       .width('100%')
       .height(56)
-      .padding({ left: 16, right: 16 })
+      .padding({ left: 16, right: 16, top: 12 })
       .justifyContent(FlexAlign.Start)
       .alignItems(VerticalAlign.Center)
+      .backgroundColor(Color.White)
 
       // 主内容区域
       Scroll() {

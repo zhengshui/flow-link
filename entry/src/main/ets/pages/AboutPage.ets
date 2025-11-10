@@ -26,6 +26,7 @@ struct AboutPage {
         title: '关于',
         showBackIcon: true
       })
+        .margin({ top: 0 })
 
       // 内容区域
       Scroll() {
@@ -121,6 +122,7 @@ struct AboutPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F5F5')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder

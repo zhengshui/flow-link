@@ -4,7 +4,7 @@
  */
 
 import { TrainingRecordModel, TrainingApiService, toast, ExerciseModel } from '@tbs/common';
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, router } from '@kit.ArkUI';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
 @Component
@@ -137,12 +137,13 @@ export struct RecordPage {
         .borderRadius(8)
         .margin({ bottom: 16 })
         .onClick(() => {
-          toast('添加功能开发中...');
+          router.pushUrl({ url: 'pages/TrainingSessionPage' });
         })
     }
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F5F5')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder

@@ -18,7 +18,7 @@ struct HomePage {
 
   build() {
     Column() {
-      // 主内容区域 - Tabs
+      // 主内容区域 - Tabs  
       Tabs({
         barPosition: BarPosition.End,
         index: this.currentIndex,
@@ -63,9 +63,11 @@ struct HomePage {
       .onChange((index: number) => {
         this.currentIndex = index
       })
+      .padding({ top: 0, bottom: 0 }) // 清除默认padding
     }
     .width('100%')
     .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   /**

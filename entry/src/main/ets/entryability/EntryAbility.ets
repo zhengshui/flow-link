@@ -72,6 +72,8 @@ export default class EntryAbility extends UIAbility {
         statusBarContentColor: '#000000'
       });
 
+      mainWindow.setWindowTouchable(true)
+
       hilog.info(DOMAIN, TAG, 'Set immersive window successfully');
     } catch (err) {
       hilog.error(DOMAIN, TAG, 'Failed to set immersive window. Cause: %{public}s', JSON.stringify(err));

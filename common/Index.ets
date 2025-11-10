@@ -22,5 +22,6 @@ export { PlanTemplateModel, TrainingDayModel, TrainingGoalConst, DifficultyLevel
 export { FitnessPlanModel, PlanStatusConst } from './src/main/ets/model/FitnessPlanModel'
 export { TrainingStatsModel, DailyStatsModel, MuscleGroupStatsModel, StatsPeriodConst } from './src/main/ets/model/TrainingStatsModel'
 export { ActionModel, MuscleGroupModel, MuscleGroupConst as ActionMuscleGroupConst, ActionDifficultyConst } from './src/main/ets/model/ActionModel'
+export { TrainingSessionModel, SessionExerciseModel, TrainingSetModel, TrainingDifficultyConst, SetTypeConst } from './src/main/ets/model/TrainingSessionModel'
 
 export * from './src/main/ets/location'

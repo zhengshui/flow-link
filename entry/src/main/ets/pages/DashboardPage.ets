@@ -133,6 +133,9 @@ export struct DashboardPage {
       // 主内容区域
       Scroll() {
         Column({ space: 16 }) {
+          // 顶部占位（避开安全区域）
+          Column()
+            .height(12)
           // 今日训练摘要
           this.TodaySummaryCard()
 

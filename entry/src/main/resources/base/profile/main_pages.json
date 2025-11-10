@@ -5,6 +5,7 @@
     "pages/RegisterPage",
     "pages/ExerciseDetailPage",
     "pages/AddTrainingPage",
+    "pages/TrainingSessionPage",
     "pages/ProfileEditPage",
     "pages/ThemeSettingsPage",
     "pages/ReminderSettingsPage",

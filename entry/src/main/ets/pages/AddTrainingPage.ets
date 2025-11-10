@@ -70,7 +70,7 @@ struct AddTrainingPage {
       }
       .width('100%')
       .height(56)
-      .padding({ left: 16, right: 16 })
+      .padding({ top: 20, left: 16, right: 16 })
       .backgroundColor(Color.White)
       .justifyContent(FlexAlign.SpaceBetween)
       .alignItems(VerticalAlign.Center)
@@ -197,5 +197,6 @@ struct AddTrainingPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F5F5')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 }

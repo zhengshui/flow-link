@@ -86,6 +86,10 @@ struct LoginPage {
 
   build() {
     Column({ space: 20 }) {
+      // 顶部占位（避开安全区域）
+      Column()
+        .height(40)
+      
       // 顶部Logo和标题
       Column({ space: 16 }) {
 
@@ -93,7 +97,7 @@ struct LoginPage {
         Image($r('app.media.foreground'))
           .width(100)
           .height(100)
-          .margin({ top: 80 })
+          .margin({ top: 40 })
           .objectFit(ImageFit.Contain)
 
         // 应用名称
