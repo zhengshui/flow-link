@@ -5,13 +5,13 @@ import { ExerciseModel } from './ExerciseModel';
  * 记录每次完整的训练会话
  */
 export class TrainingRecordModel {
-  id: number = 0                      // 训练记录ID
+  id: string = ''                     // 训练记录ID（MongoDB ObjectId）
   userId: number = 0                  // 用户ID
   title: string = ''                  // 训练标题（如：胸肌训练日、有氧跑步）
-  date: string = ''                   // 训练日期（YYYY-MM-DD）
-  startTime: string = ''              // 开始时间（HH:mm）
-  endTime: string = ''                // 结束时间（HH:mm）
-  duration: number = 0                // 总时长（分钟）
+  date: string = ''                   // 训练日期（YYYY-MM-DD）- 从 startTime 提取
+  startTime: string = ''              // 开始时间（YYYY-MM-DD HH:mm:ss）完整日期时间
+  endTime: string = ''                // 结束时间（YYYY-MM-DD HH:mm:ss）完整日期时间
+  duration: number = 0                // 总时长（分钟）- 由后端根据 startTime 和 endTime 计算
   exercises: ExerciseModel[] = []     // 训练项目列表
   totalWeight: number = 0             // 总重量（kg = sum(sets * reps * weight)）
   totalSets: number = 0               // 总组数
@@ -23,7 +23,7 @@ export class TrainingRecordModel {
   updatedAt: string = ''              // 更新时间戳
 
   constructor(
-    id?: number,
+    id?: string,
     userId?: number,
     title?: string,
     date?: string,

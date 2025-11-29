@@ -1,0 +1,104 @@
+/**
+ * 组类型选择弹窗组件
+ * 支持选择热身、正式、放松三种组类型
+ */
+
+import { SetTypeConst } from '@tbs/common';
+
+@Component
+export struct SetTypeSelectDialog {
+  @Prop currentSetType: string = SetTypeConst.WORKING
+  onSelect: (setType: string) => void = (): void => {}
+  onCancel: () => void = (): void => {}
+
+  build() {
+    Column() {
+      Column({ space: 0 }) {
+        Text('选择组类型')
+          .fontSize(17)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1A1A1A')
+          .width('100%')
+          .textAlign(TextAlign.Center)
+          .padding({ top: 20, bottom: 16 })
+
+        Column({ space: 0 }) {
+          // 热身选项
+          this.SetTypeOption('热身', '🔥', SetTypeConst.WARMUP, '#E67E22', '低强度，准备肌肉')
+
+          Divider().color('#F0F0F0').margin({ left: 20, right: 20 })
+
+          // 正式选项
+          this.SetTypeOption('正式', '💪', SetTypeConst.WORKING, '#3498DB', '主要训练组')
+
+          Divider().color('#F0F0F0').margin({ left: 20, right: 20 })
+
+          // 放松选项
+          this.SetTypeOption('放松', '🧘', SetTypeConst.COOLDOWN, '#27AE60', '低强度，恢复肌肉')
+        }
+        .width('100%')
+
+        // 取消按钮
+        Button('取消')
+          .width('100%')
+          .height(50)
+          .fontSize(16)
+          .fontColor('#666666')
+          .backgroundColor('#F5F5F5')
+          .borderRadius({ topLeft: 0, topRight: 0, bottomLeft: 16, bottomRight: 16 })
+          .margin({ top: 8 })
+          .onClick((): void => {
+            this.onCancel();
+          })
+      }
+      .width('85%')
+      .backgroundColor(Color.White)
+      .borderRadius(16)
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor('rgba(0, 0, 0, 0.4)')
+    .justifyContent(FlexAlign.Center)
+    .onClick((): void => {
+      this.onCancel();
+    })
+  }
+
+  @Builder
+  SetTypeOption(title: string, icon: string, setType: string, checkColor: string, description: string) {
+    Row() {
+      Row({ space: 12 }) {
+        Text(icon)
+          .fontSize(20)
+
+        Column({ space: 2 }) {
+          Text(title)
+            .fontSize(16)
+            .fontWeight(FontWeight.Medium)
+            .fontColor('#1A1A1A')
+
+          Text(description)
+            .fontSize(12)
+            .fontColor('#999999')
+        }
+        .alignItems(HorizontalAlign.Start)
+      }
+
+      if (this.currentSetType === setType) {
+        Text('✓')
+          .fontSize(18)
+          .fontColor(checkColor)
+          .fontWeight(FontWeight.Bold)
+      }
+    }
+    .width('100%')
+    .height(60)
+    .padding({ left: 20, right: 20 })
+    .justifyContent(FlexAlign.SpaceBetween)
+    .backgroundColor('#FFFFFF')
+    .onClick((): void => {
+      this.onSelect(setType);
+    })
+  }
+}
+

@@ -273,36 +273,36 @@ export class TrainingApiService {
       exercises.push(exercise);
     }
 
-    // 将字符串 ID 转换为数字
-    let recordId: number = 0;
-    const idValue: Object = data['id'] ?? 0;
-    if (typeof idValue === 'string') {
-      const parsedId: number = parseInt(idValue as string, 10);
-      if (!isNaN(parsedId)) {
-        recordId = parsedId;
-      }
-    } else {
-      recordId = idValue as number;
+    // 保留字符串 ID（MongoDB ObjectId）
+    const recordId: string = (data['id'] ?? '') as string;
+
+    // 获取 startTime
+    const startTime: string = data['startTime'] as string ?? '';
+
+    // 获取 date：优先使用后端返回的 date，如果为空则从 startTime 中提取
+    let dateStr: string = data['date'] as string ?? '';
+    if (dateStr.length === 0 && startTime.length >= 10) {
+      // 从 startTime (格式: YYYY-MM-DD HH:mm:ss) 中提取日期部分
+      dateStr = startTime.substring(0, 10);
     }
 
-    const record: TrainingRecordModel = new TrainingRecordModel(
-      recordId,
-      0, // userId - 不需要前端处理
-      data['title'] as string ?? '',
-      data['date'] as string ?? '',
-      data['startTime'] as string ?? '',
-      data['endTime'] as string ?? '',
-      data['duration'] as number ?? 0,
-      exercises,
-      data['totalWeight'] as number ?? 0,
-      data['totalSets'] as number ?? 0,
-      data['caloriesBurned'] as number ?? 0,
-      data['notes'] as string ?? '',
-      data['mood'] as string ?? '',
-      data['planId'] as number ?? 0,
-      data['createdAt'] as string ?? '',
-      data['updatedAt'] as string ?? ''
-    );
+    const record: TrainingRecordModel = new TrainingRecordModel();
+    record.id = recordId;
+    record.userId = 0; // userId - 不需要前端处理
+    record.title = data['title'] as string ?? '';
+    record.date = dateStr;
+    record.startTime = startTime;
+    record.endTime = data['endTime'] as string ?? '';
+    record.duration = data['duration'] as number ?? 0;
+    record.exercises = exercises;
+    record.totalWeight = data['totalWeight'] as number ?? 0;
+    record.totalSets = data['totalSets'] as number ?? 0;
+    record.caloriesBurned = data['caloriesBurned'] as number ?? 0;
+    record.notes = data['notes'] as string ?? '';
+    record.mood = data['mood'] as string ?? '';
+    record.planId = data['planId'] as number ?? 0;
+    record.createdAt = data['createdAt'] as string ?? '';
+    record.updatedAt = data['updatedAt'] as string ?? '';
 
     return record;
   }

@@ -125,7 +125,7 @@ export class TrainingSessionModel {
   startTime: number = 0               // 开始时间戳（毫秒）
   pausedTime: number = 0              // 暂停累计时长（毫秒）
   exercises: SessionExerciseModel[] = [] // 训练动作列表
-  difficulty: string = ''             // 训练难度：简单、正常、困难
+  mood: string = ''                   // 训练状态：优秀、良好、一般、疲劳
   notes: string = ''                  // 训练心得
   isRunning: boolean = false          // 是否正在计时
   planId: number = 0                  // 关联的计划ID
@@ -135,7 +135,7 @@ export class TrainingSessionModel {
     startTime: number = 0,
     pausedTime: number = 0,
     exercises: SessionExerciseModel[] = [],
-    difficulty: string = '',
+    mood: string = '',
     notes: string = '',
     isRunning: boolean = false,
     planId: number = 0
@@ -144,7 +144,7 @@ export class TrainingSessionModel {
     this.startTime = startTime;
     this.pausedTime = pausedTime;
     this.exercises = exercises;
-    this.difficulty = difficulty;
+    this.mood = mood;
     this.notes = notes;
     this.isRunning = isRunning;
     this.planId = planId;
@@ -233,12 +233,13 @@ export class TrainingSessionModel {
 }
 
 /**
- * 训练难度常量
+ * 训练状态常量（API: mood）
  */
-export class TrainingDifficultyConst {
-  static readonly EASY: string = '简单'
-  static readonly NORMAL: string = '正常'
-  static readonly HARD: string = '困难'
+export class TrainingMoodConst {
+  static readonly EXCELLENT: string = '优秀'
+  static readonly GOOD: string = '良好'
+  static readonly NORMAL: string = '一般'
+  static readonly TIRED: string = '疲劳'
 }
 
 /**

@@ -382,7 +382,7 @@ export struct DashboardPage {
       .borderRadius(8)
       .onClick(() => {
         router.pushUrl({
-          url: 'pages/AddTrainingPage'
+          url: 'pages/TrainingSessionPage'
         }).catch((err: Error) => {
           console.error('跳转失败:', JSON.stringify(err));
         });

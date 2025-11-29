@@ -25,3 +25,7 @@ You are a HarmonyOS ArkTS expert
 
 ArkTS开发文档 https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/application-dev-guide
 ArkTS编程规范 https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-coding-style-guide
+
+##重点
+app端需求变化和优化的过程，如果需要更新和优化后端接口，应该直接修改API_DOCUMENTATION.md文档，api可以修改和新增
+
