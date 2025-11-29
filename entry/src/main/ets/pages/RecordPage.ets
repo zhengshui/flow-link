@@ -11,9 +11,19 @@ import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 export struct RecordPage {
   @State records: TrainingRecordModel[] = []
   @State isLoading: boolean = false
+  @Prop @Watch('onCurrentTabChange') currentTabIndex: number = 1
 
   aboutToAppear(): void {
+    console.log('[RecordPage] aboutToAppear called');
     this.loadRecords();
+  }
+
+  onCurrentTabChange(): void {
+    console.log('[RecordPage] onCurrentTabChange - currentTabIndex:', this.currentTabIndex);
+    // 当切换到记录页面时刷新数据
+    if (this.currentTabIndex === 1) {
+      this.loadRecords();
+    }
   }
 
   /**
@@ -23,15 +33,20 @@ export struct RecordPage {
     this.isLoading = true;
     try {
       const res: ResponseResult = await TrainingApiService.getTrainingRecords(1, 100);
+      console.log('[RecordPage] API Response - code:', res.code, 'message:', res.message);
+      console.log('[RecordPage] API Response - data:', JSON.stringify(res.data));
       if (res.code === 0 && res.data) {
         const apiData: Record<string, Object> = res.data as Record<string, Object>;
         const recordsArray: Object = apiData['records'] ?? [];
+        console.log('[RecordPage] Records array length:', (recordsArray as TrainingRecordModel[]).length);
         this.records = recordsArray as TrainingRecordModel[];
+        console.log('[RecordPage] this.records set, length:', this.records.length);
       } else {
+        console.error('[RecordPage] API failed - code:', res.code, 'message:', res.message);
         toast(res.message ?? '加载失败');
       }
     } catch (err) {
-      console.error('加载训练记录失败:', JSON.stringify(err));
+      console.error('[RecordPage] 加载训练记录失败:', JSON.stringify(err));
       toast('加载失败，请重试');
     } finally {
       this.isLoading = false;
@@ -92,7 +107,22 @@ export struct RecordPage {
   build() {
     Column() {
       // 主内容区域
-      if (this.records.length > 0) {
+      if (this.isLoading) {
+        // 加载中状态
+        Column({ space: 16 }) {
+          LoadingProgress()
+            .width(48)
+            .height(48)
+            .color('#007AFF')
+          Text('加载中...')
+            .fontSize(14)
+            .fontColor('#999999')
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+      } else if (this.records.length > 0) {
         // 显示记录列表
         List({ space: 12 }) {
           ForEach(this.records, (record: TrainingRecordModel) => {

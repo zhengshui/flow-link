@@ -44,14 +44,20 @@ export class TrainingApiService {
         url += `&planId=${planId}`;
       }
 
+      console.log('[TrainingApiService] getTrainingRecords - URL:', url);
+
       const response: ResponseResult = await requestApiCall(
         url,
         http.RequestMethod.GET
       );
 
+      console.log('[TrainingApiService] getTrainingRecords - Response code:', response.code);
+      console.log('[TrainingApiService] getTrainingRecords - Response data:', JSON.stringify(response.data));
+
       if (response.code === 200 && response.data) {
         const apiData: Record<string, Object> = response.data as Record<string, Object>;
         const recordsArray: Object[] = apiData['records'] as Object[] ?? [];
+        console.log('[TrainingApiService] getTrainingRecords - recordsArray length:', recordsArray.length);
 
         const records: TrainingRecordModel[] = [];
         for (let i: number = 0; i < recordsArray.length; i++) {
@@ -59,6 +65,8 @@ export class TrainingApiService {
           const record: TrainingRecordModel = TrainingApiService.parseTrainingRecord(recordData);
           records.push(record);
         }
+
+        console.log('[TrainingApiService] getTrainingRecords - Parsed records count:', records.length);
 
         response.data = {
           total: apiData['total'] ?? 0,
@@ -69,10 +77,13 @@ export class TrainingApiService {
         response.code = 0;
       } else if (response.code === 200) {
         response.code = 0;
+      } else {
+        console.error('[TrainingApiService] getTrainingRecords - Failed with code:', response.code, 'message:', response.message);
       }
 
       return response;
     } catch (error) {
+      console.error('[TrainingApiService] getTrainingRecords - Exception:', JSON.stringify(error));
       return TrainingApiService.createErrorResponse(4001, '获取训练记录失败: ' + JSON.stringify(error));
     }
   }

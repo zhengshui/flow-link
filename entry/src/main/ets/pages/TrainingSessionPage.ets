@@ -20,6 +20,16 @@ import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
+/**
+ * 选中动作数据类（与 ActionSelectPage 共享）
+ */
+class SelectedActionData {
+  id: string = '';
+  name: string = '';
+  muscleGroup: string = '';
+  thumbnailUrl: string = '';
+}
+
 @Entry
 @Component
 struct TrainingSessionPage {
@@ -37,6 +47,92 @@ struct TrainingSessionPage {
     this.session.isRunning = true;
     this.session.title = '训练记录';
     this.startTimer();
+  }
+
+  /**
+   * 页面显示时检查是否有选中的动作
+   */
+  onPageShow(): void {
+    this.checkSelectedActions();
+  }
+
+  /**
+   * 检查并处理选中的动作
+   */
+  checkSelectedActions(): void {
+    const jsonStr: string | undefined = AppStorage.get<string>('selectedActionsJson');
+
+    if (jsonStr !== undefined && jsonStr.length > 0) {
+      try {
+        const selectedData: SelectedActionData[] = JSON.parse(jsonStr) as SelectedActionData[];
+
+        if (selectedData.length > 0) {
+          let addedCount: number = 0;
+          const newExercises: SessionExerciseModel[] = [];
+
+          // 复制现有动作
+          for (let k: number = 0; k < this.session.exercises.length; k++) {
+            newExercises.push(this.session.exercises[k]);
+          }
+
+          for (let i: number = 0; i < selectedData.length; i++) {
+            const actionData: SelectedActionData = selectedData[i];
+            const actionId: string = actionData.id;
+            const actionName: string = actionData.name;
+            const muscleGroup: string = actionData.muscleGroup;
+            const thumbnailUrl: string = actionData.thumbnailUrl;
+
+            // 检查是否已添加该动作
+            let alreadyExists: boolean = false;
+            for (let j: number = 0; j < newExercises.length; j++) {
+              if (newExercises[j].actionId === actionId) {
+                alreadyExists = true;
+                break;
+              }
+            }
+
+            if (!alreadyExists) {
+              const newExercise: SessionExerciseModel = new SessionExerciseModel(
+                actionId,
+                actionName,
+                muscleGroup,
+                [],
+                0,
+                4,
+                8,
+                '',
+                thumbnailUrl
+              );
+              // 添加一个默认的正式组
+              newExercise.addSet(SetTypeConst.WORKING, 0, 8);
+              newExercises.push(newExercise);
+              addedCount++;
+            }
+          }
+
+          // 清除 AppStorage 中的数据
+          AppStorage.delete('selectedActionsJson');
+
+          // 重新赋值 session 触发 UI 更新
+          if (addedCount > 0) {
+            const updatedSession: TrainingSessionModel = new TrainingSessionModel(
+              this.session.title,
+              this.session.startTime,
+              this.session.pausedTime,
+              newExercises,
+              this.session.difficulty,
+              this.session.notes,
+              this.session.isRunning,
+              this.session.planId
+            );
+            this.session = updatedSession;
+            toast('已添加 ' + addedCount.toString() + ' 个动作');
+          }
+        }
+      } catch (e) {
+        console.error('解析选中动作数据失败');
+      }
+    }
   }
 
   aboutToDisappear(): void {
@@ -241,10 +337,9 @@ struct TrainingSessionPage {
    */
   addExercise(): void {
     router.pushUrl({
-      url: 'pages/ExerciseDetailPage',
-      params: {
-        fromSession: true
-      }
+      url: 'pages/ActionSelectPage'
+    }).catch((err: Error): void => {
+      console.error('跳转失败:', JSON.stringify(err));
     });
   }
 

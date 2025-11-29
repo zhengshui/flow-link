@@ -9,6 +9,7 @@
     "pages/ProfileEditPage",
     "pages/ThemeSettingsPage",
     "pages/ReminderSettingsPage",
-    "pages/AboutPage"
+    "pages/AboutPage",
+    "pages/ActionSelectPage"
   ]
 }

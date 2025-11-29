@@ -32,7 +32,7 @@ struct HomePage {
 
         // 训练记录
         TabContent() {
-          RecordPage()
+          RecordPage({ currentTabIndex: this.currentIndex })
         }
         .tabBar(this.TabBuilder(tabInfo[1]))
 
