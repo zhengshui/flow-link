@@ -3,7 +3,7 @@
  * 用户信息、设置、分享等
  */
 
-import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult } from '@tbs/common';
+import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult, AuthApiService } from '@tbs/common';
 import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
 import http from '@ohos.net.http';
@@ -46,11 +46,7 @@ export struct ProfilePage {
     this.isLoading = true;
 
     try {
-      const response: ResponseResult = await requestApiCall(
-        '/api/user/info',
-        http.RequestMethod.GET,
-        undefined
-      );
+      const response: ResponseResult = await AuthApiService.getUserInfo();
 
       if (response.code === 200 && response.data !== null) {
         // 更新本地存储

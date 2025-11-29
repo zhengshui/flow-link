@@ -4,13 +4,13 @@ import { StorageConst } from '../manager';
 import { ResponseResult } from './response';
 import { router } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { BASE_URL } from '../../../../BuildProfile';
 
 export function requestApiCall(url: string,
   method: http.RequestMethod,
   data?: Record<string, number | boolean | string | Object | undefined>,
   headers?: Record<string, string>,
 ): Promise<ResponseResult> {
-  const BASE_URL = 'http://192.168.2.93:8080/api'
   const httpRequest = http.createHttp();
   const defaultHeaders: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -43,7 +43,6 @@ export function requestApiCall(url: string,
   let response: ResponseResult = new ResponseResult();
   return responseResult.then((value: http.HttpResponse) => {
     console.log('[httpUtils] HTTP status:', value.responseCode, 'URL:', BASE_URL + url);
-
     if (value.responseCode === 200) {
       let res: ResponseResult = JSON.parse(`${value.result}`);
       console.log('[httpUtils] Response code:', res.code, 'message:', res.message)
@@ -70,9 +69,10 @@ export function requestApiCall(url: string,
       router.clear();
       router.replaceUrl({ url: 'pages/LoginPage' })
     } else {
+      let res: ResponseResult = JSON.parse(`${value.result}`);
       console.error('[httpUtils] HTTP error:', value.responseCode);
-      response.message = '请求错误';
-      response.code = 400;
+      response.message = res.message || '请求错误';
+      response.code = res.code || 500;
     }
     return response;
   }).catch((error: BusinessError) => {

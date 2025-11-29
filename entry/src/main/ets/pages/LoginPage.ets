@@ -51,7 +51,7 @@ struct LoginPage {
         const userInfoRes: ResponseResult = await AuthApiService.getUserInfo();
         if (userInfoRes.code === 0 && userInfoRes.data) {
           const userInfo: UserInfoData = userInfoRes.data as UserInfoData;
-          StorageUtils.saveValueSync(StorageConst.USER_INFO, userInfo);
+          StorageUtils.saveValueSync(StorageConst.USER_INFO, JSON.stringify(userInfo));
         }
 
         toast('登录成功');
