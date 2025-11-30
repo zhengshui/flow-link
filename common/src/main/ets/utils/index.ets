@@ -11,3 +11,5 @@ export { initDataPreference, commonStorage, StorageUtils } from './StorageUtils'
 export * from './ComponentUtils'
 
 export { formatDate } from './formatDate'
+
+export { RouterManager, NavRoutes, NavRouteParams } from './RouterManager'

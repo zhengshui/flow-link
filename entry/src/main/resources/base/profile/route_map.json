@@ -1,0 +1,69 @@
+{
+  "routerMap": [
+    {
+      "name": "ProfileEditPage",
+      "pageSourceFile": "src/main/ets/pages/ProfileEditPage.ets",
+      "buildFunction": "ProfileEditPageBuilder",
+      "data": {
+        "description": "个人资料编辑页面"
+      }
+    },
+    {
+      "name": "ThemeSettingsPage",
+      "pageSourceFile": "src/main/ets/pages/ThemeSettingsPage.ets",
+      "buildFunction": "ThemeSettingsPageBuilder",
+      "data": {
+        "description": "主题设置页面"
+      }
+    },
+    {
+      "name": "ReminderSettingsPage",
+      "pageSourceFile": "src/main/ets/pages/ReminderSettingsPage.ets",
+      "buildFunction": "ReminderSettingsPageBuilder",
+      "data": {
+        "description": "训练提醒设置页面"
+      }
+    },
+    {
+      "name": "AboutPage",
+      "pageSourceFile": "src/main/ets/pages/AboutPage.ets",
+      "buildFunction": "AboutPageBuilder",
+      "data": {
+        "description": "关于页面"
+      }
+    },
+    {
+      "name": "ExerciseDetailPage",
+      "pageSourceFile": "src/main/ets/pages/ExerciseDetailPage.ets",
+      "buildFunction": "ExerciseDetailPageBuilder",
+      "data": {
+        "description": "动作详情页面"
+      }
+    },
+    {
+      "name": "TrainingSessionPage",
+      "pageSourceFile": "src/main/ets/pages/TrainingSessionPage.ets",
+      "buildFunction": "TrainingSessionPageBuilder",
+      "data": {
+        "description": "训练会话页面"
+      }
+    },
+    {
+      "name": "ActionSelectPage",
+      "pageSourceFile": "src/main/ets/pages/ActionSelectPage.ets",
+      "buildFunction": "ActionSelectPageBuilder",
+      "data": {
+        "description": "动作选择页面"
+      }
+    },
+    {
+      "name": "AddTrainingPage",
+      "pageSourceFile": "src/main/ets/pages/AddTrainingPage.ets",
+      "buildFunction": "AddTrainingPageBuilder",
+      "data": {
+        "description": "添加训练页面"
+      }
+    }
+  ]
+}
+

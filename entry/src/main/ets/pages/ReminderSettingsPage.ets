@@ -1,18 +1,26 @@
 /**
  * 训练提醒设置页面
  * 设置训练提醒时间和频率
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { StorageConst, StorageUtils, toast, TbsTitleBar } from '@tbs/common';
-import { router } from '@kit.ArkUI';
+import { StorageUtils, toast } from '@tbs/common';
 
-@Entry
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function ReminderSettingsPageBuilder(): void {
+  ReminderSettingsPage()
+}
+
 @Component
-struct ReminderSettingsPage {
+export struct ReminderSettingsPage {
   @State reminderEnabled: boolean = false
   @State reminderTime: string = '18:00'
   @State reminderDays: boolean[] = [false, false, false, false, false, false, false] // 周日到周六
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  private pathStack: NavPathStack = new NavPathStack()
   private weekDays: string[] = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
   aboutToAppear(): void {
@@ -71,7 +79,7 @@ struct ReminderSettingsPage {
 
     // 延迟返回
     setTimeout((): void => {
-      router.back();
+      this.pathStack.pop();
     }, 500);
   }
 
@@ -85,19 +93,7 @@ struct ReminderSettingsPage {
   }
 
   build() {
-    Column() {
-      // 状态栏占位
-      Row()
-        .width('100%')
-        .height(this.getUIContext().px2vp(this.topRectHeight))
-        .backgroundColor(Color.White)
-
-      // 标题栏
-      TbsTitleBar({
-        title: '训练提醒',
-        showBackIcon: true
-      })
-
+    NavDestination() {
       // 设置内容
       Scroll() {
         Column({ space: 16 }) {
@@ -219,8 +215,9 @@ struct ReminderSettingsPage {
       .layoutWeight(1)
       .backgroundColor('#F5F5F5')
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#F5F5F5')
+    .title('训练提醒')
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+    })
   }
 }

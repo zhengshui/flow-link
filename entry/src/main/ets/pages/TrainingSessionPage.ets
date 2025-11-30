@@ -1,6 +1,7 @@
 /**
  * 训练会话页面 - Training Session
  * 实时记录训练过程，支持计时、动作管理、组记录等功能
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
 import {
@@ -11,9 +12,11 @@ import {
   toast,
   TrainingApiService,
   TrainingRecordModel,
-  ExerciseModel
+  ExerciseModel,
+  NavRouteParams,
+  NavRoutes
 } from '@tbs/common';
-import { router, promptAction } from '@kit.ArkUI';
+import { promptAction } from '@kit.ArkUI';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 import {
   SessionExerciseCard,
@@ -31,9 +34,16 @@ class SelectedActionData {
   thumbnailUrl: string = '';
 }
 
-@Entry
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function TrainingSessionPageBuilder(): void {
+  TrainingSessionPage()
+}
+
 @Component
-struct TrainingSessionPage {
+export struct TrainingSessionPage {
   @State session: TrainingSessionModel = new TrainingSessionModel()
   @State currentTime: string = '00:00'
   @State timerInterval: number = -1
@@ -53,38 +63,17 @@ struct TrainingSessionPage {
   @State editSeconds: string = '0'
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  private pathStack: NavPathStack = new NavPathStack()
 
-  aboutToAppear(): void {
-    // 检查是否是继续训练（有传入 recordId）
-    const params: Record<string, Object> = router.getParams() as Record<string, Object>;
-    if (params !== null && params !== undefined) {
-      // 检查继续训练
-      if (params['recordId'] !== undefined) {
-        const recordId: string = params['recordId'] as string;
-        if (recordId.length > 0) {
-          this.existingRecordId = recordId;
-          this.loadExistingRecord(recordId);
-          return;
-        }
-      }
-
-      // 检查复制到今天
-      if (params['copyFromRecord'] !== undefined && params['copyFromRecord'] as boolean) {
-        this.loadCopiedActions();
-        return;
-      }
-
-      // 检查选中的日期（从日历进入）
-      if (params['selectedDate'] !== undefined) {
-        const selectedDateStr: string = params['selectedDate'] as string;
-        if (selectedDateStr.length > 0) {
-          this.selectedDate = selectedDateStr;
-        }
-      }
-    }
-
-    // 新训练
-    this.initNewSession();
+  /**
+   * 初始化新训练会话
+   */
+  initNewSession(): void {
+    // 计算开始时间：如果有选中日期，使用选中日期 + 当前时分秒
+    this.session.startTime = this.calculateStartTime();
+    this.session.isRunning = true;
+    this.session.title = '训练记录';
+    this.startTimer();
   }
 
   /**
@@ -223,17 +212,6 @@ struct TrainingSessionPage {
       record.planId
     );
 
-    this.startTimer();
-  }
-
-  /**
-   * 初始化新训练会话
-   */
-  initNewSession(): void {
-    // 计算开始时间：如果有选中日期，使用选中日期 + 当前时分秒
-    this.session.startTime = this.calculateStartTime();
-    this.session.isRunning = true;
-    this.session.title = '训练记录';
     this.startTimer();
   }
 
@@ -384,9 +362,7 @@ struct TrainingSessionPage {
   }
 
   addExercise(): void {
-    router.pushUrl({ url: 'pages/ActionSelectPage' }).catch((err: Error): void => {
-      console.error('跳转失败:', JSON.stringify(err));
-    });
+    this.pathStack.pushPathByName(NavRoutes.ACTION_SELECT, undefined);
   }
 
   removeExercise(index: number): void {
@@ -487,7 +463,7 @@ struct TrainingSessionPage {
         toast(this.existingRecordId.length > 0 ? '训练记录更新成功' : '训练记录保存成功');
         // 设置刷新标志，通知 RecordPage 刷新数据
         AppStorage.setOrCreate<boolean>('needRefreshRecordPage', true);
-        router.back();
+        this.pathStack.pop();
       } else {
         toast(res.message ?? '保存失败');
         this.isSaving = false;
@@ -652,85 +628,118 @@ struct TrainingSessionPage {
   // ==================== UI 构建 ====================
 
   build() {
-    Stack({ alignContent: Alignment.Bottom }) {
-      Column() {
-        this.TopBar()
+    NavDestination() {
+      Stack({ alignContent: Alignment.Bottom }) {
+        Column() {
+          this.TopBar()
 
-        if (this.isLoadingRecord) {
-          // 加载训练记录中
-          Column({ space: 16 }) {
-            LoadingProgress()
-              .width(48)
-              .height(48)
-              .color('#007AFF')
-            Text('加载训练记录中...')
-              .fontSize(14)
-              .fontColor('#999999')
-          }
-          .width('100%')
-          .layoutWeight(1)
-          .justifyContent(FlexAlign.Center)
-          .alignItems(HorizontalAlign.Center)
-        } else {
-          Scroll() {
+          if (this.isLoadingRecord) {
+            // 加载训练记录中
             Column({ space: 16 }) {
-              if (this.session.exercises.length === 0) {
-                this.EmptyState()
-              } else {
-                ForEach(this.session.exercises, (exercise: SessionExerciseModel, index: number) => {
-                  SessionExerciseCard({
-                    exercise: exercise,
-                    exerciseIndex: index,
-                    onRemoveExercise: (idx: number): void => { this.removeExercise(idx); },
-                    onAddSet: (idx: number): void => { this.addSet(idx); },
-                    onToggleSetComplete: (eIdx: number, sIdx: number): void => { this.toggleSetComplete(eIdx, sIdx); },
-                    onRemoveSet: (eIdx: number, sIdx: number): void => { this.removeSet(eIdx, sIdx); },
-                    onShowSetTypeSelector: (eIdx: number, sIdx: number): void => { this.showSetTypeSelector(eIdx, sIdx); }
-                  })
-                })
-              }
-
-              TrainingFeedbackSection({
-                selectedMood: this.session.mood,
-                onSelect: (m: string): void => { this.selectMood(m); }
-              })
-
-              Column().height(100)
+              LoadingProgress()
+                .width(48)
+                .height(48)
+                .color('#007AFF')
+              Text('加载训练记录中...')
+                .fontSize(14)
+                .fontColor('#999999')
             }
             .width('100%')
-            .padding(16)
+            .layoutWeight(1)
+            .justifyContent(FlexAlign.Center)
+            .alignItems(HorizontalAlign.Center)
+          } else {
+            Scroll() {
+              Column({ space: 16 }) {
+                if (this.session.exercises.length === 0) {
+                  this.EmptyState()
+                } else {
+                  ForEach(this.session.exercises, (exercise: SessionExerciseModel, index: number) => {
+                    SessionExerciseCard({
+                      exercise: exercise,
+                      exerciseIndex: index,
+                      onRemoveExercise: (idx: number): void => { this.removeExercise(idx); },
+                      onAddSet: (idx: number): void => { this.addSet(idx); },
+                      onToggleSetComplete: (eIdx: number, sIdx: number): void => { this.toggleSetComplete(eIdx, sIdx); },
+                      onRemoveSet: (eIdx: number, sIdx: number): void => { this.removeSet(eIdx, sIdx); },
+                      onShowSetTypeSelector: (eIdx: number, sIdx: number): void => { this.showSetTypeSelector(eIdx, sIdx); }
+                    })
+                  })
+                }
+
+                TrainingFeedbackSection({
+                  selectedMood: this.session.mood,
+                  onSelect: (m: string): void => { this.selectMood(m); }
+                })
+
+                Column().height(100)
+              }
+              .width('100%')
+              .padding(16)
+            }
+            .layoutWeight(1)
           }
-          .layoutWeight(1)
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor('#F5F5F5')
+
+        this.BottomBar()
+
+        if (this.showNoteDialog) {
+          this.NoteDialog()
+        }
+
+        if (this.showSetTypeMenu) {
+          SetTypeSelectDialog({
+            currentSetType: this.getCurrentSetType(),
+            onSelect: (setType: string): void => { this.changeSetType(setType); },
+            onCancel: (): void => {
+              this.showSetTypeMenu = false;
+              this.currentEditExerciseIndex = -1;
+              this.currentEditSetIndex = -1;
+            }
+          })
+        }
+
+        if (this.showTimeEditDialog) {
+          this.TimeEditDialog()
         }
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#F5F5F5')
-
-      this.BottomBar()
-
-      if (this.showNoteDialog) {
-        this.NoteDialog()
-      }
-
-      if (this.showSetTypeMenu) {
-        SetTypeSelectDialog({
-          currentSetType: this.getCurrentSetType(),
-          onSelect: (setType: string): void => { this.changeSetType(setType); },
-          onCancel: (): void => {
-            this.showSetTypeMenu = false;
-            this.currentEditExerciseIndex = -1;
-            this.currentEditSetIndex = -1;
-          }
-        })
-      }
-
-      if (this.showTimeEditDialog) {
-        this.TimeEditDialog()
-      }
     }
-    .width('100%')
-    .height('100%')
+    .hideTitleBar(true)
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+      // 获取路由参数
+      const params: NavRouteParams | undefined = context.pathInfo.param as NavRouteParams | undefined
+      if (params !== undefined) {
+        // 检查继续训练
+        if (params.recordId !== undefined && params.recordId.length > 0) {
+          this.existingRecordId = params.recordId
+          this.loadExistingRecord(params.recordId)
+          return
+        }
+
+        // 检查复制到今天
+        if (params.copyFromRecord === true) {
+          this.loadCopiedActions()
+          return
+        }
+
+        // 检查选中的日期（从日历进入）
+        if (params.selectedDate !== undefined && params.selectedDate.length > 0) {
+          this.selectedDate = params.selectedDate
+        }
+      }
+
+      // 新训练
+      this.initNewSession()
+    })
+    .onShown(() => {
+      this.checkSelectedActions()
+    })
   }
 
   @Builder
@@ -749,7 +758,7 @@ struct TrainingSessionPage {
           .width(40)
           .height(40)
           .textAlign(TextAlign.Center)
-          .onClick((): void => { router.back(); })
+          .onClick((): void => { this.pathStack.pop(); })
 
         TextInput({ text: this.session.title })
           .layoutWeight(1)

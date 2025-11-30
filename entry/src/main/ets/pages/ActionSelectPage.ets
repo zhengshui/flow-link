@@ -1,10 +1,10 @@
 /**
  * 动作选择页面 - Action Select
  * 支持多选动作（最多5个），用于训练时添加动作
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
 import { ActionModel, MuscleGroupModel, ActionDataService, toast } from '@tbs/common';
-import { router } from '@kit.ArkUI';
 
 const MAX_SELECT_COUNT: number = 5;
 
@@ -25,9 +25,16 @@ class SelectedActionData {
   }
 }
 
-@Entry
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function ActionSelectPageBuilder(): void {
+  ActionSelectPage()
+}
+
 @Component
-struct ActionSelectPage {
+export struct ActionSelectPage {
   @State muscleGroups: MuscleGroupModel[] = []
   @State currentGroupIndex: number = 0
   @State currentActions: ActionModel[] = []
@@ -35,6 +42,7 @@ struct ActionSelectPage {
   @State selectedActionIds: Set<string> = new Set()
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  private pathStack: NavPathStack = new NavPathStack()
 
   aboutToAppear(): void {
     this.loadData();
@@ -123,74 +131,40 @@ struct ActionSelectPage {
     const jsonStr: string = JSON.stringify(selectedData);
     AppStorage.setOrCreate<string>('selectedActionsJson', jsonStr);
 
-    router.back();
-  }
-
-  /**
-   * 返回
-   */
-  goBack(): void {
-    router.back();
+    this.pathStack.pop();
   }
 
   build() {
-    Column() {
-      // 顶部栏
-      this.TopBar()
+    NavDestination() {
+      Column() {
+        // 主内容区域 - 左右布局
+        Row() {
+          // 左侧：肌肉部位列表
+          this.MuscleGroupList()
 
-      // 主内容区域 - 左右布局
-      Row() {
-        // 左侧：肌肉部位列表
-        this.MuscleGroupList()
-
-        // 右侧：动作列表
-        this.ActionList()
-      }
-      .width('100%')
-      .layoutWeight(1)
-
-      // 底部确认栏
-      this.BottomBar()
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#F5F5F5')
-  }
-
-  @Builder
-  TopBar() {
-    Column() {
-      // 状态栏占位
-      Row()
+          // 右侧：动作列表
+          this.ActionList()
+        }
         .width('100%')
-        .height(this.getUIContext().px2vp(this.topRectHeight))
+        .layoutWeight(1)
 
-      Row() {
-        Text('<')
-          .fontSize(24)
-          .fontColor('#007AFF')
-          .onClick(() => {
-            this.goBack();
-          })
-
-        Text('选择动作')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .margin({ left: 12 })
-          .layoutWeight(1)
-
-        Text(this.selectedActions.length.toString() + '/' + MAX_SELECT_COUNT.toString())
-          .fontSize(14)
-          .fontColor('#007AFF')
+        // 底部确认栏
+        this.BottomBar()
       }
       .width('100%')
-      .height(56)
-      .padding({ left: 16, right: 16 })
-      .justifyContent(FlexAlign.SpaceBetween)
-      .alignItems(VerticalAlign.Center)
+      .height('100%')
+      .backgroundColor('#F5F5F5')
     }
-    .width('100%')
-    .backgroundColor(Color.White)
+    .title('选择动作')
+    .menus([
+      {
+        value: this.selectedActions.length.toString() + '/' + MAX_SELECT_COUNT.toString(),
+        action: (): void => {}
+      }
+    ])
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+    })
   }
 
   @Builder
@@ -353,7 +327,7 @@ struct ActionSelectPage {
           .fontColor('#333333')
           .borderRadius(8)
           .onClick(() => {
-            this.goBack();
+            this.pathStack.pop();
           })
 
         Button('确认添加 (' + this.selectedActions.length.toString() + ')')
@@ -413,4 +387,3 @@ struct ActionSelectPage {
     return '#999999';
   }
 }
-

@@ -1,15 +1,22 @@
 /**
  * 个人资料编辑页面
  * 编辑用户的个人信息、身体数据等
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult, TbsTitleBar } from '@tbs/common';
-import { router } from '@kit.ArkUI';
+import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult } from '@tbs/common';
 import http from '@ohos.net.http';
 
-@Entry
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function ProfileEditPageBuilder(): void {
+  ProfileEditPage()
+}
+
 @Component
-struct ProfileEditPage {
+export struct ProfileEditPage {
   @State userInfo: UserInfoData | null = null
   @State nickname: string = ''
   @State email: string = ''
@@ -22,6 +29,7 @@ struct ProfileEditPage {
   @State fitnessGoal: string = '增肌'
   @State isLoading: boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  private pathStack: NavPathStack = new NavPathStack()
 
   private genderOptions: string[] = ['男', '女']
   private fitnessGoalOptions: string[] = ['增肌', '减脂', '力量提升', '耐力提升', '综合健身']
@@ -127,7 +135,7 @@ struct ProfileEditPage {
 
           // 延迟返回，让用户看到成功提示
           setTimeout((): void => {
-            router.back();
+            this.pathStack.pop();
           }, 500);
         }
       } else {
@@ -143,19 +151,7 @@ struct ProfileEditPage {
   }
 
   build() {
-    Column() {
-      // 状态栏占位
-      Row()
-        .width('100%')
-        .height(this.getUIContext().px2vp(this.topRectHeight))
-        .backgroundColor(Color.White)
-
-      // 标题栏
-      TbsTitleBar({
-        title: '编辑个人资料',
-        showBackIcon: true
-      })
-
+    NavDestination() {
       // 表单内容
       Scroll() {
         Column({ space: 0 }) {
@@ -164,11 +160,11 @@ struct ProfileEditPage {
           this.InputItem('昵称', this.nickname, (value: string): void => {
             this.nickname = value;
           }, '请输入昵称')
-          this.Divider()
+          this.ItemDivider()
           this.InputItem('邮箱', this.email, (value: string): void => {
             this.email = value;
           }, '请输入邮箱')
-          this.Divider()
+          this.ItemDivider()
           this.InputItem('手机号', this.phone, (value: string): void => {
             this.phone = value;
           }, '请输入手机号')
@@ -178,7 +174,7 @@ struct ProfileEditPage {
           this.SelectItem('性别', this.gender, this.genderOptions, (value: string): void => {
             this.gender = value;
           })
-          this.Divider()
+          this.ItemDivider()
           this.InputItem('年龄', this.age, (value: string): void => {
             this.age = value;
           }, '请输入年龄', true)
@@ -188,11 +184,11 @@ struct ProfileEditPage {
           this.InputItem('身高 (cm)', this.heightValue, (value: string): void => {
             this.heightValue = value;
           }, '请输入身高', true)
-          this.Divider()
+          this.ItemDivider()
           this.InputItem('体重 (kg)', this.weightValue, (value: string): void => {
             this.weightValue = value;
           }, '请输入体重', true)
-          this.Divider()
+          this.ItemDivider()
           this.InputItem('目标体重 (kg)', this.targetWeightValue, (value: string): void => {
             this.targetWeightValue = value;
           }, '请输入目标体重', true)
@@ -222,9 +218,10 @@ struct ProfileEditPage {
       .layoutWeight(1)
       .backgroundColor('#F5F5F5')
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#F5F5F5')
+    .title('编辑个人资料')
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+    })
   }
 
   @Builder
@@ -291,7 +288,7 @@ struct ProfileEditPage {
   }
 
   @Builder
-  Divider() {
+  ItemDivider() {
     Divider()
       .strokeWidth(0.5)
       .color('#E0E0E0')

@@ -1,14 +1,21 @@
 /**
  * 添加训练记录页面 - Add Training
  * 用户可以添加新的训练记录
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
 import { toast } from '@tbs/common';
-import { router } from '@kit.ArkUI';
 
-@Entry
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function AddTrainingPageBuilder(): void {
+  AddTrainingPage()
+}
+
 @Component
-struct AddTrainingPage {
+export struct AddTrainingPage {
   @State title: string = ''
   @State date: string = ''
   @State startTime: string = ''
@@ -17,6 +24,7 @@ struct AddTrainingPage {
   @State notes: string = ''
   @State mood: string = '良好'
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  private pathStack: NavPathStack = new NavPathStack()
 
   aboutToAppear(): void {
     const today: Date = new Date();
@@ -39,52 +47,11 @@ struct AddTrainingPage {
     }
 
     toast('训练记录已保存');
-    router.back();
-  }
-
-  goBack(): void {
-    router.back();
+    this.pathStack.pop();
   }
 
   build() {
-    Column({ space: 0 }) {
-      // 顶部导航栏
-      Column() {
-        // 状态栏占位
-        Row()
-          .width('100%')
-          .height(this.getUIContext().px2vp(this.topRectHeight))
-
-        Row() {
-          Text('<')
-            .fontSize(24)
-            .fontColor('#007AFF')
-            .onClick(() => {
-              this.goBack();
-            })
-
-          Text('添加训练记录')
-            .fontSize(18)
-            .fontWeight(FontWeight.Bold)
-            .margin({ left: 12 })
-            .layoutWeight(1)
-
-          Text('保存')
-            .fontSize(16)
-            .fontColor('#007AFF')
-            .onClick(() => {
-              this.saveTraining();
-            })
-        }
-        .width('100%')
-        .height(56)
-        .padding({ left: 16, right: 16 })
-        .justifyContent(FlexAlign.SpaceBetween)
-        .alignItems(VerticalAlign.Center)
-      }
-      .width('100%')
-      .backgroundColor(Color.White)
-
+    NavDestination() {
       Scroll() {
         Column({ space: 16 }) {
           Column({ space: 0 }) {
@@ -204,8 +171,17 @@ struct AddTrainingPage {
       }
       .layoutWeight(1)
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#F5F5F5')
+    .title('添加训练记录')
+    .menus([
+      {
+        value: '保存',
+        action: (): void => {
+          this.saveTraining();
+        }
+      }
+    ])
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+    })
   }
 }

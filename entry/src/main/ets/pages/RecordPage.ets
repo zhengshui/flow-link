@@ -3,8 +3,8 @@
  * 日历视图显示历史训练记录，支持年月切换，点击查看详情
  */
 
-import { TrainingRecordModel, TrainingApiService, toast, ExerciseModel } from '@tbs/common';
-import { promptAction, router } from '@kit.ArkUI';
+import { TrainingRecordModel, TrainingApiService, toast, ExerciseModel, RouterManager, NavRoutes, NavRouteParams } from '@tbs/common';
+import { promptAction } from '@kit.ArkUI';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
 /**
@@ -260,10 +260,8 @@ export struct RecordPage {
       }).then((result: promptAction.ShowDialogSuccessResponse) => {
         if (result.index === 1) {
           // 传递选中的日期，用于设置训练的开始时间
-          router.pushUrl({
-            url: 'pages/TrainingSessionPage',
-            params: { selectedDate: day.dateStr }
-          });
+          const params: NavRouteParams = { selectedDate: day.dateStr };
+          RouterManager.pushPath(NavRoutes.TRAINING_SESSION, params);
         }
       }).catch((err: Error) => {
         console.error('Dialog error:', JSON.stringify(err));
@@ -336,10 +334,8 @@ export struct RecordPage {
 
     this.showDetailDialog = false;
     toast('已复制动作，开始训练');
-    router.pushUrl({
-      url: 'pages/TrainingSessionPage',
-      params: { copyFromRecord: true }
-    });
+    const params: NavRouteParams = { copyFromRecord: true };
+    RouterManager.pushPath(NavRoutes.TRAINING_SESSION, params);
   }
 
   build() {
@@ -758,10 +754,8 @@ export struct RecordPage {
         .borderRadius(8)
         .onClick(() => {
           this.showDetailDialog = false;
-          router.pushUrl({
-            url: 'pages/TrainingSessionPage',
-            params: { recordId: record.id }
-          });
+          const params: NavRouteParams = { recordId: record.id };
+          RouterManager.pushPath(NavRoutes.TRAINING_SESSION, params);
         })
 
       // 复制到今天

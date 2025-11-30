@@ -3,8 +3,7 @@
  * 按肌肉部位分组显示训练动作，左右布局
  */
 
-import { ActionModel, MuscleGroupModel, ActionDataService } from '@tbs/common';
-import { router } from '@kit.ArkUI';
+import { ActionModel, MuscleGroupModel, ActionDataService, RouterManager, NavRoutes, NavRouteParams } from '@tbs/common';
 
 @Component
 export struct ExercisePage {
@@ -41,14 +40,10 @@ export struct ExercisePage {
    * 跳转到动作详情页
    */
   goToActionDetail(action: ActionModel): void {
-    router.pushUrl({
-      url: 'pages/ExerciseDetailPage',
-      params: {
-        actionId: action.id
-      }
-    }).catch((err: Error) => {
-      console.error('跳转失败:', JSON.stringify(err));
-    });
+    const params: NavRouteParams = {
+      actionId: action.id
+    };
+    RouterManager.pushPath(NavRoutes.EXERCISE_DETAIL, params);
   }
 
   build() {

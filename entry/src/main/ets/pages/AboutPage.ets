@@ -1,15 +1,21 @@
 /**
  * 关于页面
  * 显示应用信息、版本号等
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { TbsTitleBar } from '@tbs/common';
-import { router } from '@kit.ArkUI';
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function AboutPageBuilder(): void {
+  AboutPage()
+}
 
-@Entry
 @Component
-struct AboutPage {
+export struct AboutPage {
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  private pathStack: NavPathStack = new NavPathStack()
   private appVersion: string = '1.0.0'
   private appName: string = 'FitEasy (健身易)'
   private appDescription: string = '让健身更简单，记录每一次进步'
@@ -21,20 +27,7 @@ struct AboutPage {
   ]
 
   build() {
-    Column() {
-      // 状态栏占位
-      Row()
-        .width('100%')
-        .height(this.getUIContext().px2vp(this.topRectHeight))
-        .backgroundColor(Color.White)
-
-      // 标题栏
-      TbsTitleBar({
-        title: '关于',
-        showBackIcon: true
-      })
-        .margin({ top: 0 })
-
+    NavDestination() {
       // 内容区域
       Scroll() {
         Column({ space: 24 }) {
@@ -99,7 +92,7 @@ struct AboutPage {
           // 项目信息
           Column({ space: 0 }) {
             this.InfoItem('开发者', 'FitEasy Team')
-            this.Divider()
+            this.ItemDivider()
             this.InfoItem('发布日期', '2025-11-03')
           }
           .width('100%')
@@ -126,9 +119,10 @@ struct AboutPage {
       .layoutWeight(1)
       .backgroundColor('#F5F5F5')
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#F5F5F5')
+    .title('关于')
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+    })
   }
 
   @Builder
@@ -177,7 +171,7 @@ struct AboutPage {
   }
 
   @Builder
-  Divider() {
+  ItemDivider() {
     Divider()
       .strokeWidth(0.5)
       .color('#E0E0E0')

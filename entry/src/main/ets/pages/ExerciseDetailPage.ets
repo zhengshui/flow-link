@@ -1,26 +1,25 @@
 /**
  * 动作详情页面 - Exercise Detail
  * 显示动作的详细信息、视频讲解和动作步骤
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { ActionModel, ActionDataService, toast } from '@tbs/common';
-import { router } from '@kit.ArkUI';
+import { ActionModel, ActionDataService, toast, NavRouteParams } from '@tbs/common';
 
-@Entry
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function ExerciseDetailPageBuilder(): void {
+  ExerciseDetailPage()
+}
+
 @Component
-struct ExerciseDetailPage {
+export struct ExerciseDetailPage {
   @State action: ActionModel | null = null
   @State actionId: string = ''
   @StorageProp('topRectHeight') topRectHeight: number = 0
-
-  aboutToAppear(): void {
-    // 获取路由参数
-    const params: ESObject = router.getParams() as ESObject;
-    if (params !== null && params.actionId !== undefined) {
-      this.actionId = params.actionId as string;
-      this.loadData();
-    }
-  }
+  private pathStack: NavPathStack = new NavPathStack()
 
   /**
    * 加载动作数据
@@ -29,63 +28,66 @@ struct ExerciseDetailPage {
     this.action = ActionDataService.getActionById(this.actionId);
   }
 
-  /**
-   * 返回上一页
-   */
-  goBack(): void {
-    router.back();
-  }
-
   build() {
-    Column() {
-      if (this.action !== null) {
-        // 主内容区域
-        Scroll() {
-          Column({ space: 16 }) {
-            // 视频区域
-            this.VideoSection()
+    NavDestination() {
+      Column() {
+        if (this.action !== null) {
+          // 主内容区域
+          Scroll() {
+            Column({ space: 16 }) {
+              // 视频区域
+              this.VideoSection()
 
-            // 基本信息
-            this.BasicInfoSection()
+              // 基本信息
+              this.BasicInfoSection()
 
-            // 动作描述
-            this.DescriptionSection()
+              // 动作描述
+              this.DescriptionSection()
 
-            // 动作步骤
-            this.StepsSection()
+              // 动作步骤
+              this.StepsSection()
 
-            // 注意事项
-            if (this.action.tips.length > 0) {
-              this.TipsSection()
+              // 注意事项
+              if (this.action.tips.length > 0) {
+                this.TipsSection()
+              }
+
+              // 底部间距
+              Column()
+                .height(20)
             }
-
-            // 底部间距
-            Column()
-              .height(20)
+            .width('100%')
+            .padding(16)
           }
           .width('100%')
-          .padding(16)
+          .height('100%')
+        } else {
+          // 无数据
+          Column() {
+            Text('动作不存在')
+              .fontSize(16)
+              .fontColor('#999999')
+          }
+          .width('100%')
+          .layoutWeight(1)
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
         }
-        .width('100%')
-        .height('100%')
-      } else {
-        // 无数据
-        Column() {
-          Text('动作不存在')
-            .fontSize(16)
-            .fontColor('#999999')
-        }
-        .width('100%')
-        .layoutWeight(1)
-        .justifyContent(FlexAlign.Center)
-        .alignItems(HorizontalAlign.Center)
       }
+      .width('100%')
+      .height('100%')
+      .backgroundColor('#F5F5F5')
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#F5F5F5')
-    // 顶部状态栏避让
-    .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
+    .title(this.action?.name ?? '动作详情')
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+      // 获取路由参数
+      const params: NavRouteParams | undefined = context.pathInfo.param as NavRouteParams | undefined
+      if (params !== undefined && params.actionId !== undefined) {
+        this.actionId = params.actionId
+        this.loadData()
+      }
+    })
   }
 
   @Builder

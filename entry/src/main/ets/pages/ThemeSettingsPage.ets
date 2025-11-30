@@ -1,16 +1,24 @@
 /**
  * 主题设置页面
  * 设置应用的主题（浅色/深色）
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { StorageConst, StorageUtils, toast, TbsTitleBar } from '@tbs/common';
-import { router } from '@kit.ArkUI';
+import { StorageUtils, toast } from '@tbs/common';
 
-@Entry
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function ThemeSettingsPageBuilder(): void {
+  ThemeSettingsPage()
+}
+
 @Component
-struct ThemeSettingsPage {
+export struct ThemeSettingsPage {
   @State currentTheme: string = 'light'
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  private pathStack: NavPathStack = new NavPathStack()
   private themeOptions: ThemeOption[] = [
     { name: '浅色模式', value: 'light', description: '适合白天使用，保护视力' },
     { name: '深色模式', value: 'dark', description: '适合夜间使用，减少眼睛疲劳' },
@@ -53,43 +61,37 @@ struct ThemeSettingsPage {
   }
 
   build() {
-    Column() {
-      // 状态栏占位
-      Row()
+    NavDestination() {
+      Column() {
+        // 主题选项列表
+        Column({ space: 0 }) {
+          ForEach(this.themeOptions, (option: ThemeOption, index: number) => {
+            this.ThemeOptionItem(option, index === this.themeOptions.length - 1)
+          })
+        }
         .width('100%')
-        .height(this.getUIContext().px2vp(this.topRectHeight))
         .backgroundColor(Color.White)
+        .borderRadius(12)
+        .margin({ left: 16, right: 16, top: 16 })
 
-      // 标题栏
-      TbsTitleBar({
-        title: '主题设置',
-        showBackIcon: true
-      })
+        // 提示信息
+        Text('注意：深色模式和跟随系统功能暂未完全实现，敬请期待')
+          .fontSize(12)
+          .fontColor('#999999')
+          .width('100%')
+          .padding({ left: 24, right: 24, top: 16 })
+          .textAlign(TextAlign.Center)
 
-      // 主题选项列表
-      Column({ space: 0 }) {
-        ForEach(this.themeOptions, (option: ThemeOption, index: number) => {
-          this.ThemeOptionItem(option, index === this.themeOptions.length - 1)
-        })
+        Blank()
       }
       .width('100%')
-      .backgroundColor(Color.White)
-      .borderRadius(12)
-      .margin({ left: 16, right: 16, top: 16 })
-
-      // 提示信息
-      Text('注意：深色模式和跟随系统功能暂未完全实现，敬请期待')
-        .fontSize(12)
-        .fontColor('#999999')
-        .width('100%')
-        .padding({ left: 24, right: 24, top: 16 })
-        .textAlign(TextAlign.Center)
-
-      Blank()
+      .height('100%')
+      .backgroundColor('#F5F5F5')
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#F5F5F5')
+    .title('主题设置')
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+    })
   }
 
   @Builder

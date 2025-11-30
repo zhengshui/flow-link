@@ -1,4 +1,4 @@
-import { ScreenUtils, StyleConst } from "../../../../Index"
+import { ScreenUtils, StyleConst, RouterManager } from "../../../../Index"
 import { router } from "@kit.ArkUI"
 
 @Component
@@ -7,6 +7,8 @@ export struct TbsTitleBar {
   @Prop titleColor: ResourceColor = Color.Black
   @Prop showBackIcon: boolean = false
   @Prop titleBarBgColor: ResourceColor = Color.White
+  // 是否使用 Navigation 路由（默认 true）
+  @Prop useNavigation: boolean = true
 
   build() {
     Column() {
@@ -33,7 +35,13 @@ export struct TbsTitleBar {
               center: { anchor: "__container__", align: VerticalAlign.Center },
             })
             .onClick(() => {
-              router.back()
+              if (this.useNavigation) {
+                // 优先使用 Navigation 路由
+                RouterManager.pop()
+              } else {
+                // 兼容 Router 路由
+                router.back()
+              }
             })
         }
       }

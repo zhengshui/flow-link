@@ -12,9 +12,10 @@ import {
   FitnessPlanModel,
   PlanTemplateModel,
   TrainingStatsModel,
-  toast
+  toast,
+  RouterManager,
+  NavRoutes
 } from '@tbs/common';
-import { router } from '@kit.ArkUI';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
 @Component
@@ -381,11 +382,7 @@ export struct DashboardPage {
       .backgroundColor('#007AFF')
       .borderRadius(8)
       .onClick(() => {
-        router.pushUrl({
-          url: 'pages/TrainingSessionPage'
-        }).catch((err: Error) => {
-          console.error('跳转失败:', JSON.stringify(err));
-        });
+        RouterManager.pushPath(NavRoutes.TRAINING_SESSION);
       })
   }
 

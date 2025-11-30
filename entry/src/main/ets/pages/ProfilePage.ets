@@ -3,7 +3,7 @@
  * 用户信息、设置、分享等
  */
 
-import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult, AuthApiService } from '@tbs/common';
+import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult, AuthApiService, RouterManager, NavRoutes } from '@tbs/common';
 import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
 import http from '@ohos.net.http';
@@ -87,7 +87,7 @@ export struct ProfilePage {
 
         toast('已退出登录');
 
-        // 跳转到登录页
+        // 跳转到登录页（使用 router，因为登录页是独立的 @Entry 页面）
         router.replaceUrl({
           url: 'pages/LoginPage'
         }).catch((err: Error) => {
@@ -115,27 +115,15 @@ export struct ProfilePage {
           // 功能菜单
           Column({ space: 0 }) {
             this.MenuItem('个人资料', '编辑个人信息', () => {
-              router.pushUrl({
-                url: 'pages/ProfileEditPage'
-              }).catch((err: Error) => {
-                console.error('跳转失败:', JSON.stringify(err));
-              });
+              RouterManager.pushPath(NavRoutes.PROFILE_EDIT);
             })
             this.MenuDivider()
             this.MenuItem('主题设置', this.getThemeDisplay(), () => {
-              router.pushUrl({
-                url: 'pages/ThemeSettingsPage'
-              }).catch((err: Error) => {
-                console.error('跳转失败:', JSON.stringify(err));
-              });
+              RouterManager.pushPath(NavRoutes.THEME_SETTINGS);
             })
             this.MenuDivider()
             this.MenuItem('训练提醒', this.getReminderDisplay(), () => {
-              router.pushUrl({
-                url: 'pages/ReminderSettingsPage'
-              }).catch((err: Error) => {
-                console.error('跳转失败:', JSON.stringify(err));
-              });
+              RouterManager.pushPath(NavRoutes.REMINDER_SETTINGS);
             })
           }
           .width('100%')
@@ -146,11 +134,7 @@ export struct ProfilePage {
           // 关于
           Column({ space: 0 }) {
             this.MenuItem('关于 FitEasy', 'v1.0.0', () => {
-              router.pushUrl({
-                url: 'pages/AboutPage'
-              }).catch((err: Error) => {
-                console.error('跳转失败:', JSON.stringify(err));
-              });
+              RouterManager.pushPath(NavRoutes.ABOUT);
             })
           }
           .width('100%')
@@ -233,11 +217,7 @@ export struct ProfilePage {
     .borderRadius(12)
     .alignItems(VerticalAlign.Center)
     .onClick(() => {
-      router.pushUrl({
-        url: 'pages/ProfileEditPage'
-      }).catch((err: Error) => {
-        console.error('跳转失败:', JSON.stringify(err));
-      });
+      RouterManager.pushPath(NavRoutes.PROFILE_EDIT);
     })
   }
 
