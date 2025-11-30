@@ -1,7 +1,5 @@
 {
   "src": [
-    "home/HomePage",
-    "pages/LoginPage",
-    "pages/RegisterPage"
+    "home/HomePage"
   ]
 }

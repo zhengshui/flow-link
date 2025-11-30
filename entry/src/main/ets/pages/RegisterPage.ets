@@ -1,15 +1,22 @@
 /**
  * 注册页面 - Register
  * 新用户注册
+ * 使用 NavDestination 作为 Navigation 子页面
  */
 
 import { AuthApiService, toast } from '@tbs/common';
-import { router } from '@kit.ArkUI';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
-@Entry
+/**
+ * 系统路由表构建函数
+ */
+@Builder
+export function RegisterPageBuilder(): void {
+  RegisterPage()
+}
+
 @Component
-struct RegisterPage {
+export struct RegisterPage {
   @State username: string = ''
   @State password: string = ''
   @State confirmPassword: string = ''
@@ -17,6 +24,7 @@ struct RegisterPage {
   @State email: string = ''
   @State isLoading: boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  private pathStack: NavPathStack = new NavPathStack()
 
   /**
    * 执行注册
@@ -64,7 +72,7 @@ struct RegisterPage {
       if (res.code === 0) {
         toast('注册成功，请登录');
         // 返回登录页
-        router.back();
+        this.pathStack.pop();
       } else {
         toast(res.message ?? '注册失败');
       }
@@ -76,45 +84,8 @@ struct RegisterPage {
     }
   }
 
-  /**
-   * 返回登录页
-   */
-  goBack(): void {
-    router.back();
-  }
-
   build() {
-    Column({ space: 0 }) {
-      // 顶部导航栏
-      Column() {
-        // 状态栏占位
-        Row()
-          .width('100%')
-          .height(this.getUIContext().px2vp(this.topRectHeight))
-
-        Row() {
-          Text('<')
-            .fontSize(24)
-            .fontColor('#007AFF')
-            .onClick(() => {
-              this.goBack();
-            })
-
-          Text('注册')
-            .fontSize(18)
-            .fontWeight(FontWeight.Bold)
-            .margin({ left: 12 })
-            .layoutWeight(1)
-        }
-        .width('100%')
-        .height(56)
-        .padding({ left: 16, right: 16 })
-        .justifyContent(FlexAlign.Start)
-        .alignItems(VerticalAlign.Center)
-      }
-      .width('100%')
-      .backgroundColor(Color.White)
-
+    NavDestination() {
       Scroll() {
         Column({ space: 20 }) {
           // Logo
@@ -254,7 +225,7 @@ struct RegisterPage {
               .fontColor('#007AFF')
               .fontWeight(FontWeight.Medium)
               .onClick(() => {
-                this.goBack();
+                this.pathStack.pop();
               })
           }
           .margin({ bottom: 40 })
@@ -264,8 +235,9 @@ struct RegisterPage {
       }
       .layoutWeight(1)
     }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#F5F5F5')
+    .title('注册')
+    .onReady((context: NavDestinationContext) => {
+      this.pathStack = context.pathStack
+    })
   }
 }

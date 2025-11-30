@@ -112,6 +112,8 @@ export class RouterManager {
  * 路由常量 - 页面名称
  */
 export class NavRoutes {
+  static readonly LOGIN: string = 'LoginPage';
+  static readonly REGISTER: string = 'RegisterPage';
   static readonly PROFILE_EDIT: string = 'ProfileEditPage';
   static readonly THEME_SETTINGS: string = 'ThemeSettingsPage';
   static readonly REMINDER_SETTINGS: string = 'ReminderSettingsPage';

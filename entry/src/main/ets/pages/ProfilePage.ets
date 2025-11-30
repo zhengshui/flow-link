@@ -4,7 +4,6 @@
  */
 
 import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult, AuthApiService, RouterManager, NavRoutes } from '@tbs/common';
-import { router } from '@kit.ArkUI';
 import { promptAction } from '@kit.ArkUI';
 import http from '@ohos.net.http';
 
@@ -87,12 +86,8 @@ export struct ProfilePage {
 
         toast('已退出登录');
 
-        // 跳转到登录页（使用 router，因为登录页是独立的 @Entry 页面）
-        router.replaceUrl({
-          url: 'pages/LoginPage'
-        }).catch((err: Error) => {
-          console.error('跳转失败:', JSON.stringify(err));
-        });
+        // 设置登录状态为 false，触发 HomePage 跳转到登录页
+        AppStorage.setOrCreate<boolean>('isLoggedIn', false);
       }
     }).catch(() => {
       console.error('Dialog error');

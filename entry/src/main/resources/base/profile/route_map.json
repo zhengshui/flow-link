@@ -1,6 +1,22 @@
 {
   "routerMap": [
     {
+      "name": "LoginPage",
+      "pageSourceFile": "src/main/ets/pages/LoginPage.ets",
+      "buildFunction": "LoginPageBuilder",
+      "data": {
+        "description": "登录页面"
+      }
+    },
+    {
+      "name": "RegisterPage",
+      "pageSourceFile": "src/main/ets/pages/RegisterPage.ets",
+      "buildFunction": "RegisterPageBuilder",
+      "data": {
+        "description": "注册页面"
+      }
+    },
+    {
       "name": "ProfileEditPage",
       "pageSourceFile": "src/main/ets/pages/ProfileEditPage.ets",
       "buildFunction": "ProfileEditPageBuilder",
@@ -66,4 +82,3 @@
     }
   ]
 }
-
