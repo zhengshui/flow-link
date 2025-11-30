@@ -751,14 +751,16 @@ export struct TrainingSessionPage {
         .height(this.getUIContext().px2vp(this.topRectHeight))
 
       Row() {
-        Text('×')
-          .fontSize(24)
-          .fontColor($r('app.color.text_secondary'))
-          .fontWeight(FontWeight.Lighter)
-          .width(40)
-          .height(40)
-          .textAlign(TextAlign.Center)
-          .onClick((): void => { this.pathStack.pop(); })
+        // 关闭按钮
+        Button() {
+          SymbolGlyph($r('sys.symbol.xmark'))
+            .fontSize(18)
+            .fontColor([$r('app.color.text_secondary')])
+        }
+        .width(40)
+        .height(40)
+        .backgroundColor(Color.Transparent)
+        .onClick((): void => { this.pathStack.pop(); })
 
         TextInput({ text: this.session.title })
           .layoutWeight(1)
@@ -793,14 +795,18 @@ export struct TrainingSessionPage {
 
           // 暂停/继续按钮
           Button() {
-            Text(this.session.isRunning ? '⏸' : '▶').fontSize(14).fontColor($r('app.color.brand_primary'))
+            SymbolGlyph(this.session.isRunning ? $r('sys.symbol.pause') : $r('sys.symbol.play_fill'))
+              .fontSize(14)
+              .fontColor([$r('app.color.brand_primary')])
           }
           .width(32).height(32).backgroundColor($r('app.color.brand_primary_light')).borderRadius(16)
           .onClick((): void => { this.toggleTimer(); })
 
           // 重置按钮
           Button() {
-            Text('↺').fontSize(14).fontColor($r('app.color.color_danger'))
+            SymbolGlyph($r('sys.symbol.arrow_counterclockwise'))
+              .fontSize(14)
+              .fontColor([$r('app.color.color_danger')])
           }
           .width(32).height(32).backgroundColor('#FFF0F0').borderRadius(16)
           .onClick((): void => { this.resetTimer(); })
@@ -833,9 +839,11 @@ export struct TrainingSessionPage {
   EmptyState() {
     Column({ space: 20 }) {
       Column() {
-        Text('🏋️').fontSize(64)
+        SymbolGlyph($r('sys.symbol.dumbbell'))
+          .fontSize(48)
+          .fontColor([$r('app.color.brand_primary')])
       }
-      .width(120).height(120).backgroundColor($r('app.color.card_background_secondary')).borderRadius(60).justifyContent(FlexAlign.Center)
+      .width(100).height(100).backgroundColor($r('app.color.card_background_secondary')).borderRadius(50).justifyContent(FlexAlign.Center)
 
       Column({ space: 8 }) {
         Text('准备开始训练').fontSize(18).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
@@ -854,7 +862,9 @@ export struct TrainingSessionPage {
       Row({ space: 10 }) {
         Button() {
           Row({ space: 6 }) {
-            Text('+').fontSize(18).fontWeight(FontWeight.Bold).fontColor(Color.White)
+            SymbolGlyph($r('sys.symbol.plus'))
+              .fontSize(16)
+              .fontColor([Color.White])
             Text('添加动作').fontSize(14).fontWeight(FontWeight.Medium).fontColor(Color.White)
           }
         }
@@ -863,7 +873,9 @@ export struct TrainingSessionPage {
 
         Button() {
           Row({ space: 6 }) {
-            Text('📝').fontSize(16)
+            SymbolGlyph($r('sys.symbol.square_and_pencil'))
+              .fontSize(16)
+              .fontColor([$r('app.color.text_primary')])
             Text('心得').fontSize(14).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
           }
         }

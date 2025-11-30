@@ -395,13 +395,12 @@ export struct RecordPage {
   MonthSelector() {
     Row() {
       // 上月按钮
-      Text('<')
+      SymbolGlyph($r('sys.symbol.chevron_left'))
         .fontSize(20)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor([$r('app.color.text_primary')])
         .fontWeight(FontWeight.Medium)
         .width(40)
         .height(40)
-        .textAlign(TextAlign.Center)
         .onClick(() => {
           this.goToPrevMonth();
         })
@@ -420,13 +419,12 @@ export struct RecordPage {
       })
 
       // 下月按钮
-      Text('>')
+      SymbolGlyph($r('sys.symbol.chevron_right'))
         .fontSize(20)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor([$r('app.color.text_primary')])
         .fontWeight(FontWeight.Medium)
         .width(40)
         .height(40)
-        .textAlign(TextAlign.Center)
         .onClick(() => {
           this.goToNextMonth();
         })

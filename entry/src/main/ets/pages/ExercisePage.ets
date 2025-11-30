@@ -85,8 +85,9 @@ export struct ExercisePage {
   @Builder
   MuscleGroupItem(group: MuscleGroupModel, index: number) {
     Column({ space: 4 }) {
+      // 肌肉部位图标
       Text(group.icon)
-        .fontSize(24)
+        .fontSize(22)
 
       Text(group.name)
         .fontSize(12)
@@ -94,10 +95,11 @@ export struct ExercisePage {
         .fontWeight(this.currentGroupIndex === index ? FontWeight.Medium : FontWeight.Normal)
     }
     .width('100%')
-    .height(80)
+    .height(72)
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
     .backgroundColor(this.currentGroupIndex === index ? $r('app.color.brand_primary_light') : $r('app.color.card_background'))
+    .borderRadius(this.currentGroupIndex === index ? 8 : 0)
     .onClick(() => {
       this.switchMuscleGroup(index);
     })
@@ -140,40 +142,40 @@ export struct ExercisePage {
   @Builder
   ActionItem(action: ActionModel) {
     Row({ space: 12 }) {
-      // 动作缩略图
+      // 动作缩略图 - 使用肌群对应图标
       Column() {
-        Text('🏋️')
-          .fontSize(32)
+        Text(this.getMuscleGroupIcon(action.muscleGroup))
+          .fontSize(28)
       }
-      .width(80)
-      .height(80)
-      .backgroundColor($r('app.color.outline'))
-      .borderRadius(8)
+      .width(56)
+      .height(56)
+      .backgroundColor(this.getMuscleGroupColor(action.muscleGroup))
+      .borderRadius(12)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
 
       // 动作信息
-      Column({ space: 6 }) {
+      Column({ space: 4 }) {
         Text(action.name)
-          .fontSize(16)
+          .fontSize(15)
           .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.text_primary'))
 
         Text(action.englishName)
-          .fontSize(12)
+          .fontSize(11)
           .fontColor($r('app.color.text_hint'))
 
         Row({ space: 8 }) {
           Text(action.difficulty)
-            .fontSize(11)
+            .fontSize(10)
             .fontColor(Color.White)
             .backgroundColor(this.getDifficultyColor(action.difficulty))
             .padding({ left: 6, right: 6, top: 2, bottom: 2 })
             .borderRadius(3)
 
           if (action.equipment.length > 0) {
-            Text('器械: ' + action.equipment)
-              .fontSize(11)
+            Text(action.equipment)
+              .fontSize(10)
               .fontColor($r('app.color.text_secondary'))
           }
         }
@@ -182,9 +184,9 @@ export struct ExercisePage {
       .alignItems(HorizontalAlign.Start)
 
       // 箭头图标
-      Text('>')
-        .fontSize(18)
-        .fontColor($r('app.color.text_placeholder'))
+      SymbolGlyph($r('sys.symbol.chevron_right'))
+        .fontSize(16)
+        .fontColor([$r('app.color.text_placeholder')])
     }
     .width('100%')
     .padding(12)
@@ -208,5 +210,71 @@ export struct ExercisePage {
       return '#F44336';
     }
     return '#999999';
+  }
+
+  /**
+   * 获取难度等级背景色（较浅）
+   */
+  getDifficultyBgColor(difficulty: string): string {
+    if (difficulty === '初级') {
+      return '#66BB6A';
+    } else if (difficulty === '中级') {
+      return '#FFA726';
+    } else if (difficulty === '高级') {
+      return '#EF5350';
+    }
+    return '#BDBDBD';
+  }
+
+  /**
+   * 根据肌肉部位名称获取对应图标
+   */
+  getMuscleGroupIcon(muscleGroup: string): string {
+    if (muscleGroup === '胸肌') {
+      return '💪';
+    } else if (muscleGroup === '背肌') {
+      return '🦾';
+    } else if (muscleGroup === '腿部') {
+      return '🦵';
+    } else if (muscleGroup === '肩部') {
+      return '🤸';
+    } else if (muscleGroup === '二头肌') {
+      return '💪';
+    } else if (muscleGroup === '三头肌') {
+      return '💪';
+    } else if (muscleGroup === '小腿') {
+      return '🦿';
+    } else if (muscleGroup === '臀部') {
+      return '🍑';
+    } else if (muscleGroup === '腹肌') {
+      return '🎯';
+    }
+    return '💪';
+  }
+
+  /**
+   * 根据肌肉部位名称获取对应背景色
+   */
+  getMuscleGroupColor(muscleGroup: string): string {
+    if (muscleGroup === '胸肌') {
+      return '#E57373'; // 红色系
+    } else if (muscleGroup === '背肌') {
+      return '#64B5F6'; // 蓝色系
+    } else if (muscleGroup === '腿部') {
+      return '#81C784'; // 绿色系
+    } else if (muscleGroup === '肩部') {
+      return '#FFB74D'; // 橙色系
+    } else if (muscleGroup === '二头肌') {
+      return '#BA68C8'; // 紫色系
+    } else if (muscleGroup === '三头肌') {
+      return '#9575CD'; // 深紫色系
+    } else if (muscleGroup === '小腿') {
+      return '#4DB6AC'; // 青色系
+    } else if (muscleGroup === '臀部') {
+      return '#F06292'; // 粉色系
+    } else if (muscleGroup === '腹肌') {
+      return '#FFD54F'; // 黄色系
+    }
+    return '#90A4AE'; // 默认灰色
   }
 }

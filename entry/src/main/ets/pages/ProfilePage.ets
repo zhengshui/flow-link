@@ -166,9 +166,15 @@ export struct ProfilePage {
     Row({ space: 16 }) {
       // 头像
       Column() {
-        Text(this.userInfo?.nickname?.substring(0, 1) ?? '👤')
-          .fontSize(28)
-          .fontColor(Color.White)
+        if (this.userInfo !== null && this.userInfo.nickname.length > 0) {
+          Text(this.userInfo.nickname.substring(0, 1))
+            .fontSize(28)
+            .fontColor(Color.White)
+        } else {
+          SymbolGlyph($r('sys.symbol.person_fill'))
+            .fontSize(28)
+            .fontColor([Color.White])
+        }
       }
       .width(64)
       .height(64)
@@ -200,9 +206,9 @@ export struct ProfilePage {
       .layoutWeight(1)
 
       // 编辑按钮
-      Text('›')
-        .fontSize(24)
-        .fontColor($r('app.color.text_placeholder'))
+      SymbolGlyph($r('sys.symbol.chevron_right'))
+        .fontSize(18)
+        .fontColor([$r('app.color.text_placeholder')])
     }
     .width('100%')
     .padding(16)
@@ -337,9 +343,9 @@ export struct ProfilePage {
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
 
-      Text('›')
-        .fontSize(20)
-        .fontColor($r('app.color.text_placeholder'))
+      SymbolGlyph($r('sys.symbol.chevron_right'))
+        .fontSize(16)
+        .fontColor([$r('app.color.text_placeholder')])
     }
     .width('100%')
     .height(60)

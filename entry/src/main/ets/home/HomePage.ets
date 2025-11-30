@@ -102,7 +102,6 @@ struct HomePage {
           .barMode(BarMode.Fixed)
           .scrollable(false)
           .animationDuration(0)
-          .barBackgroundColor($r('app.color.card_background'))
           .onChange((index: number) => {
             this.currentIndex = index
           })
@@ -123,16 +122,19 @@ struct HomePage {
 
   /**
    * 自定义Tab项构建器
+   * 使用 HarmonyOS Symbol 图标
    */
   @Builder
   TabBuilder(item: TabInfoModel) {
     Column({ space: 4 }) {
-      Text(item.icon)
-        .fontSize(24)
-        .opacity(this.currentIndex === item.index ? 1.0 : 0.6)
+      if (item.icon !== null) {
+        SymbolGlyph(this.currentIndex === item.index && item.iconFilled !== null ? item.iconFilled : item.icon)
+          .fontSize(24)
+          .fontColor([this.currentIndex === item.index ? $r('app.color.brand_primary') : $r('app.color.text_secondary')])
+      }
 
       Text(item.title)
-        .fontSize(12)
+        .fontSize(11)
         .fontColor(this.currentIndex === item.index ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
         .fontWeight(this.currentIndex === item.index ? FontWeight.Medium : FontWeight.Normal)
     }
