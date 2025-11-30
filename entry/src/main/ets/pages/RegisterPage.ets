@@ -16,6 +16,7 @@ struct RegisterPage {
   @State nickname: string = ''
   @State email: string = ''
   @State isLoading: boolean = false
+  @StorageProp('topRectHeight') topRectHeight: number = 0
 
   /**
    * 执行注册
@@ -85,26 +86,34 @@ struct RegisterPage {
   build() {
     Column({ space: 0 }) {
       // 顶部导航栏
-      Row() {
-        Text('<')
-          .fontSize(24)
-          .fontColor('#007AFF')
-          .onClick(() => {
-            this.goBack();
-          })
+      Column() {
+        // 状态栏占位
+        Row()
+          .width('100%')
+          .height(this.getUIContext().px2vp(this.topRectHeight))
 
-        Text('注册')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .margin({ left: 12 })
-          .layoutWeight(1)
+        Row() {
+          Text('<')
+            .fontSize(24)
+            .fontColor('#007AFF')
+            .onClick(() => {
+              this.goBack();
+            })
+
+          Text('注册')
+            .fontSize(18)
+            .fontWeight(FontWeight.Bold)
+            .margin({ left: 12 })
+            .layoutWeight(1)
+        }
+        .width('100%')
+        .height(56)
+        .padding({ left: 16, right: 16 })
+        .justifyContent(FlexAlign.Start)
+        .alignItems(VerticalAlign.Center)
       }
       .width('100%')
-      .height(56)
-      .padding({ left: 16, right: 16 })
       .backgroundColor(Color.White)
-      .justifyContent(FlexAlign.Start)
-      .alignItems(VerticalAlign.Center)
 
       Scroll() {
         Column({ space: 20 }) {

@@ -30,9 +30,6 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(DOMAIN, TAG, 'Ability onWindowStageCreate');
 
-    // 设置沉浸式窗口
-    this.setMainWindowImmersive(windowStage);
-
     // 直接加载主页面
     windowStage.loadContent('home/HomePage', (err) => {
       if (err.code) {
@@ -40,6 +37,9 @@ export default class EntryAbility extends UIAbility {
         return;
       }
       hilog.info(DOMAIN, TAG, 'Succeeded in loading the content.');
+
+      // 设置沉浸式窗口
+      this.setMainWindowImmersive(windowStage);
     });
   }
 
@@ -62,17 +62,42 @@ export default class EntryAbility extends UIAbility {
     try {
       const mainWindow: window.Window = windowStage.getMainWindowSync();
 
-      // 设置窗口全屏
+      // 1. 设置窗口全屏布局
       mainWindow.setWindowLayoutFullScreen(true);
 
-      // 设置状态栏和导航栏透明
+      // 2. 获取状态栏避让区域高度
+      const systemAvoidArea: window.AvoidArea = mainWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+      const topRectHeight: number = systemAvoidArea.topRect.height;
+      AppStorage.setOrCreate<number>('topRectHeight', topRectHeight);
+      hilog.info(DOMAIN, TAG, 'Status bar height: %{public}d', topRectHeight);
+
+      // 3. 获取导航区域避让高度
+      const navigationAvoidArea: window.AvoidArea = mainWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
+      const bottomRectHeight: number = navigationAvoidArea.bottomRect.height;
+      AppStorage.setOrCreate<number>('bottomRectHeight', bottomRectHeight);
+      hilog.info(DOMAIN, TAG, 'Navigation bar height: %{public}d', bottomRectHeight);
+
+      // 4. 注册监听函数，动态获取避让区域数据
+      mainWindow.on('avoidAreaChange', (data: window.AvoidAreaOptions) => {
+        if (data.type === window.AvoidAreaType.TYPE_SYSTEM) {
+          const newTopHeight: number = data.area.topRect.height;
+          AppStorage.setOrCreate<number>('topRectHeight', newTopHeight);
+          hilog.info(DOMAIN, TAG, 'Status bar height changed: %{public}d', newTopHeight);
+        } else if (data.type === window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+          const newBottomHeight: number = data.area.bottomRect.height;
+          AppStorage.setOrCreate<number>('bottomRectHeight', newBottomHeight);
+          hilog.info(DOMAIN, TAG, 'Navigation bar height changed: %{public}d', newBottomHeight);
+        }
+      });
+
+      // 5. 设置状态栏和导航栏透明
       mainWindow.setWindowSystemBarProperties({
         statusBarColor: '#00000000',
         navigationBarColor: '#00000000',
         statusBarContentColor: '#000000'
       });
 
-      mainWindow.setWindowTouchable(true)
+      mainWindow.setWindowTouchable(true);
 
       hilog.info(DOMAIN, TAG, 'Set immersive window successfully');
     } catch (err) {

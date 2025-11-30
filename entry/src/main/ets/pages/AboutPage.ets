@@ -9,6 +9,7 @@ import { router } from '@kit.ArkUI';
 @Entry
 @Component
 struct AboutPage {
+  @StorageProp('topRectHeight') topRectHeight: number = 0
   private appVersion: string = '1.0.0'
   private appName: string = 'FitEasy (健身易)'
   private appDescription: string = '让健身更简单，记录每一次进步'
@@ -21,6 +22,12 @@ struct AboutPage {
 
   build() {
     Column() {
+      // 状态栏占位
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.topRectHeight))
+        .backgroundColor(Color.White)
+
       // 标题栏
       TbsTitleBar({
         title: '关于',
@@ -122,7 +129,6 @@ struct AboutPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F5F5')
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder

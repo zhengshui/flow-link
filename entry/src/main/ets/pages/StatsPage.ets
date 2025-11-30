@@ -19,6 +19,7 @@ export struct StatsPage {
   @State stats: TrainingStatsModel | null = null
   @State muscleGroupStats: MuscleGroupStatsModel[] = []
   @State isLoading: boolean = false
+  @StorageProp('topRectHeight') topRectHeight: number = 0
 
   aboutToAppear(): void {
     this.loadData();
@@ -162,6 +163,8 @@ export struct StatsPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F5F5')
+    // 顶部状态栏避让
+    .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
   }
 
   @Builder

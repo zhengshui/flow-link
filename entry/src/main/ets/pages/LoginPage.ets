@@ -13,6 +13,7 @@ struct LoginPage {
   @State username: string = ''
   @State password: string = ''
   @State isLoading: boolean = false
+  @StorageProp('topRectHeight') topRectHeight: number = 0
 
   /**
    * 执行登录
@@ -86,10 +87,6 @@ struct LoginPage {
 
   build() {
     Column({ space: 20 }) {
-      // 顶部占位（避开安全区域）
-      Column()
-        .height(40)
-      
       // 顶部Logo和标题
       Column({ space: 16 }) {
 
@@ -173,5 +170,7 @@ struct LoginPage {
     .height('100%')
     .backgroundColor('#F5F5F5')
     .alignItems(HorizontalAlign.Center)
+    // 顶部状态栏避让
+    .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
   }
 }

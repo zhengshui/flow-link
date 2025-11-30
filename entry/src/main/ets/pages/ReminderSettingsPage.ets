@@ -12,6 +12,7 @@ struct ReminderSettingsPage {
   @State reminderEnabled: boolean = false
   @State reminderTime: string = '18:00'
   @State reminderDays: boolean[] = [false, false, false, false, false, false, false] // 周日到周六
+  @StorageProp('topRectHeight') topRectHeight: number = 0
   private weekDays: string[] = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
   aboutToAppear(): void {
@@ -85,6 +86,12 @@ struct ReminderSettingsPage {
 
   build() {
     Column() {
+      // 状态栏占位
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.topRectHeight))
+        .backgroundColor(Color.White)
+
       // 标题栏
       TbsTitleBar({
         title: '训练提醒',

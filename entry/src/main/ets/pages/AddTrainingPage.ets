@@ -16,6 +16,7 @@ struct AddTrainingPage {
   @State duration: string = ''
   @State notes: string = ''
   @State mood: string = '良好'
+  @StorageProp('topRectHeight') topRectHeight: number = 0
 
   aboutToAppear(): void {
     const today: Date = new Date();
@@ -47,33 +48,42 @@ struct AddTrainingPage {
 
   build() {
     Column({ space: 0 }) {
-      Row() {
-        Text('<')
-          .fontSize(24)
-          .fontColor('#007AFF')
-          .onClick(() => {
-            this.goBack();
-          })
+      // 顶部导航栏
+      Column() {
+        // 状态栏占位
+        Row()
+          .width('100%')
+          .height(this.getUIContext().px2vp(this.topRectHeight))
 
-        Text('添加训练记录')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .margin({ left: 12 })
-          .layoutWeight(1)
+        Row() {
+          Text('<')
+            .fontSize(24)
+            .fontColor('#007AFF')
+            .onClick(() => {
+              this.goBack();
+            })
 
-        Text('保存')
-          .fontSize(16)
-          .fontColor('#007AFF')
-          .onClick(() => {
-            this.saveTraining();
-          })
+          Text('添加训练记录')
+            .fontSize(18)
+            .fontWeight(FontWeight.Bold)
+            .margin({ left: 12 })
+            .layoutWeight(1)
+
+          Text('保存')
+            .fontSize(16)
+            .fontColor('#007AFF')
+            .onClick(() => {
+              this.saveTraining();
+            })
+        }
+        .width('100%')
+        .height(56)
+        .padding({ left: 16, right: 16 })
+        .justifyContent(FlexAlign.SpaceBetween)
+        .alignItems(VerticalAlign.Center)
       }
       .width('100%')
-      .height(56)
-      .padding({ top: 20, left: 16, right: 16 })
       .backgroundColor(Color.White)
-      .justifyContent(FlexAlign.SpaceBetween)
-      .alignItems(VerticalAlign.Center)
 
       Scroll() {
         Column({ space: 16 }) {
@@ -197,6 +207,5 @@ struct AddTrainingPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F5F5')
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 }

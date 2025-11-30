@@ -10,6 +10,7 @@ import { router } from '@kit.ArkUI';
 @Component
 struct ThemeSettingsPage {
   @State currentTheme: string = 'light'
+  @StorageProp('topRectHeight') topRectHeight: number = 0
   private themeOptions: ThemeOption[] = [
     { name: '浅色模式', value: 'light', description: '适合白天使用，保护视力' },
     { name: '深色模式', value: 'dark', description: '适合夜间使用，减少眼睛疲劳' },
@@ -53,6 +54,12 @@ struct ThemeSettingsPage {
 
   build() {
     Column() {
+      // 状态栏占位
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.topRectHeight))
+        .backgroundColor(Color.White)
+
       // 标题栏
       TbsTitleBar({
         title: '主题设置',

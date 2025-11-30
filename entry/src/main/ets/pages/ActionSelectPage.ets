@@ -33,6 +33,8 @@ struct ActionSelectPage {
   @State currentActions: ActionModel[] = []
   @State selectedActions: ActionModel[] = []
   @State selectedActionIds: Set<string> = new Set()
+  @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
 
   aboutToAppear(): void {
     this.loadData();
@@ -153,35 +155,42 @@ struct ActionSelectPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F5F5')
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder
   TopBar() {
-    Row() {
-      Text('<')
-        .fontSize(24)
-        .fontColor('#007AFF')
-        .onClick(() => {
-          this.goBack();
-        })
+    Column() {
+      // 状态栏占位
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.topRectHeight))
 
-      Text('选择动作')
-        .fontSize(18)
-        .fontWeight(FontWeight.Bold)
-        .margin({ left: 12 })
-        .layoutWeight(1)
+      Row() {
+        Text('<')
+          .fontSize(24)
+          .fontColor('#007AFF')
+          .onClick(() => {
+            this.goBack();
+          })
 
-      Text(this.selectedActions.length.toString() + '/' + MAX_SELECT_COUNT.toString())
-        .fontSize(14)
-        .fontColor('#007AFF')
+        Text('选择动作')
+          .fontSize(18)
+          .fontWeight(FontWeight.Bold)
+          .margin({ left: 12 })
+          .layoutWeight(1)
+
+        Text(this.selectedActions.length.toString() + '/' + MAX_SELECT_COUNT.toString())
+          .fontSize(14)
+          .fontColor('#007AFF')
+      }
+      .width('100%')
+      .height(56)
+      .padding({ left: 16, right: 16 })
+      .justifyContent(FlexAlign.SpaceBetween)
+      .alignItems(VerticalAlign.Center)
     }
     .width('100%')
-    .height(56)
-    .padding({ top: 20, left: 16, right: 16 })
     .backgroundColor(Color.White)
-    .justifyContent(FlexAlign.SpaceBetween)
-    .alignItems(VerticalAlign.Center)
   }
 
   @Builder
@@ -359,7 +368,12 @@ struct ActionSelectPage {
           })
       }
       .width('100%')
-      .padding({ left: 16, right: 16, bottom: 16 })
+      .padding({ left: 16, right: 16 })
+
+      // 底部导航区域避让
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.bottomRectHeight))
     }
     .width('100%')
     .backgroundColor(Color.White)

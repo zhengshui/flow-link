@@ -21,6 +21,7 @@ struct ProfileEditPage {
   @State targetWeightValue: string = ''
   @State fitnessGoal: string = '增肌'
   @State isLoading: boolean = false
+  @StorageProp('topRectHeight') topRectHeight: number = 0
 
   private genderOptions: string[] = ['男', '女']
   private fitnessGoalOptions: string[] = ['增肌', '减脂', '力量提升', '耐力提升', '综合健身']
@@ -143,6 +144,12 @@ struct ProfileEditPage {
 
   build() {
     Column() {
+      // 状态栏占位
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.topRectHeight))
+        .backgroundColor(Color.White)
+
       // 标题栏
       TbsTitleBar({
         title: '编辑个人资料',

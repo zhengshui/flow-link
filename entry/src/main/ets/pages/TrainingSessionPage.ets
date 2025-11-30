@@ -51,6 +51,8 @@ struct TrainingSessionPage {
   @State editHours: string = '0'
   @State editMinutes: string = '0'
   @State editSeconds: string = '0'
+  @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
 
   aboutToAppear(): void {
     // 检查是否是继续训练（有传入 recordId）
@@ -729,12 +731,16 @@ struct TrainingSessionPage {
     }
     .width('100%')
     .height('100%')
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder
   TopBar() {
     Column({ space: 0 }) {
+      // 状态栏占位
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.topRectHeight))
+
       Row() {
         Text('×')
           .fontSize(24)
@@ -834,27 +840,35 @@ struct TrainingSessionPage {
 
   @Builder
   BottomBar() {
-    Row({ space: 10 }) {
-      Button() {
-        Row({ space: 6 }) {
-          Text('+').fontSize(18).fontWeight(FontWeight.Bold).fontColor(Color.White)
-          Text('添加动作').fontSize(14).fontWeight(FontWeight.Medium).fontColor(Color.White)
+    Column() {
+      Row({ space: 10 }) {
+        Button() {
+          Row({ space: 6 }) {
+            Text('+').fontSize(18).fontWeight(FontWeight.Bold).fontColor(Color.White)
+            Text('添加动作').fontSize(14).fontWeight(FontWeight.Medium).fontColor(Color.White)
+          }
         }
-      }
-      .height(48).layoutWeight(1).backgroundColor('#007AFF').borderRadius(12)
-      .onClick((): void => { this.addExercise(); })
+        .height(48).layoutWeight(1).backgroundColor('#007AFF').borderRadius(12)
+        .onClick((): void => { this.addExercise(); })
 
-      Button() {
-        Row({ space: 6 }) {
-          Text('📝').fontSize(16)
-          Text('心得').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#333333')
+        Button() {
+          Row({ space: 6 }) {
+            Text('📝').fontSize(16)
+            Text('心得').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#333333')
+          }
         }
+        .height(48).layoutWeight(0.6).backgroundColor('#F5F5F5').borderRadius(12)
+        .onClick((): void => { this.showNoteInput(); })
       }
-      .height(48).layoutWeight(0.6).backgroundColor('#F5F5F5').borderRadius(12)
-      .onClick((): void => { this.showNoteInput(); })
+      .width('100%')
+      .padding({ left: 16, right: 16, top: 12, bottom: 12 })
+
+      // 底部导航区域避让
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.bottomRectHeight))
     }
     .width('100%')
-    .padding({ left: 16, right: 16, top: 12, bottom: 12 })
     .backgroundColor(Color.White)
     .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.08)', offsetX: 0, offsetY: -2 })
   }

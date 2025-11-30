@@ -11,6 +11,7 @@ export struct ExercisePage {
   @State muscleGroups: MuscleGroupModel[] = []
   @State currentGroupIndex: number = 0
   @State currentActions: ActionModel[] = []
+  @StorageProp('topRectHeight') topRectHeight: number = 0
 
   aboutToAppear(): void {
     this.loadData();
@@ -66,6 +67,8 @@ export struct ExercisePage {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F5F5')
+    // 顶部状态栏避让
+    .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
   }
 
   @Builder

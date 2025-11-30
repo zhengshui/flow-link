@@ -14,11 +14,12 @@ import { TabInfoModel, tabInfo } from './viewModel/homeData'
 @Component
 struct HomePage {
   @State currentIndex: number = 0
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   private controller: TabsController = new TabsController()
 
   build() {
     Column() {
-      // 主内容区域 - Tabs  
+      // 主内容区域 - Tabs
       Tabs({
         barPosition: BarPosition.End,
         index: this.currentIndex,
@@ -63,11 +64,11 @@ struct HomePage {
       .onChange((index: number) => {
         this.currentIndex = index
       })
-      .padding({ top: 0, bottom: 0 }) // 清除默认padding
+      // 底部导航区域避让，防止底部Tab被系统导航条遮挡
+      .padding({ bottom: this.getUIContext().px2vp(this.bottomRectHeight) })
     }
     .width('100%')
     .height('100%')
-    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   /**
