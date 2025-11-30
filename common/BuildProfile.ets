@@ -5,7 +5,7 @@ export const HAR_VERSION = '1.0.0';
 export const BUILD_MODE_NAME = 'debug';
 export const DEBUG = true;
 export const TARGET_NAME = 'default';
-export const BASE_URL = 'http://192.168.1.187:8080/api';
+export const BASE_URL = 'http://10.0.2.2:8080/api';
 
 /**
  * BuildProfile Class is used only for compatibility purposes.
