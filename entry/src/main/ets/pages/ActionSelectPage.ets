@@ -153,7 +153,7 @@ export struct ActionSelectPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#F5F5F5')
+      .backgroundColor($r('app.color.page_background'))
     }
     .title('选择动作')
     .menus([
@@ -179,7 +179,7 @@ export struct ActionSelectPage {
     }
     .width(100)
     .height('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .scrollBar(BarState.Off)
   }
 
@@ -191,14 +191,14 @@ export struct ActionSelectPage {
 
       Text(group.name)
         .fontSize(12)
-        .fontColor(this.currentGroupIndex === index ? '#007AFF' : '#666666')
+        .fontColor(this.currentGroupIndex === index ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
         .fontWeight(this.currentGroupIndex === index ? FontWeight.Medium : FontWeight.Normal)
     }
     .width('100%')
     .height(80)
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor(this.currentGroupIndex === index ? '#E3F2FD' : Color.White)
+    .backgroundColor(this.currentGroupIndex === index ? $r('app.color.brand_primary_light') : $r('app.color.card_background'))
     .onClick(() => {
       this.switchMuscleGroup(index);
     })
@@ -213,11 +213,11 @@ export struct ActionSelectPage {
           Text(this.muscleGroups[this.currentGroupIndex]?.name ?? '')
             .fontSize(18)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#333333')
+            .fontColor($r('app.color.text_primary'))
           Blank()
           Text(this.currentActions.length.toString() + ' 个动作')
             .fontSize(13)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .width('100%')
         .padding({ left: 16, right: 16, top: 16 })
@@ -235,7 +235,7 @@ export struct ActionSelectPage {
     }
     .layoutWeight(1)
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor($r('app.color.page_background'))
   }
 
   @Builder
@@ -244,7 +244,7 @@ export struct ActionSelectPage {
       // 选择框
       Text(this.isActionSelected(action.id) ? '✅' : '⭕')
         .fontSize(22)
-        .fontColor(this.isActionSelected(action.id) ? '#007AFF' : '#CCCCCC')
+        .fontColor(this.isActionSelected(action.id) ? $r('app.color.brand_primary') : $r('app.color.text_placeholder'))
 
       // 动作缩略图
       Column() {
@@ -253,7 +253,7 @@ export struct ActionSelectPage {
       }
       .width(60)
       .height(60)
-      .backgroundColor(this.isActionSelected(action.id) ? '#E3F2FD' : '#E8E8E8')
+      .backgroundColor(this.isActionSelected(action.id) ? $r('app.color.brand_primary_light') : $r('app.color.outline'))
       .borderRadius(8)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
@@ -263,11 +263,11 @@ export struct ActionSelectPage {
         Text(action.name)
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
-          .fontColor(this.isActionSelected(action.id) ? '#007AFF' : '#333333')
+          .fontColor(this.isActionSelected(action.id) ? $r('app.color.brand_primary') : $r('app.color.text_primary'))
 
         Text(action.englishName)
           .fontSize(11)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
 
         Row({ space: 8 }) {
           Text(action.difficulty)
@@ -280,7 +280,7 @@ export struct ActionSelectPage {
           if (action.equipment.length > 0) {
             Text(action.equipment)
               .fontSize(10)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
           }
         }
       }
@@ -289,9 +289,9 @@ export struct ActionSelectPage {
     }
     .width('100%')
     .padding(12)
-    .backgroundColor(this.isActionSelected(action.id) ? '#F0F7FF' : Color.White)
+    .backgroundColor(this.isActionSelected(action.id) ? $r('app.color.brand_primary_light') : $r('app.color.card_background'))
     .borderRadius(12)
-    .border({ width: this.isActionSelected(action.id) ? 2 : 0, color: '#007AFF' })
+    .border({ width: this.isActionSelected(action.id) ? 2 : 0, color: $r('app.color.brand_primary') })
     .alignItems(VerticalAlign.Center)
     .onClick(() => {
       this.toggleActionSelection(action);
@@ -323,8 +323,8 @@ export struct ActionSelectPage {
           .layoutWeight(1)
           .height(44)
           .fontSize(16)
-          .backgroundColor('#E0E0E0')
-          .fontColor('#333333')
+          .backgroundColor($r('app.color.outline'))
+          .fontColor($r('app.color.text_primary'))
           .borderRadius(8)
           .onClick(() => {
             this.pathStack.pop();
@@ -334,7 +334,7 @@ export struct ActionSelectPage {
           .layoutWeight(2)
           .height(44)
           .fontSize(16)
-          .backgroundColor(this.selectedActions.length > 0 ? '#007AFF' : '#CCCCCC')
+          .backgroundColor(this.selectedActions.length > 0 ? $r('app.color.brand_primary') : $r('app.color.text_placeholder'))
           .borderRadius(8)
           .enabled(this.selectedActions.length > 0)
           .onClick(() => {
@@ -350,7 +350,7 @@ export struct ActionSelectPage {
         .height(this.getUIContext().px2vp(this.bottomRectHeight))
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .padding({ top: 12 })
   }
 
@@ -359,17 +359,17 @@ export struct ActionSelectPage {
     Row({ space: 4 }) {
       Text(action.name)
         .fontSize(12)
-        .fontColor('#007AFF')
+        .fontColor($r('app.color.brand_primary'))
 
       Text('✕')
         .fontSize(12)
-        .fontColor('#999999')
+        .fontColor($r('app.color.text_hint'))
         .onClick(() => {
           this.toggleActionSelection(action);
         })
     }
     .padding({ left: 10, right: 10, top: 6, bottom: 6 })
-    .backgroundColor('#E3F2FD')
+    .backgroundColor($r('app.color.brand_primary_light'))
     .borderRadius(16)
   }
 

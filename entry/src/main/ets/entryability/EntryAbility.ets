@@ -1,7 +1,7 @@
-import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { AbilityConstant, Configuration, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { GlobalContext, initDataPreference } from '@tbs/common';
+import { GlobalContext, initDataPreference, StorageUtils } from '@tbs/common';
 
 const DOMAIN: number = 0x0000;
 const TAG: string = 'FitEasy';
@@ -11,16 +11,74 @@ const TAG: string = 'FitEasy';
  */
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    // 设置颜色模式
-    this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
-
     // 初始化全局上下文
     GlobalContext.getContext().setObject('context', this.context);
 
     // 初始化数据存储
     initDataPreference();
 
+    // 初始化主题设置
+    this.initColorMode();
+
+    // 保存当前颜色模式到 AppStorage
+    AppStorage.setOrCreate<number>('currentColorMode', this.context.config.colorMode ?? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
+
     hilog.info(DOMAIN, TAG, 'Ability onCreate - Storage initialized');
+  }
+
+  /**
+   * 初始化颜色模式
+   */
+  private initColorMode(): void {
+    // 读取保存的主题设置
+    const savedTheme: string = StorageUtils.getStringValueSync('app_theme', 'auto');
+
+    if (savedTheme === 'light') {
+      this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
+      hilog.info(DOMAIN, TAG, 'Set color mode to LIGHT');
+    } else if (savedTheme === 'dark') {
+      this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_DARK);
+      hilog.info(DOMAIN, TAG, 'Set color mode to DARK');
+    } else {
+      // auto - 跟随系统
+      this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+      hilog.info(DOMAIN, TAG, 'Set color mode to AUTO (follow system)');
+    }
+  }
+
+  /**
+   * 监听配置变化（包括深浅色模式切换）
+   */
+  onConfigurationUpdate(newConfig: Configuration): void {
+    // 更新 AppStorage 中的颜色模式
+    AppStorage.setOrCreate<number>('currentColorMode', newConfig.colorMode ?? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
+    hilog.info(DOMAIN, TAG, 'Color mode changed to: %{public}d', newConfig.colorMode ?? 0);
+
+    // 更新状态栏颜色
+    this.updateStatusBarStyle(newConfig.colorMode ?? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
+  }
+
+  /**
+   * 更新状态栏样式
+   */
+  private updateStatusBarStyle(colorMode: number): void {
+    try {
+      const windowStage: window.WindowStage | undefined = GlobalContext.getContext().getObject('windowStage') as window.WindowStage | undefined;
+      if (windowStage !== undefined) {
+        const mainWindow: window.Window = windowStage.getMainWindowSync();
+        const isDark: boolean = colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+
+        mainWindow.setWindowSystemBarProperties({
+          statusBarColor: '#00000000',
+          navigationBarColor: '#00000000',
+          statusBarContentColor: isDark ? '#FFFFFF' : '#000000'
+        });
+
+        hilog.info(DOMAIN, TAG, 'Updated status bar style for %{public}s mode', isDark ? 'dark' : 'light');
+      }
+    } catch (err) {
+      hilog.error(DOMAIN, TAG, 'Failed to update status bar style: %{public}s', JSON.stringify(err));
+    }
   }
 
   onDestroy(): void {
@@ -29,6 +87,9 @@ export default class EntryAbility extends UIAbility {
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(DOMAIN, TAG, 'Ability onWindowStageCreate');
+
+    // 保存 windowStage 引用到全局上下文
+    GlobalContext.getContext().setObject('windowStage', windowStage);
 
     // 直接加载主页面
     windowStage.loadContent('home/HomePage', (err) => {
@@ -90,11 +151,14 @@ export default class EntryAbility extends UIAbility {
         }
       });
 
-      // 5. 设置状态栏和导航栏透明
+      // 5. 根据当前颜色模式设置状态栏和导航栏透明
+      const currentColorMode: number = this.context.config.colorMode ?? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+      const isDark: boolean = currentColorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+
       mainWindow.setWindowSystemBarProperties({
         statusBarColor: '#00000000',
         navigationBarColor: '#00000000',
-        statusBarContentColor: '#000000'
+        statusBarContentColor: isDark ? '#FFFFFF' : '#000000'
       });
 
       mainWindow.setWindowTouchable(true);

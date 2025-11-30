@@ -162,7 +162,7 @@ export struct DashboardPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor($r('app.color.page_background'))
     // 顶部状态栏避让
     .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
   }
@@ -173,6 +173,7 @@ export struct DashboardPage {
       Text('今日训练')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
 
       if (this.todayRecord !== null) {
         // 显示今日训练数据
@@ -181,13 +182,13 @@ export struct DashboardPage {
           Text(this.todayRecord.title)
             .fontSize(18)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#333333')
+            .fontColor($r('app.color.text_primary'))
 
           // 数据卡片
           Row({ space: 12 }) {
-            this.DataItem('时长', this.todayRecord.duration.toString() + '分钟', '#4CAF50')
-            this.DataItem('组数', this.todayRecord.totalSets.toString() + '组', '#FF9800')
-            this.DataItem('卡路里', this.todayRecord.caloriesBurned.toString(), '#F44336')
+            this.DataItem('时长', this.todayRecord.duration.toString() + '分钟', $r('app.color.color_success'))
+            this.DataItem('组数', this.todayRecord.totalSets.toString() + '组', $r('app.color.color_warning'))
+            this.DataItem('卡路里', this.todayRecord.caloriesBurned.toString(), $r('app.color.color_danger'))
           }
           .width('100%')
           .justifyContent(FlexAlign.SpaceBetween)
@@ -196,13 +197,13 @@ export struct DashboardPage {
           Row({ space: 8 }) {
             Text('状态: ' + this.todayRecord.mood)
               .fontSize(13)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
             Text('|')
               .fontSize(13)
-              .fontColor('#CCCCCC')
+              .fontColor($r('app.color.text_placeholder'))
             Text(this.todayRecord.startTime + ' - ' + this.todayRecord.endTime)
               .fontSize(13)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
           }
           .width('100%')
         }
@@ -212,19 +213,19 @@ export struct DashboardPage {
         // 无训练记录
         Text('暂无训练记录')
           .fontSize(14)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
           .margin({ top: 20, bottom: 20 })
       }
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
 
   @Builder
-  DataItem(label: string, value: string, color: string) {
+  DataItem(label: string, value: string, color: Resource) {
     Column({ space: 4 }) {
       Text(value)
         .fontSize(20)
@@ -232,11 +233,11 @@ export struct DashboardPage {
         .fontColor(color)
       Text(label)
         .fontSize(12)
-        .fontColor('#999999')
+        .fontColor($r('app.color.text_hint'))
     }
     .layoutWeight(1)
     .padding(12)
-    .backgroundColor('#F9F9F9')
+    .backgroundColor($r('app.color.card_background_secondary'))
     .borderRadius(8)
     .alignItems(HorizontalAlign.Center)
   }
@@ -248,10 +249,11 @@ export struct DashboardPage {
         Text('本周趋势')
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.text_primary'))
         Blank()
         Text(this.weekTotalCount.toString() + '次训练')
           .fontSize(13)
-          .fontColor('#666666')
+          .fontColor($r('app.color.text_secondary'))
       }
       .width('100%')
 
@@ -262,10 +264,10 @@ export struct DashboardPage {
             Text(this.weekTotalDuration.toString())
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
-              .fontColor('#007AFF')
+              .fontColor($r('app.color.brand_primary'))
             Text('总时长(分钟)')
               .fontSize(11)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
 
@@ -273,10 +275,10 @@ export struct DashboardPage {
             Text(this.weekTotalWeight.toString())
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
-              .fontColor('#FF9800')
+              .fontColor($r('app.color.color_warning'))
             Text('总重量(kg)')
               .fontSize(11)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
 
@@ -284,10 +286,10 @@ export struct DashboardPage {
             Text(this.weekTotalCount.toString())
               .fontSize(18)
               .fontWeight(FontWeight.Bold)
-              .fontColor('#4CAF50')
+              .fontColor($r('app.color.color_success'))
             Text('训练次数')
               .fontSize(11)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
         }
@@ -299,13 +301,13 @@ export struct DashboardPage {
       } else {
         Text('开始记录训练，查看进度趋势')
           .fontSize(14)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
           .margin({ top: 20, bottom: 20 })
       }
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -329,7 +331,7 @@ export struct DashboardPage {
         ForEach(this.weekStats, (dayStat: DailyStatsModel) => {
           Text(this.formatDateLabel(dayStat.date))
             .fontSize(10)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
             .layoutWeight(1)
             .textAlign(TextAlign.Center)
         })
@@ -347,14 +349,14 @@ export struct DashboardPage {
       Column()
         .width(30)
         .height(dayStat.trainingCount > 0 ? (dayStat.duration > 0 ? Math.min(100, dayStat.duration) : 20) : 0)
-        .backgroundColor(dayStat.trainingCount > 0 ? '#007AFF' : '#E0E0E0')
+        .backgroundColor(dayStat.trainingCount > 0 ? $r('app.color.brand_primary') : $r('app.color.outline'))
         .borderRadius(4)
 
       // 数值标签
       if (dayStat.trainingCount > 0) {
         Text(dayStat.duration.toString())
           .fontSize(10)
-          .fontColor('#666666')
+          .fontColor($r('app.color.text_secondary'))
           .margin({ top: 4 })
       }
     }
@@ -379,7 +381,7 @@ export struct DashboardPage {
       .width('100%')
       .height(48)
       .fontSize(16)
-      .backgroundColor('#007AFF')
+      .backgroundColor($r('app.color.brand_primary'))
       .borderRadius(8)
       .onClick(() => {
         RouterManager.pushPath(NavRoutes.TRAINING_SESSION);
@@ -393,6 +395,7 @@ export struct DashboardPage {
         Text('我的训练计划')
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.text_primary'))
         Blank()
         Text(this.myPlan?.status ?? '')
           .fontSize(12)
@@ -407,19 +410,19 @@ export struct DashboardPage {
       Text(this.myPlan?.name ?? '')
         .fontSize(18)
         .fontWeight(FontWeight.Medium)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
 
       // 进度条
       Column({ space: 6 }) {
         Row() {
           Text('完成进度')
             .fontSize(12)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
           Blank()
           Text((this.myPlan?.completionRate ?? 0).toString() + '%')
             .fontSize(12)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
         }
         .width('100%')
 
@@ -428,12 +431,12 @@ export struct DashboardPage {
           Row()
             .width((this.myPlan?.completionRate ?? 0).toString() + '%')
             .height('100%')
-            .backgroundColor('#007AFF')
+            .backgroundColor($r('app.color.brand_primary'))
             .borderRadius(2)
         }
         .width('100%')
         .height(6)
-        .backgroundColor('#E0E0E0')
+        .backgroundColor($r('app.color.outline'))
         .borderRadius(3)
       }
       .width('100%')
@@ -444,10 +447,10 @@ export struct DashboardPage {
           Text((this.myPlan?.totalCompletedDays ?? 0).toString() + '天')
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
           Text('已完成')
             .fontSize(10)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Center)
@@ -456,10 +459,10 @@ export struct DashboardPage {
           Text('第' + (this.myPlan?.currentWeek ?? 0).toString() + '周')
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
           Text('本周')
             .fontSize(10)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Center)
@@ -468,10 +471,10 @@ export struct DashboardPage {
           Text(this.myPlan?.goal ?? '')
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
           Text('目标')
             .fontSize(10)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Center)
@@ -483,7 +486,7 @@ export struct DashboardPage {
         .width('100%')
         .height(36)
         .fontSize(14)
-        .backgroundColor('#4CAF50')
+        .backgroundColor($r('app.color.color_success'))
         .borderRadius(6)
         .margin({ top: 4 })
         .onClick(() => {
@@ -492,7 +495,7 @@ export struct DashboardPage {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -504,10 +507,11 @@ export struct DashboardPage {
         Text('推荐训练模板')
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.text_primary'))
         Blank()
         Text('查看更多 >')
           .fontSize(13)
-          .fontColor('#007AFF')
+          .fontColor($r('app.color.brand_primary'))
           .onClick(() => {
             toast('查看更多模板');
           })
@@ -524,7 +528,7 @@ export struct DashboardPage {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -536,7 +540,7 @@ export struct DashboardPage {
         Text(template.name)
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_primary'))
           .layoutWeight(1)
 
         Text(template.level)
@@ -550,32 +554,32 @@ export struct DashboardPage {
 
       Text(template.description)
         .fontSize(12)
-        .fontColor('#666666')
+        .fontColor($r('app.color.text_secondary'))
         .maxLines(2)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
 
       Row({ space: 8 }) {
         Text('#' + template.goal)
           .fontSize(10)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
         Text('|')
           .fontSize(10)
-          .fontColor('#CCCCCC')
+          .fontColor($r('app.color.text_placeholder'))
         Text(template.durationWeeks.toString() + '周')
           .fontSize(10)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
         Text('|')
           .fontSize(10)
-          .fontColor('#CCCCCC')
+          .fontColor($r('app.color.text_placeholder'))
         Text('每周' + template.trainingDaysPerWeek.toString() + '天')
           .fontSize(10)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
       }
       .width('100%')
     }
     .width('100%')
     .padding(12)
-    .backgroundColor('#F9F9F9')
+    .backgroundColor($r('app.color.card_background_secondary'))
     .borderRadius(8)
     .alignItems(HorizontalAlign.Start)
     .onClick(() => {

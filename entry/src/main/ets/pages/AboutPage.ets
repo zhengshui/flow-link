@@ -42,19 +42,19 @@ export struct AboutPage {
             }
             .width(100)
             .height(100)
-            .backgroundColor('#007AFF')
+            .backgroundColor($r('app.color.brand_primary'))
             .borderRadius(20)
             .justifyContent(FlexAlign.Center)
             .margin({ top: 40 })
 
             Text(this.appName)
               .fontSize(24)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_primary'))
               .fontWeight(FontWeight.Bold)
 
             Text('v' + this.appVersion)
               .fontSize(16)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .width('100%')
           .alignItems(HorizontalAlign.Center)
@@ -62,7 +62,7 @@ export struct AboutPage {
           // 应用描述
           Text(this.appDescription)
             .fontSize(14)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
             .textAlign(TextAlign.Center)
             .width('80%')
             .margin({ left: '10%' })
@@ -71,7 +71,7 @@ export struct AboutPage {
           Column({ space: 12 }) {
             Text('核心功能')
               .fontSize(16)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_primary'))
               .fontWeight(FontWeight.Medium)
               .width('100%')
               .padding({ left: 16 })
@@ -82,7 +82,7 @@ export struct AboutPage {
               })
             }
             .width('100%')
-            .backgroundColor(Color.White)
+            .backgroundColor($r('app.color.card_background'))
             .borderRadius(12)
             .margin({ left: 16, right: 16 })
           }
@@ -96,7 +96,7 @@ export struct AboutPage {
             this.InfoItem('发布日期', '2025-11-03')
           }
           .width('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
           .margin({ left: 16, right: 16 })
 
@@ -104,11 +104,11 @@ export struct AboutPage {
           Column({ space: 8 }) {
             Text('© 2025 FitEasy')
               .fontSize(12)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
 
             Text('让健身成为一种生活方式')
               .fontSize(12)
-              .fontColor('#CCCCCC')
+              .fontColor($r('app.color.text_placeholder'))
           }
           .width('100%')
           .alignItems(HorizontalAlign.Center)
@@ -117,7 +117,7 @@ export struct AboutPage {
         .width('100%')
       }
       .layoutWeight(1)
-      .backgroundColor('#F5F5F5')
+      .backgroundColor($r('app.color.page_background'))
     }
     .title('关于')
     .onReady((context: NavDestinationContext) => {
@@ -131,12 +131,12 @@ export struct AboutPage {
       Row() {
         Text('•')
           .fontSize(16)
-          .fontColor('#007AFF')
+          .fontColor($r('app.color.brand_primary'))
           .margin({ right: 8 })
 
         Text(feature)
           .fontSize(15)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_primary'))
       }
       .width('100%')
       .height(48)
@@ -146,7 +146,7 @@ export struct AboutPage {
       if (!isLast) {
         Divider()
           .strokeWidth(0.5)
-          .color('#E0E0E0')
+          .color($r('app.color.outline'))
           .margin({ left: 16, right: 16 })
       }
     }
@@ -157,13 +157,13 @@ export struct AboutPage {
     Row() {
       Text(label)
         .fontSize(15)
-        .fontColor('#666666')
+        .fontColor($r('app.color.text_secondary'))
 
       Blank()
 
       Text(value)
         .fontSize(15)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
     }
     .width('100%')
     .height(48)
@@ -174,7 +174,7 @@ export struct AboutPage {
   ItemDivider() {
     Divider()
       .strokeWidth(0.5)
-      .color('#E0E0E0')
+      .color($r('app.color.outline'))
       .margin({ left: 16, right: 16 })
   }
 }

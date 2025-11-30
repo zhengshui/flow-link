@@ -24,29 +24,29 @@ export struct SessionExerciseCard {
           Text(this.exercise.actionName)
             .fontSize(18)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1A1A1A')
+            .fontColor($r('app.color.text_primary'))
 
           Row({ space: 8 }) {
             Text(this.exercise.muscleGroup)
               .fontSize(13)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
 
             Text('·')
               .fontSize(13)
-              .fontColor('#CCCCCC')
+              .fontColor($r('app.color.text_placeholder'))
 
             Text(this.exercise.getCompletedSetsCount().toString() + '/' + this.exercise.sets.length.toString() + ' 组')
               .fontSize(13)
-              .fontColor('#007AFF')
+              .fontColor($r('app.color.brand_primary'))
 
             if (this.exercise.getTotalVolume() > 0) {
               Text('·')
                 .fontSize(13)
-                .fontColor('#CCCCCC')
+                .fontColor($r('app.color.text_placeholder'))
 
               Text(this.exercise.getTotalVolume().toString() + ' kg')
                 .fontSize(13)
-                .fontColor('#666666')
+                .fontColor($r('app.color.text_secondary'))
             }
           }
         }
@@ -55,7 +55,7 @@ export struct SessionExerciseCard {
 
         Text('×')
           .fontSize(22)
-          .fontColor('#CCCCCC')
+          .fontColor($r('app.color.text_placeholder'))
           .fontWeight(FontWeight.Lighter)
           .onClick((): void => {
             this.onRemoveExercise(this.exerciseIndex);
@@ -68,14 +68,14 @@ export struct SessionExerciseCard {
       Row() {
           Text('#')
             .fontSize(12)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
             .fontWeight(FontWeight.Medium)
             .width(32)
             .textAlign(TextAlign.Center)
 
           Text('类型')
             .fontSize(12)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
             .fontWeight(FontWeight.Medium)
             .width(56)
             .textAlign(TextAlign.Center)
@@ -84,7 +84,7 @@ export struct SessionExerciseCard {
 
           Text('重量')
             .fontSize(12)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
             .fontWeight(FontWeight.Medium)
             .layoutWeight(1)
             .textAlign(TextAlign.Center)
@@ -93,7 +93,7 @@ export struct SessionExerciseCard {
 
           Text('次数')
             .fontSize(12)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
             .fontWeight(FontWeight.Medium)
             .layoutWeight(0.8)
             .textAlign(TextAlign.Center)
@@ -129,8 +129,8 @@ export struct SessionExerciseCard {
         .height(40)
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
-        .backgroundColor('#F5F7FA')
-        .fontColor('#007AFF')
+        .backgroundColor($r('app.color.card_background_secondary'))
+        .fontColor($r('app.color.brand_primary'))
         .borderRadius(8)
         .margin({ top: 16 })
         .onClick((): void => {
@@ -139,7 +139,7 @@ export struct SessionExerciseCard {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(16)
     .shadow({
       radius: 8,
@@ -150,4 +150,3 @@ export struct SessionExerciseCard {
     .alignItems(HorizontalAlign.Start)
   }
 }
-

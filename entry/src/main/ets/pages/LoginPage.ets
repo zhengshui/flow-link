@@ -106,12 +106,12 @@ export struct LoginPage {
           Text('FitEasy')
             .fontSize(32)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#333333')
+            .fontColor($r('app.color.text_primary'))
 
           // 欢迎语
           Text('健身易 - 让健身更简单')
             .fontSize(16)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .width('100%')
 
@@ -121,7 +121,7 @@ export struct LoginPage {
           TextInput({ placeholder: '请输入用户名' })
             .width('100%')
             .height(48)
-            .backgroundColor(Color.White)
+            .backgroundColor($r('app.color.card_background'))
             .borderRadius(8)
             .onChange((value: string) => {
               this.username = value;
@@ -132,7 +132,7 @@ export struct LoginPage {
             .width('100%')
             .height(48)
             .type(InputType.Password)
-            .backgroundColor(Color.White)
+            .backgroundColor($r('app.color.card_background'))
             .borderRadius(8)
             .onChange((value: string) => {
               this.password = value;
@@ -143,7 +143,7 @@ export struct LoginPage {
             .width('100%')
             .height(48)
             .fontSize(16)
-            .backgroundColor('#007AFF')
+            .backgroundColor($r('app.color.brand_primary'))
             .borderRadius(8)
             .opacity((this.username.length > 0 && this.password.length > 0 && !this.isLoading) ? 1 : 0.5)
             .enabled(this.username.length > 0 && this.password.length > 0 && !this.isLoading)
@@ -159,11 +159,11 @@ export struct LoginPage {
         Row({ space: 4 }) {
           Text('还没有账号？')
             .fontSize(14)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
 
           Text('立即注册')
             .fontSize(14)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
             .fontWeight(FontWeight.Medium)
             .onClick(() => {
               this.goToRegister();
@@ -173,7 +173,7 @@ export struct LoginPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#F5F5F5')
+      .backgroundColor($r('app.color.page_background'))
       .alignItems(HorizontalAlign.Center)
       // 顶部状态栏避让
       .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })

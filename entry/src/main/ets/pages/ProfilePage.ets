@@ -3,9 +3,8 @@
  * 用户信息、设置、分享等
  */
 
-import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult, AuthApiService, RouterManager, NavRoutes } from '@tbs/common';
+import { UserInfoData, StorageConst, StorageUtils, toast, ResponseResult, AuthApiService, RouterManager, NavRoutes } from '@tbs/common';
 import { promptAction } from '@kit.ArkUI';
-import http from '@ohos.net.http';
 
 @Component
 export struct ProfilePage {
@@ -122,7 +121,7 @@ export struct ProfilePage {
             })
           }
           .width('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
           .margin({ left: 16, right: 16 })
 
@@ -133,7 +132,7 @@ export struct ProfilePage {
             })
           }
           .width('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
           .margin({ left: 16, right: 16 })
 
@@ -142,7 +141,7 @@ export struct ProfilePage {
             .width('90%')
             .height(48)
             .fontSize(16)
-            .backgroundColor('#FF3B30')
+            .backgroundColor($r('app.color.color_danger'))
             .fontColor(Color.White)
             .borderRadius(8)
             .margin({ left: 16, right: 16, top: 8, bottom: 40 })
@@ -157,7 +156,7 @@ export struct ProfilePage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor($r('app.color.page_background'))
     // 顶部状态栏避让
     .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
   }
@@ -173,7 +172,7 @@ export struct ProfilePage {
       }
       .width(64)
       .height(64)
-      .backgroundColor('#007AFF')
+      .backgroundColor($r('app.color.brand_primary'))
       .borderRadius(32)
       .justifyContent(FlexAlign.Center)
 
@@ -182,18 +181,18 @@ export struct ProfilePage {
         Text(this.userInfo?.nickname ?? '健身爱好者')
           .fontSize(18)
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_primary'))
 
         Text('@' + (this.userInfo?.username ?? 'user'))
           .fontSize(14)
-          .fontColor('#666666')
+          .fontColor($r('app.color.text_secondary'))
 
         if (this.userInfo !== null && this.userInfo.fitnessGoal.length > 0) {
           Text('目标: ' + this.userInfo.fitnessGoal)
             .fontSize(12)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
             .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-            .backgroundColor('#E3F2FF')
+            .backgroundColor($r('app.color.brand_primary_light'))
             .borderRadius(4)
         }
       }
@@ -203,12 +202,12 @@ export struct ProfilePage {
       // 编辑按钮
       Text('›')
         .fontSize(24)
-        .fontColor('#CCCCCC')
+        .fontColor($r('app.color.text_placeholder'))
     }
     .width('100%')
     .padding(16)
     .margin({ left: 16, right: 16 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(VerticalAlign.Center)
     .onClick(() => {
@@ -220,7 +219,7 @@ export struct ProfilePage {
    * 获取主题显示文本
    */
   getThemeDisplay(): string {
-    const theme: string = StorageUtils.getStringValueSync('app_theme', 'light');
+    const theme: string = StorageUtils.getStringValueSync('app_theme', 'auto');
     if (theme === 'dark') {
       return '深色模式';
     } else if (theme === 'auto') {
@@ -248,7 +247,7 @@ export struct ProfilePage {
       Text('身体数据')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
 
       Row({ space: 12 }) {
         // 身高
@@ -257,14 +256,14 @@ export struct ProfilePage {
             Text(this.userInfo.height.toString())
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
-              .fontColor('#007AFF')
+              .fontColor($r('app.color.brand_primary'))
             Text('身高(cm)')
               .fontSize(11)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
           }
           .layoutWeight(1)
           .padding(12)
-          .backgroundColor('#F9F9F9')
+          .backgroundColor($r('app.color.card_background_secondary'))
           .borderRadius(8)
         }
 
@@ -274,14 +273,14 @@ export struct ProfilePage {
             Text(this.userInfo.weight.toString())
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
-              .fontColor('#34C759')
+              .fontColor($r('app.color.color_success'))
             Text('体重(kg)')
               .fontSize(11)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
           }
           .layoutWeight(1)
           .padding(12)
-          .backgroundColor('#F9F9F9')
+          .backgroundColor($r('app.color.card_background_secondary'))
           .borderRadius(8)
         }
 
@@ -291,14 +290,14 @@ export struct ProfilePage {
             Text(this.userInfo.targetWeight.toString())
               .fontSize(20)
               .fontWeight(FontWeight.Bold)
-              .fontColor('#FF9500')
+              .fontColor($r('app.color.color_warning'))
             Text('目标体重(kg)')
               .fontSize(11)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
           }
           .layoutWeight(1)
           .padding(12)
-          .backgroundColor('#F9F9F9')
+          .backgroundColor($r('app.color.card_background_secondary'))
           .borderRadius(8)
         }
       }
@@ -307,7 +306,7 @@ export struct ProfilePage {
     .width('100%')
     .padding(16)
     .margin({ left: 16, right: 16 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -319,28 +318,28 @@ export struct ProfilePage {
         Row({ space: 8 }) {
           Text(title)
             .fontSize(16)
-            .fontColor('#333333')
+            .fontColor($r('app.color.text_primary'))
 
           if (isComingSoon) {
             Text('即将上线')
               .fontSize(12)
-              .fontColor('#007AFF')
+              .fontColor($r('app.color.brand_primary'))
               .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-              .backgroundColor('#E3F2FF')
+              .backgroundColor($r('app.color.brand_primary_light'))
               .borderRadius(4)
           }
         }
 
         Text(subtitle)
           .fontSize(14)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
 
       Text('›')
         .fontSize(20)
-        .fontColor('#CCCCCC')
+        .fontColor($r('app.color.text_placeholder'))
     }
     .width('100%')
     .height(60)
@@ -352,7 +351,7 @@ export struct ProfilePage {
   MenuDivider() {
     Divider()
       .strokeWidth(0.5)
-      .color('#E0E0E0')
+      .color($r('app.color.outline'))
       .margin({ left: 16, right: 16 })
   }
 }

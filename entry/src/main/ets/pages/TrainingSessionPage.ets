@@ -639,10 +639,10 @@ export struct TrainingSessionPage {
               LoadingProgress()
                 .width(48)
                 .height(48)
-                .color('#007AFF')
+                .color($r('app.color.brand_primary'))
               Text('加载训练记录中...')
                 .fontSize(14)
-                .fontColor('#999999')
+                .fontColor($r('app.color.text_hint'))
             }
             .width('100%')
             .layoutWeight(1)
@@ -682,7 +682,7 @@ export struct TrainingSessionPage {
         }
         .width('100%')
         .height('100%')
-        .backgroundColor('#F5F5F5')
+        .backgroundColor($r('app.color.page_background'))
 
         this.BottomBar()
 
@@ -753,7 +753,7 @@ export struct TrainingSessionPage {
       Row() {
         Text('×')
           .fontSize(24)
-          .fontColor('#666666')
+          .fontColor($r('app.color.text_secondary'))
           .fontWeight(FontWeight.Lighter)
           .width(40)
           .height(40)
@@ -764,6 +764,7 @@ export struct TrainingSessionPage {
           .layoutWeight(1)
           .fontSize(17)
           .fontWeight(FontWeight.Bold)
+          .fontColor($r('app.color.text_primary'))
           .backgroundColor(Color.Transparent)
           .margin({ left: 8, right: 8 })
           .onChange((value: string): void => { this.session.title = value; })
@@ -773,7 +774,7 @@ export struct TrainingSessionPage {
           .fontWeight(FontWeight.Medium)
           .height(34)
           .padding({ left: 16, right: 16 })
-          .backgroundColor('#34C759')
+          .backgroundColor($r('app.color.color_success'))
           .borderRadius(17)
           .onClick((): void => { this.finishTraining(); })
       }
@@ -787,19 +788,19 @@ export struct TrainingSessionPage {
           Text(this.currentTime)
             .fontSize(28)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
             .onClick((): void => { this.openTimeEditDialog(); })
 
           // 暂停/继续按钮
           Button() {
-            Text(this.session.isRunning ? '⏸' : '▶').fontSize(14).fontColor('#007AFF')
+            Text(this.session.isRunning ? '⏸' : '▶').fontSize(14).fontColor($r('app.color.brand_primary'))
           }
-          .width(32).height(32).backgroundColor('#EBF5FF').borderRadius(16)
+          .width(32).height(32).backgroundColor($r('app.color.brand_primary_light')).borderRadius(16)
           .onClick((): void => { this.toggleTimer(); })
 
           // 重置按钮
           Button() {
-            Text('↺').fontSize(14).fontColor('#FF6B6B')
+            Text('↺').fontSize(14).fontColor($r('app.color.color_danger'))
           }
           .width(32).height(32).backgroundColor('#FFF0F0').borderRadius(16)
           .onClick((): void => { this.resetTimer(); })
@@ -816,15 +817,15 @@ export struct TrainingSessionPage {
       .justifyContent(FlexAlign.SpaceBetween)
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .shadow({ radius: 4, color: 'rgba(0, 0, 0, 0.04)', offsetX: 0, offsetY: 2 })
   }
 
   @Builder
   StatItem(value: string, label: string) {
     Column({ space: 2 }) {
-      Text(value).fontSize(18).fontWeight(FontWeight.Bold).fontColor('#1A1A1A')
-      Text(label).fontSize(11).fontColor('#999999')
+      Text(value).fontSize(18).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+      Text(label).fontSize(11).fontColor($r('app.color.text_hint'))
     }.alignItems(HorizontalAlign.Center)
   }
 
@@ -834,11 +835,11 @@ export struct TrainingSessionPage {
       Column() {
         Text('🏋️').fontSize(64)
       }
-      .width(120).height(120).backgroundColor('#F5F7FA').borderRadius(60).justifyContent(FlexAlign.Center)
+      .width(120).height(120).backgroundColor($r('app.color.card_background_secondary')).borderRadius(60).justifyContent(FlexAlign.Center)
 
       Column({ space: 8 }) {
-        Text('准备开始训练').fontSize(18).fontWeight(FontWeight.Bold).fontColor('#1A1A1A')
-        Text('点击下方「添加动作」开始记录').fontSize(14).fontColor('#999999')
+        Text('准备开始训练').fontSize(18).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+        Text('点击下方「添加动作」开始记录').fontSize(14).fontColor($r('app.color.text_hint'))
       }.alignItems(HorizontalAlign.Center)
     }
     .width('100%')
@@ -857,16 +858,16 @@ export struct TrainingSessionPage {
             Text('添加动作').fontSize(14).fontWeight(FontWeight.Medium).fontColor(Color.White)
           }
         }
-        .height(48).layoutWeight(1).backgroundColor('#007AFF').borderRadius(12)
+        .height(48).layoutWeight(1).backgroundColor($r('app.color.brand_primary')).borderRadius(12)
         .onClick((): void => { this.addExercise(); })
 
         Button() {
           Row({ space: 6 }) {
             Text('📝').fontSize(16)
-            Text('心得').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#333333')
+            Text('心得').fontSize(14).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
           }
         }
-        .height(48).layoutWeight(0.6).backgroundColor('#F5F5F5').borderRadius(12)
+        .height(48).layoutWeight(0.6).backgroundColor($r('app.color.card_background_secondary')).borderRadius(12)
         .onClick((): void => { this.showNoteInput(); })
       }
       .width('100%')
@@ -878,7 +879,7 @@ export struct TrainingSessionPage {
         .height(this.getUIContext().px2vp(this.bottomRectHeight))
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.08)', offsetX: 0, offsetY: -2 })
   }
 
@@ -889,6 +890,7 @@ export struct TrainingSessionPage {
         Text('训练心得')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
+          .fontColor($r('app.color.text_primary'))
           .width('100%')
           .textAlign(TextAlign.Center)
           .padding(16)
@@ -897,33 +899,34 @@ export struct TrainingSessionPage {
           .width('100%')
           .height(200)
           .fontSize(14)
-          .backgroundColor(Color.White)
+          .fontColor($r('app.color.text_primary'))
+          .backgroundColor($r('app.color.card_background'))
           .onChange((value: string): void => { this.tempNote = value; })
 
         Row({ space: 12 }) {
           Button('取消')
             .layoutWeight(1)
             .height(44)
-            .backgroundColor('#E0E0E0')
-            .fontColor('#333333')
+            .backgroundColor($r('app.color.outline'))
+            .fontColor($r('app.color.text_primary'))
             .onClick((): void => { this.showNoteDialog = false; })
 
           Button('保存')
             .layoutWeight(1)
             .height(44)
-            .backgroundColor('#007AFF')
+            .backgroundColor($r('app.color.brand_primary'))
             .onClick((): void => { this.saveNote(); })
         }
         .width('100%')
         .padding(16)
       }
       .width('90%')
-      .backgroundColor(Color.White)
+      .backgroundColor($r('app.color.card_background'))
       .borderRadius(12)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0, 0, 0, 0.5)')
+    .backgroundColor($r('app.color.overlay_background'))
     .justifyContent(FlexAlign.Center)
     .onClick((): void => { this.showNoteDialog = false; })
   }
@@ -935,6 +938,7 @@ export struct TrainingSessionPage {
         Text('编辑训练时间')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
+          .fontColor($r('app.color.text_primary'))
           .width('100%')
           .textAlign(TextAlign.Center)
           .padding(16)
@@ -947,23 +951,24 @@ export struct TrainingSessionPage {
               .height(50)
               .fontSize(22)
               .fontWeight(FontWeight.Bold)
+              .fontColor($r('app.color.text_primary'))
               .textAlign(TextAlign.Center)
               .type(InputType.Number)
-              .backgroundColor('#F5F5F5')
+              .backgroundColor($r('app.color.card_background_secondary'))
               .borderRadius(8)
               .onChange((value: string): void => {
                 this.editHours = value;
               })
             Text('小时')
               .fontSize(12)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .alignItems(HorizontalAlign.Center)
 
           Text(':')
             .fontSize(28)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#333333')
+            .fontColor($r('app.color.text_primary'))
 
           // 分钟输入
           Column({ space: 4 }) {
@@ -972,9 +977,10 @@ export struct TrainingSessionPage {
               .height(50)
               .fontSize(22)
               .fontWeight(FontWeight.Bold)
+              .fontColor($r('app.color.text_primary'))
               .textAlign(TextAlign.Center)
               .type(InputType.Number)
-              .backgroundColor('#F5F5F5')
+              .backgroundColor($r('app.color.card_background_secondary'))
               .borderRadius(8)
               .onChange((value: string): void => {
                 // 限制分钟在 0-59
@@ -987,14 +993,14 @@ export struct TrainingSessionPage {
               })
             Text('分钟')
               .fontSize(12)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .alignItems(HorizontalAlign.Center)
 
           Text(':')
             .fontSize(28)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#333333')
+            .fontColor($r('app.color.text_primary'))
 
           // 秒数输入
           Column({ space: 4 }) {
@@ -1003,9 +1009,10 @@ export struct TrainingSessionPage {
               .height(50)
               .fontSize(22)
               .fontWeight(FontWeight.Bold)
+              .fontColor($r('app.color.text_primary'))
               .textAlign(TextAlign.Center)
               .type(InputType.Number)
-              .backgroundColor('#F5F5F5')
+              .backgroundColor($r('app.color.card_background_secondary'))
               .borderRadius(8)
               .onChange((value: string): void => {
                 // 限制秒数在 0-59
@@ -1018,7 +1025,7 @@ export struct TrainingSessionPage {
               })
             Text('秒')
               .fontSize(12)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .alignItems(HorizontalAlign.Center)
         }
@@ -1028,28 +1035,28 @@ export struct TrainingSessionPage {
 
         Text('点击数字可以直接输入修改')
           .fontSize(12)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
           .margin({ bottom: 16 })
 
         Row({ space: 12 }) {
           Button('取消')
             .layoutWeight(1)
             .height(44)
-            .backgroundColor('#E0E0E0')
-            .fontColor('#333333')
+            .backgroundColor($r('app.color.outline'))
+            .fontColor($r('app.color.text_primary'))
             .onClick((): void => { this.showTimeEditDialog = false; })
 
           Button('确定')
             .layoutWeight(1)
             .height(44)
-            .backgroundColor('#007AFF')
+            .backgroundColor($r('app.color.brand_primary'))
             .onClick((): void => { this.saveEditedTime(); })
         }
         .width('100%')
         .padding(16)
       }
       .width('90%')
-      .backgroundColor(Color.White)
+      .backgroundColor($r('app.color.card_background'))
       .borderRadius(12)
       .onClick((): void => {
         // 阻止点击内部关闭对话框
@@ -1057,7 +1064,7 @@ export struct TrainingSessionPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0, 0, 0, 0.5)')
+    .backgroundColor($r('app.color.overlay_background'))
     .justifyContent(FlexAlign.Center)
     .onClick((): void => { this.showTimeEditDialog = false; })
   }

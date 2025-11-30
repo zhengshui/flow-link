@@ -20,7 +20,7 @@ export struct SessionSetRow {
       Text((this.setIndex + 1).toString())
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
-        .fontColor(this.set.isCompleted ? '#007AFF' : '#666666')
+        .fontColor(this.set.isCompleted ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
         .width(32)
         .textAlign(TextAlign.Center)
 
@@ -49,9 +49,10 @@ export struct SessionSetRow {
           .height(36)
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.text_primary'))
           .type(InputType.Number)
           .textAlign(TextAlign.Center)
-          .backgroundColor(this.set.isCompleted ? '#F0F9FF' : '#F5F7FA')
+          .backgroundColor(this.set.isCompleted ? $r('app.color.brand_primary_light') : $r('app.color.card_background_secondary'))
           .borderRadius(8)
           .onChange((value: string): void => {
             const weight: number = parseInt(value, 10);
@@ -62,7 +63,7 @@ export struct SessionSetRow {
 
         Text('kg')
           .fontSize(12)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
           .margin({ left: 4 })
       }
       .layoutWeight(1)
@@ -77,9 +78,10 @@ export struct SessionSetRow {
           .height(36)
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.text_primary'))
           .type(InputType.Number)
           .textAlign(TextAlign.Center)
-          .backgroundColor(this.set.isCompleted ? '#F0F9FF' : '#F5F7FA')
+          .backgroundColor(this.set.isCompleted ? $r('app.color.brand_primary_light') : $r('app.color.card_background_secondary'))
           .borderRadius(8)
           .onChange((value: string): void => {
             const reps: number = parseInt(value, 10);
@@ -90,7 +92,7 @@ export struct SessionSetRow {
 
         Text('次')
           .fontSize(12)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
           .margin({ left: 4 })
       }
       .layoutWeight(0.8)
@@ -105,7 +107,7 @@ export struct SessionSetRow {
       }
       .width(32)
       .height(32)
-      .backgroundColor(this.set.isCompleted ? '#007AFF' : '#E8E8E8')
+      .backgroundColor(this.set.isCompleted ? $r('app.color.brand_primary') : $r('app.color.outline'))
       .borderRadius(16)
       .margin({ left: 8 })
       .onClick((): void => {
@@ -115,7 +117,7 @@ export struct SessionSetRow {
       // 删除按钮
       Text('×')
         .fontSize(18)
-        .fontColor('#CCCCCC')
+        .fontColor($r('app.color.text_placeholder'))
         .width(32)
         .textAlign(TextAlign.Center)
         .onClick((): void => {
@@ -125,8 +127,7 @@ export struct SessionSetRow {
     .width('100%')
     .height(52)
     .padding({ left: 4, right: 4, top: 4, bottom: 4 })
-    .backgroundColor(this.set.isCompleted ? '#FAFCFF' : Color.Transparent)
+    .backgroundColor(this.set.isCompleted ? $r('app.color.brand_primary_light') : Color.Transparent)
     .borderRadius(10)
   }
 }
-

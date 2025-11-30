@@ -90,13 +90,14 @@ export struct StatsPage {
         Text('数据分析')
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
+          .fontColor($r('app.color.text_primary'))
       }
       .width('100%')
       .height(56)
       .padding({ left: 16, right: 16, top: 12 })
       .justifyContent(FlexAlign.Start)
       .alignItems(VerticalAlign.Center)
-      .backgroundColor(Color.White)
+      .backgroundColor($r('app.color.card_background'))
 
       // 主内容区域
       Scroll() {
@@ -105,8 +106,8 @@ export struct StatsPage {
           Row({ space: 8 }) {
             Button('周')
               .fontSize(14)
-              .backgroundColor(this.currentPeriod === StatsPeriodConst.WEEK ? '#007AFF' : '#E0E0E0')
-              .fontColor(this.currentPeriod === StatsPeriodConst.WEEK ? Color.White : '#333333')
+              .backgroundColor(this.currentPeriod === StatsPeriodConst.WEEK ? $r('app.color.brand_primary') : $r('app.color.outline'))
+              .fontColor(this.currentPeriod === StatsPeriodConst.WEEK ? Color.White : $r('app.color.text_primary'))
               .height(32)
               .layoutWeight(1)
               .onClick(() => {
@@ -115,8 +116,8 @@ export struct StatsPage {
 
             Button('月')
               .fontSize(14)
-              .backgroundColor(this.currentPeriod === StatsPeriodConst.MONTH ? '#007AFF' : '#E0E0E0')
-              .fontColor(this.currentPeriod === StatsPeriodConst.MONTH ? Color.White : '#333333')
+              .backgroundColor(this.currentPeriod === StatsPeriodConst.MONTH ? $r('app.color.brand_primary') : $r('app.color.outline'))
+              .fontColor(this.currentPeriod === StatsPeriodConst.MONTH ? Color.White : $r('app.color.text_primary'))
               .height(32)
               .layoutWeight(1)
               .onClick(() => {
@@ -125,8 +126,8 @@ export struct StatsPage {
 
             Button('年')
               .fontSize(14)
-              .backgroundColor(this.currentPeriod === StatsPeriodConst.YEAR ? '#007AFF' : '#E0E0E0')
-              .fontColor(this.currentPeriod === StatsPeriodConst.YEAR ? Color.White : '#333333')
+              .backgroundColor(this.currentPeriod === StatsPeriodConst.YEAR ? $r('app.color.brand_primary') : $r('app.color.outline'))
+              .fontColor(this.currentPeriod === StatsPeriodConst.YEAR ? Color.White : $r('app.color.text_primary'))
               .height(32)
               .layoutWeight(1)
               .onClick(() => {
@@ -162,7 +163,7 @@ export struct StatsPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor($r('app.color.page_background'))
     // 顶部状态栏避让
     .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
   }
@@ -173,16 +174,17 @@ export struct StatsPage {
       Text(this.getPeriodTitle() + '数据概览')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
 
       Row({ space: 20 }) {
         Column({ space: 4 }) {
           Text((this.stats?.totalTrainingCount ?? 0).toString())
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
           Text('训练次数')
             .fontSize(12)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
         }
         .layoutWeight(1)
 
@@ -190,10 +192,10 @@ export struct StatsPage {
           Text((this.stats?.totalDuration ?? 0).toString())
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#34C759')
+            .fontColor($r('app.color.color_success'))
           Text('训练时长(分钟)')
             .fontSize(12)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
         }
         .layoutWeight(1)
 
@@ -201,10 +203,10 @@ export struct StatsPage {
           Text((this.stats?.totalWeight ?? 0).toString())
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#FF9500')
+            .fontColor($r('app.color.color_warning'))
           Text('总重量(kg)')
             .fontSize(12)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
         }
         .layoutWeight(1)
       }
@@ -218,10 +220,10 @@ export struct StatsPage {
           Text((this.stats?.totalCalories ?? 0).toString())
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#FF3B30')
+            .fontColor($r('app.color.color_danger'))
           Text('消耗卡路里')
             .fontSize(12)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
         }
         .layoutWeight(1)
 
@@ -229,10 +231,10 @@ export struct StatsPage {
           Text((this.stats?.avgDuration ?? 0).toString())
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#5AC8FA')
+            .fontColor($r('app.color.color_info'))
           Text('平均时长(分钟)')
             .fontSize(12)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
         }
         .layoutWeight(1)
 
@@ -240,10 +242,10 @@ export struct StatsPage {
           Text((this.stats?.totalSets ?? 0).toString())
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#AF52DE')
+            .fontColor($r('app.color.color_accent'))
           Text('总组数')
             .fontSize(12)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
         }
         .layoutWeight(1)
       }
@@ -254,7 +256,7 @@ export struct StatsPage {
     .width('100%')
     .padding(16)
     .margin({ left: 16, right: 16 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -265,6 +267,7 @@ export struct StatsPage {
       Text('训练次数趋势')
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
 
       // 简易柱状图
       Column({ space: 8 }) {
@@ -284,7 +287,7 @@ export struct StatsPage {
           ForEach(this.stats?.dailyStats ?? [], (dayStat: DailyStatsModel) => {
             Text(this.formatDateLabel(dayStat.date))
               .fontSize(10)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
               .layoutWeight(1)
               .textAlign(TextAlign.Center)
           })
@@ -293,13 +296,13 @@ export struct StatsPage {
       }
       .width('100%')
       .padding(12)
-      .backgroundColor('#F9F9F9')
+      .backgroundColor($r('app.color.card_background_secondary'))
       .borderRadius(8)
     }
     .width('100%')
     .padding(16)
     .margin({ left: 16, right: 16 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -312,14 +315,14 @@ export struct StatsPage {
         .width(30)
         .height(dayStat.trainingCount > 0 ?
           (dayStat.duration > 0 ? Math.min(100, dayStat.duration) : 20) : 0)
-        .backgroundColor(dayStat.trainingCount > 0 ? '#007AFF' : '#E0E0E0')
+        .backgroundColor(dayStat.trainingCount > 0 ? $r('app.color.brand_primary') : $r('app.color.outline'))
         .borderRadius(4)
 
       // 数值标签
       if (dayStat.trainingCount > 0) {
         Text(dayStat.trainingCount.toString())
           .fontSize(10)
-          .fontColor('#666666')
+          .fontColor($r('app.color.text_secondary'))
           .margin({ top: 4 })
       }
     }
@@ -333,6 +336,7 @@ export struct StatsPage {
       Text('肌肉部位训练分布')
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
 
       Column({ space: 8 }) {
         ForEach(this.muscleGroupStats, (muscleGroupStat: MuscleGroupStatsModel) => {
@@ -344,7 +348,7 @@ export struct StatsPage {
     .width('100%')
     .padding(16)
     .margin({ left: 16, right: 16 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -354,7 +358,7 @@ export struct StatsPage {
     Row({ space: 12 }) {
       Text(muscleGroupStat.muscleGroup)
         .fontSize(14)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
         .width(60)
 
       // 进度条
@@ -367,12 +371,12 @@ export struct StatsPage {
       }
       .layoutWeight(1)
       .height(8)
-      .backgroundColor('#E0E0E0')
+      .backgroundColor($r('app.color.outline'))
       .borderRadius(4)
 
       Text(muscleGroupStat.trainingCount.toString() + '次')
         .fontSize(12)
-        .fontColor('#666666')
+        .fontColor($r('app.color.text_secondary'))
         .width(40)
         .textAlign(TextAlign.End)
     }

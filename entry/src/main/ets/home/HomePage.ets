@@ -102,6 +102,7 @@ struct HomePage {
           .barMode(BarMode.Fixed)
           .scrollable(false)
           .animationDuration(0)
+          .barBackgroundColor($r('app.color.card_background'))
           .onChange((index: number) => {
             this.currentIndex = index
           })
@@ -110,6 +111,7 @@ struct HomePage {
         }
         .width('100%')
         .height('100%')
+        .backgroundColor($r('app.color.page_background'))
       }
     }
     .width('100%')
@@ -131,7 +133,7 @@ struct HomePage {
 
       Text(item.title)
         .fontSize(12)
-        .fontColor(this.currentIndex === item.index ? '#007AFF' : '#666666')
+        .fontColor(this.currentIndex === item.index ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
         .fontWeight(this.currentIndex === item.index ? FontWeight.Medium : FontWeight.Normal)
     }
     .width('100%')

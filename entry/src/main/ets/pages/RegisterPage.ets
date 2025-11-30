@@ -101,13 +101,13 @@ export struct RegisterPage {
             Column({ space: 8 }) {
               Text('用户名')
                 .fontSize(14)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width('100%')
 
               TextInput({ placeholder: '请输入用户名（至少4个字符）' })
                 .width('100%')
                 .height(48)
-                .backgroundColor(Color.White)
+                .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
                 .onChange((value: string) => {
                   this.username = value;
@@ -120,14 +120,14 @@ export struct RegisterPage {
             Column({ space: 8 }) {
               Text('密码')
                 .fontSize(14)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width('100%')
 
               TextInput({ placeholder: '请输入密码（至少6个字符）' })
                 .width('100%')
                 .height(48)
                 .type(InputType.Password)
-                .backgroundColor(Color.White)
+                .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
                 .onChange((value: string) => {
                   this.password = value;
@@ -140,14 +140,14 @@ export struct RegisterPage {
             Column({ space: 8 }) {
               Text('确认密码')
                 .fontSize(14)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width('100%')
 
               TextInput({ placeholder: '请再次输入密码' })
                 .width('100%')
                 .height(48)
                 .type(InputType.Password)
-                .backgroundColor(Color.White)
+                .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
                 .onChange((value: string) => {
                   this.confirmPassword = value;
@@ -160,13 +160,13 @@ export struct RegisterPage {
             Column({ space: 8 }) {
               Text('昵称')
                 .fontSize(14)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width('100%')
 
               TextInput({ placeholder: '请输入昵称' })
                 .width('100%')
                 .height(48)
-                .backgroundColor(Color.White)
+                .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
                 .onChange((value: string) => {
                   this.nickname = value;
@@ -179,13 +179,13 @@ export struct RegisterPage {
             Column({ space: 8 }) {
               Text('邮箱（可选）')
                 .fontSize(14)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width('100%')
 
               TextInput({ placeholder: '请输入邮箱' })
                 .width('100%')
                 .height(48)
-                .backgroundColor(Color.White)
+                .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
                 .onChange((value: string) => {
                   this.email = value;
@@ -199,7 +199,7 @@ export struct RegisterPage {
               .width('100%')
               .height(48)
               .fontSize(16)
-              .backgroundColor('#007AFF')
+              .backgroundColor($r('app.color.brand_primary'))
               .borderRadius(8)
               .margin({ top: 20 })
               .opacity((this.username.length > 0 && this.password.length > 0 &&
@@ -218,11 +218,11 @@ export struct RegisterPage {
           Row({ space: 4 }) {
             Text('已有账号？')
               .fontSize(14)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
 
             Text('立即登录')
               .fontSize(14)
-              .fontColor('#007AFF')
+              .fontColor($r('app.color.brand_primary'))
               .fontWeight(FontWeight.Medium)
               .onClick(() => {
                 this.pathStack.pop();
@@ -234,6 +234,7 @@ export struct RegisterPage {
         .alignItems(HorizontalAlign.Center)
       }
       .layoutWeight(1)
+      .backgroundColor($r('app.color.page_background'))
     }
     .title('注册')
     .onReady((context: NavDestinationContext) => {

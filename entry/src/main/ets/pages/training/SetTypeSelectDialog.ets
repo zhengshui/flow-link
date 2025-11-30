@@ -17,7 +17,7 @@ export struct SetTypeSelectDialog {
         Text('选择组类型')
           .fontSize(17)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1A1A1A')
+          .fontColor($r('app.color.text_primary'))
           .width('100%')
           .textAlign(TextAlign.Center)
           .padding({ top: 20, bottom: 16 })
@@ -26,12 +26,12 @@ export struct SetTypeSelectDialog {
           // 热身选项
           this.SetTypeOption('热身', '🔥', SetTypeConst.WARMUP, '#E67E22', '低强度，准备肌肉')
 
-          Divider().color('#F0F0F0').margin({ left: 20, right: 20 })
+          Divider().color($r('app.color.outline')).margin({ left: 20, right: 20 })
 
           // 正式选项
           this.SetTypeOption('正式', '💪', SetTypeConst.WORKING, '#3498DB', '主要训练组')
 
-          Divider().color('#F0F0F0').margin({ left: 20, right: 20 })
+          Divider().color($r('app.color.outline')).margin({ left: 20, right: 20 })
 
           // 放松选项
           this.SetTypeOption('放松', '🧘', SetTypeConst.COOLDOWN, '#27AE60', '低强度，恢复肌肉')
@@ -43,8 +43,8 @@ export struct SetTypeSelectDialog {
           .width('100%')
           .height(50)
           .fontSize(16)
-          .fontColor('#666666')
-          .backgroundColor('#F5F5F5')
+          .fontColor($r('app.color.text_secondary'))
+          .backgroundColor($r('app.color.card_background_secondary'))
           .borderRadius({ topLeft: 0, topRight: 0, bottomLeft: 16, bottomRight: 16 })
           .margin({ top: 8 })
           .onClick((): void => {
@@ -52,12 +52,12 @@ export struct SetTypeSelectDialog {
           })
       }
       .width('85%')
-      .backgroundColor(Color.White)
+      .backgroundColor($r('app.color.card_background'))
       .borderRadius(16)
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0, 0, 0, 0.4)')
+    .backgroundColor($r('app.color.overlay_background'))
     .justifyContent(FlexAlign.Center)
     .onClick((): void => {
       this.onCancel();
@@ -75,11 +75,11 @@ export struct SetTypeSelectDialog {
           Text(title)
             .fontSize(16)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#1A1A1A')
+            .fontColor($r('app.color.text_primary'))
 
           Text(description)
             .fontSize(12)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .alignItems(HorizontalAlign.Start)
       }
@@ -95,10 +95,9 @@ export struct SetTypeSelectDialog {
     .height(60)
     .padding({ left: 20, right: 20 })
     .justifyContent(FlexAlign.SpaceBetween)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor($r('app.color.card_background'))
     .onClick((): void => {
       this.onSelect(setType);
     })
   }
 }
-

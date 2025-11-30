@@ -58,12 +58,13 @@ export struct AddTrainingPage {
             Row() {
               Text('训练标题')
                 .fontSize(14)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width(100)
 
               TextInput({ placeholder: '例如：胸部训练' })
                 .layoutWeight(1)
                 .backgroundColor(Color.Transparent)
+                .fontColor($r('app.color.text_primary'))
                 .onChange((value: string) => {
                   this.title = value;
                 })
@@ -73,34 +74,35 @@ export struct AddTrainingPage {
             .padding({ left: 16, right: 16 })
             .alignItems(VerticalAlign.Center)
 
-            Divider().color('#F0F0F0')
+            Divider().color($r('app.color.outline'))
 
             Row() {
               Text('日期')
                 .fontSize(14)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width(100)
 
               Text(this.date)
                 .fontSize(16)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
             }
             .width('100%')
             .height(56)
             .padding({ left: 16, right: 16 })
             .alignItems(VerticalAlign.Center)
 
-            Divider().color('#F0F0F0')
+            Divider().color($r('app.color.outline'))
 
             Row() {
               Text('时长(分钟)')
                 .fontSize(14)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width(100)
 
               TextInput({ placeholder: '输入训练时长' })
                 .layoutWeight(1)
                 .backgroundColor(Color.Transparent)
+                .fontColor($r('app.color.text_primary'))
                 .type(InputType.Number)
                 .onChange((value: string) => {
                   this.duration = value;
@@ -112,22 +114,22 @@ export struct AddTrainingPage {
             .alignItems(VerticalAlign.Center)
           }
           .width('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
           .margin({ top: 16 })
 
           Column({ space: 16 }) {
             Text('训练状态')
               .fontSize(14)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_primary'))
               .width('100%')
 
             Row({ space: 8 }) {
               ForEach(['良好', '一般', '疲劳'], (moodItem: string) => {
                 Text(moodItem)
                   .fontSize(14)
-                  .fontColor(this.mood === moodItem ? Color.White : '#666666')
-                  .backgroundColor(this.mood === moodItem ? '#007AFF' : '#F0F0F0')
+                  .fontColor(this.mood === moodItem ? Color.White : $r('app.color.text_secondary'))
+                  .backgroundColor(this.mood === moodItem ? $r('app.color.brand_primary') : $r('app.color.outline'))
                   .padding({ left: 16, right: 16, top: 8, bottom: 8 })
                   .borderRadius(16)
                   .onClick(() => {
@@ -138,20 +140,21 @@ export struct AddTrainingPage {
           }
           .width('100%')
           .padding(16)
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
           .alignItems(HorizontalAlign.Start)
 
           Column({ space: 12 }) {
             Text('备注')
               .fontSize(14)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_primary'))
               .width('100%')
 
             TextArea({ placeholder: '记录今天的训练感受...' })
               .width('100%')
               .height(120)
-              .backgroundColor(Color.White)
+              .backgroundColor($r('app.color.card_background'))
+              .fontColor($r('app.color.text_primary'))
               .borderRadius(8)
               .onChange((value: string) => {
                 this.notes = value;
@@ -159,7 +162,7 @@ export struct AddTrainingPage {
           }
           .width('100%')
           .padding(16)
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
           .alignItems(HorizontalAlign.Start)
 
@@ -170,6 +173,7 @@ export struct AddTrainingPage {
         .padding(16)
       }
       .layoutWeight(1)
+      .backgroundColor($r('app.color.page_background'))
     }
     .title('添加训练记录')
     .menus([

@@ -66,7 +66,7 @@ export struct ExerciseDetailPage {
           Column() {
             Text('动作不存在')
               .fontSize(16)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .width('100%')
           .layoutWeight(1)
@@ -76,7 +76,7 @@ export struct ExerciseDetailPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#F5F5F5')
+      .backgroundColor($r('app.color.page_background'))
     }
     .title(this.action?.name ?? '动作详情')
     .onReady((context: NavDestinationContext) => {
@@ -104,7 +104,7 @@ export struct ExerciseDetailPage {
       }
       .width('100%')
       .height(200)
-      .backgroundColor('#E8E8E8')
+      .backgroundColor($r('app.color.outline'))
       .borderRadius(12)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
@@ -114,12 +114,12 @@ export struct ExerciseDetailPage {
 
       Text(this.action?.englishName ?? '')
         .fontSize(14)
-        .fontColor('#666666')
+        .fontColor($r('app.color.text_secondary'))
         .textAlign(TextAlign.Center)
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Center)
   }
@@ -130,6 +130,7 @@ export struct ExerciseDetailPage {
       Text('基本信息')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
 
       // 信息卡片
       Row({ space: 12 }) {
@@ -137,14 +138,14 @@ export struct ExerciseDetailPage {
           Text(this.action?.muscleGroup ?? '')
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
           Text('目标肌群')
             .fontSize(11)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
         .padding(12)
-        .backgroundColor('#F9F9F9')
+        .backgroundColor($r('app.color.card_background_secondary'))
         .borderRadius(8)
         .alignItems(HorizontalAlign.Center)
 
@@ -155,11 +156,11 @@ export struct ExerciseDetailPage {
             .fontColor(this.getDifficultyColor(this.action?.difficulty ?? ''))
           Text('难度等级')
             .fontSize(11)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
         .padding(12)
-        .backgroundColor('#F9F9F9')
+        .backgroundColor($r('app.color.card_background_secondary'))
         .borderRadius(8)
         .alignItems(HorizontalAlign.Center)
 
@@ -167,14 +168,14 @@ export struct ExerciseDetailPage {
           Text(this.action?.equipment ?? '无')
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#FF9800')
+            .fontColor($r('app.color.color_warning'))
           Text('所需器械')
             .fontSize(11)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
         .padding(12)
-        .backgroundColor('#F9F9F9')
+        .backgroundColor($r('app.color.card_background_secondary'))
         .borderRadius(8)
         .alignItems(HorizontalAlign.Center)
       }
@@ -182,7 +183,7 @@ export struct ExerciseDetailPage {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -193,15 +194,16 @@ export struct ExerciseDetailPage {
       Text('动作说明')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
 
       Text(this.action?.description ?? '')
         .fontSize(14)
-        .fontColor('#666666')
+        .fontColor($r('app.color.text_secondary'))
         .lineHeight(22)
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -212,6 +214,7 @@ export struct ExerciseDetailPage {
       Text('动作步骤')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
 
       Column({ space: 12 }) {
         ForEach(this.action?.steps ?? [], (step: string, index: number) => {
@@ -222,7 +225,7 @@ export struct ExerciseDetailPage {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }
@@ -239,7 +242,7 @@ export struct ExerciseDetailPage {
       }
       .width(32)
       .height(32)
-      .backgroundColor('#007AFF')
+      .backgroundColor($r('app.color.brand_primary'))
       .borderRadius(16)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
@@ -247,7 +250,7 @@ export struct ExerciseDetailPage {
       // 步骤内容
       Text(step)
         .fontSize(14)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
         .lineHeight(22)
         .layoutWeight(1)
     }
@@ -261,18 +264,19 @@ export struct ExerciseDetailPage {
       Text('注意事项')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
 
       Column({ space: 8 }) {
         ForEach(this.action?.tips ?? [], (tip: string) => {
           Row({ space: 8 }) {
             Text('•')
               .fontSize(16)
-              .fontColor('#FF9800')
+              .fontColor($r('app.color.color_warning'))
               .fontWeight(FontWeight.Bold)
 
             Text(tip)
               .fontSize(14)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
               .lineHeight(22)
               .layoutWeight(1)
           }
@@ -284,7 +288,7 @@ export struct ExerciseDetailPage {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
   }

@@ -351,10 +351,10 @@ export struct RecordPage {
             LoadingProgress()
               .width(40)
               .height(40)
-              .color('#007AFF')
+              .color($r('app.color.brand_primary'))
             Text('加载中...')
               .fontSize(14)
-              .fontColor('#999999')
+              .fontColor($r('app.color.text_hint'))
           }
           .width('100%')
           .layoutWeight(1)
@@ -378,7 +378,7 @@ export struct RecordPage {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#F5F5F5')
+      .backgroundColor($r('app.color.page_background'))
       // 顶部状态栏避让
       .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
 
@@ -397,7 +397,7 @@ export struct RecordPage {
       // 上月按钮
       Text('<')
         .fontSize(20)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
         .fontWeight(FontWeight.Medium)
         .width(40)
         .height(40)
@@ -411,7 +411,7 @@ export struct RecordPage {
         Text(this.currentYear.toString() + '年' + this.currentMonth.toString() + '月')
           .fontSize(18)
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_primary'))
       }
       .layoutWeight(1)
       .justifyContent(FlexAlign.Center)
@@ -422,7 +422,7 @@ export struct RecordPage {
       // 下月按钮
       Text('>')
         .fontSize(20)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
         .fontWeight(FontWeight.Medium)
         .width(40)
         .height(40)
@@ -434,7 +434,7 @@ export struct RecordPage {
     .width('100%')
     .height(56)
     .padding({ left: 8, right: 8 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
   }
 
   @Builder
@@ -443,14 +443,14 @@ export struct RecordPage {
       ForEach(this.weekDays, (day: string, index: number) => {
         Text(day)
           .fontSize(13)
-          .fontColor(index === 0 || index === 6 ? '#F44336' : '#666666')
+          .fontColor(index === 0 || index === 6 ? $r('app.color.color_danger') : $r('app.color.text_secondary'))
           .width('14.28%')
           .textAlign(TextAlign.Center)
           .padding({ top: 12, bottom: 8 })
       })
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
   }
 
   @Builder
@@ -467,7 +467,7 @@ export struct RecordPage {
       })
     }
     .width('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
   }
 
@@ -477,13 +477,13 @@ export struct RecordPage {
       // 日期数字
       Text(day.day.toString())
         .fontSize(14)
-        .fontColor(day.isCurrentMonth ? (day.isToday ? Color.White : '#333333') : '#CCCCCC')
+        .fontColor(day.isCurrentMonth ? (day.isToday ? Color.White : $r('app.color.text_primary')) : $r('app.color.text_placeholder'))
         .fontWeight(day.isToday ? FontWeight.Medium : FontWeight.Normal)
         .width(28)
         .height(28)
         .textAlign(TextAlign.Center)
         .borderRadius(14)
-        .backgroundColor(day.isToday ? '#007AFF' : Color.Transparent)
+        .backgroundColor(day.isToday ? $r('app.color.brand_primary') : Color.Transparent)
 
       // 训练信息
       if (day.records.length > 0 && day.isCurrentMonth) {
@@ -502,7 +502,7 @@ export struct RecordPage {
             .width('100%')
             .height(14)
             .padding({ left: 2, right: 2 })
-            .backgroundColor('#4CAF50')
+            .backgroundColor($r('app.color.color_success'))
             .borderRadius(3)
             .justifyContent(FlexAlign.Center)
           })
@@ -511,7 +511,7 @@ export struct RecordPage {
           if (day.records.length > 2) {
             Text('+' + (day.records.length - 2).toString())
               .fontSize(8)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
           }
         }
         .width('100%')
@@ -537,7 +537,7 @@ export struct RecordPage {
       Row() {
         Text('关闭')
           .fontSize(15)
-          .fontColor('#007AFF')
+          .fontColor($r('app.color.brand_primary'))
           .onClick(() => {
             this.showDetailDialog = false;
           })
@@ -547,7 +547,7 @@ export struct RecordPage {
         Text(this.selectedDay?.dateStr ?? '')
           .fontSize(17)
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_primary'))
 
         Blank()
 
@@ -555,7 +555,7 @@ export struct RecordPage {
         if (this.selectedDayRecords.length > 1) {
           Text((this.currentRecordIndex + 1).toString() + '/' + this.selectedDayRecords.length.toString())
             .fontSize(14)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
         } else {
           Text('')
             .fontSize(14)
@@ -565,7 +565,7 @@ export struct RecordPage {
       .width('100%')
       .height(56)
       .padding({ left: 16, right: 16 })
-      .backgroundColor(Color.White)
+      .backgroundColor($r('app.color.card_background'))
 
       // 记录详情 - Swiper 支持左右滑动
       if (this.selectedDayRecords.length > 1) {
@@ -593,7 +593,7 @@ export struct RecordPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor($r('app.color.page_background'))
   }
 
   @Builder
@@ -607,10 +607,10 @@ export struct RecordPage {
               Text(record.title)
                 .fontSize(20)
                 .fontWeight(FontWeight.Bold)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
               Text(this.extractTimeFromDateTime(record.startTime) + ' - ' + this.extractTimeFromDateTime(record.endTime))
                 .fontSize(13)
-                .fontColor('#999999')
+                .fontColor($r('app.color.text_hint'))
             }
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1)
@@ -636,7 +636,7 @@ export struct RecordPage {
         }
         .width('100%')
         .padding(16)
-        .backgroundColor(Color.White)
+        .backgroundColor($r('app.color.card_background'))
         .borderRadius(12)
 
         // 训练动作详情
@@ -645,7 +645,7 @@ export struct RecordPage {
             Text('训练动作')
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_primary'))
               .width('100%')
 
             ForEach(record.exercises, (exercise: ExerciseModel, index: number) => {
@@ -654,7 +654,7 @@ export struct RecordPage {
           }
           .width('100%')
           .padding(16)
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
         }
 
@@ -664,17 +664,17 @@ export struct RecordPage {
             Text('训练心得')
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#333333')
+              .fontColor($r('app.color.text_primary'))
               .width('100%')
 
             Text(record.notes)
               .fontSize(14)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
               .width('100%')
           }
           .width('100%')
           .padding(16)
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
           .alignItems(HorizontalAlign.Start)
         }
@@ -700,7 +700,7 @@ export struct RecordPage {
         .width(24)
         .height(24)
         .textAlign(TextAlign.Center)
-        .backgroundColor('#007AFF')
+        .backgroundColor($r('app.color.brand_primary'))
         .borderRadius(12)
 
       // 动作信息
@@ -708,18 +708,18 @@ export struct RecordPage {
         Text(exercise.name)
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_primary'))
 
         Row({ space: 16 }) {
           Text(exercise.sets.toString() + '组')
             .fontSize(13)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
           Text(exercise.reps.toString() + '次/组')
             .fontSize(13)
-            .fontColor('#666666')
+            .fontColor($r('app.color.text_secondary'))
           Text(exercise.weight.toString() + 'kg')
             .fontSize(13)
-            .fontColor('#007AFF')
+            .fontColor($r('app.color.brand_primary'))
             .fontWeight(FontWeight.Medium)
         }
       }
@@ -730,15 +730,15 @@ export struct RecordPage {
       if (exercise.muscleGroup.length > 0) {
         Text(exercise.muscleGroup)
           .fontSize(11)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-          .backgroundColor('#F5F5F5')
+          .backgroundColor($r('app.color.card_background_secondary'))
           .borderRadius(4)
       }
     }
     .width('100%')
     .padding(12)
-    .backgroundColor('#F9F9F9')
+    .backgroundColor($r('app.color.card_background_secondary'))
     .borderRadius(8)
   }
 
@@ -750,7 +750,7 @@ export struct RecordPage {
         .fontSize(14)
         .height(44)
         .layoutWeight(1)
-        .backgroundColor('#007AFF')
+        .backgroundColor($r('app.color.brand_primary'))
         .borderRadius(8)
         .onClick(() => {
           this.showDetailDialog = false;
@@ -763,7 +763,7 @@ export struct RecordPage {
         .fontSize(14)
         .height(44)
         .layoutWeight(1)
-        .backgroundColor('#4CAF50')
+        .backgroundColor($r('app.color.color_success'))
         .borderRadius(8)
         .onClick(() => {
           this.copyToToday(record);
@@ -774,7 +774,7 @@ export struct RecordPage {
         .fontSize(14)
         .height(44)
         .width(70)
-        .backgroundColor('#FF4444')
+        .backgroundColor($r('app.color.color_danger'))
         .borderRadius(8)
         .onClick(() => {
           promptAction.showDialog({
@@ -795,7 +795,7 @@ export struct RecordPage {
     }
     .width('100%')
     .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.08)', offsetX: 0, offsetY: -2 })
   }
 
@@ -808,11 +808,11 @@ export struct RecordPage {
         .fontColor(color)
       Text(label)
         .fontSize(10)
-        .fontColor('#999999')
+        .fontColor($r('app.color.text_hint'))
     }
     .layoutWeight(1)
     .padding(8)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(6)
     .alignItems(HorizontalAlign.Center)
   }

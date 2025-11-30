@@ -3,6 +3,70 @@
     {
       "name": "start_window_background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "page_background",
+      "value": "#F5F5F5"
+    },
+    {
+      "name": "card_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "card_background_secondary",
+      "value": "#F9F9F9"
+    },
+    {
+      "name": "text_primary",
+      "value": "#333333"
+    },
+    {
+      "name": "text_secondary",
+      "value": "#666666"
+    },
+    {
+      "name": "text_hint",
+      "value": "#999999"
+    },
+    {
+      "name": "text_placeholder",
+      "value": "#CCCCCC"
+    },
+    {
+      "name": "brand_primary",
+      "value": "#007AFF"
+    },
+    {
+      "name": "brand_primary_light",
+      "value": "#E3F2FF"
+    },
+    {
+      "name": "outline",
+      "value": "#E0E0E0"
+    },
+    {
+      "name": "color_success",
+      "value": "#34C759"
+    },
+    {
+      "name": "color_warning",
+      "value": "#FF9500"
+    },
+    {
+      "name": "color_danger",
+      "value": "#FF3B30"
+    },
+    {
+      "name": "color_info",
+      "value": "#5AC8FA"
+    },
+    {
+      "name": "color_accent",
+      "value": "#AF52DE"
+    },
+    {
+      "name": "overlay_background",
+      "value": "#80000000"
     }
   ]
 }

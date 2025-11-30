@@ -61,7 +61,7 @@ export struct ExercisePage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor($r('app.color.page_background'))
     // 顶部状态栏避让
     .padding({ top: this.getUIContext().px2vp(this.topRectHeight) })
   }
@@ -78,7 +78,7 @@ export struct ExercisePage {
     }
     .width(100)
     .height('100%')
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .scrollBar(BarState.Off)
   }
 
@@ -90,14 +90,14 @@ export struct ExercisePage {
 
       Text(group.name)
         .fontSize(12)
-        .fontColor(this.currentGroupIndex === index ? '#007AFF' : '#666666')
+        .fontColor(this.currentGroupIndex === index ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
         .fontWeight(this.currentGroupIndex === index ? FontWeight.Medium : FontWeight.Normal)
     }
     .width('100%')
     .height(80)
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor(this.currentGroupIndex === index ? '#E3F2FD' : Color.White)
+    .backgroundColor(this.currentGroupIndex === index ? $r('app.color.brand_primary_light') : $r('app.color.card_background'))
     .onClick(() => {
       this.switchMuscleGroup(index);
     })
@@ -112,11 +112,11 @@ export struct ExercisePage {
           Text(this.muscleGroups[this.currentGroupIndex]?.name ?? '')
             .fontSize(18)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#333333')
+            .fontColor($r('app.color.text_primary'))
           Blank()
           Text(this.currentActions.length.toString() + ' 个动作')
             .fontSize(13)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
         }
         .width('100%')
         .padding({ left: 16, right: 16, top: 16 })
@@ -134,7 +134,7 @@ export struct ExercisePage {
     }
     .layoutWeight(1)
     .height('100%')
-    .backgroundColor('#F5F5F5')
+    .backgroundColor($r('app.color.page_background'))
   }
 
   @Builder
@@ -147,7 +147,7 @@ export struct ExercisePage {
       }
       .width(80)
       .height(80)
-      .backgroundColor('#E8E8E8')
+      .backgroundColor($r('app.color.outline'))
       .borderRadius(8)
       .justifyContent(FlexAlign.Center)
       .alignItems(HorizontalAlign.Center)
@@ -157,11 +157,11 @@ export struct ExercisePage {
         Text(action.name)
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
-          .fontColor('#333333')
+          .fontColor($r('app.color.text_primary'))
 
         Text(action.englishName)
           .fontSize(12)
-          .fontColor('#999999')
+          .fontColor($r('app.color.text_hint'))
 
         Row({ space: 8 }) {
           Text(action.difficulty)
@@ -174,7 +174,7 @@ export struct ExercisePage {
           if (action.equipment.length > 0) {
             Text('器械: ' + action.equipment)
               .fontSize(11)
-              .fontColor('#666666')
+              .fontColor($r('app.color.text_secondary'))
           }
         }
       }
@@ -184,11 +184,11 @@ export struct ExercisePage {
       // 箭头图标
       Text('>')
         .fontSize(18)
-        .fontColor('#CCCCCC')
+        .fontColor($r('app.color.text_placeholder'))
     }
     .width('100%')
     .padding(12)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(VerticalAlign.Center)
     .onClick(() => {

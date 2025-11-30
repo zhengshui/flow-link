@@ -102,7 +102,7 @@ export struct ReminderSettingsPage {
             Row() {
               Text('启用训练提醒')
                 .fontSize(16)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .layoutWeight(1)
 
               Toggle({ type: ToggleType.Switch, isOn: this.reminderEnabled })
@@ -115,7 +115,7 @@ export struct ReminderSettingsPage {
             .padding({ left: 16, right: 16 })
           }
           .width('100%')
-          .backgroundColor(Color.White)
+          .backgroundColor($r('app.color.card_background'))
           .borderRadius(12)
           .margin({ left: 16, right: 16, top: 16 })
 
@@ -125,12 +125,12 @@ export struct ReminderSettingsPage {
               Row() {
                 Text('提醒时间')
                   .fontSize(16)
-                  .fontColor('#333333')
+                  .fontColor($r('app.color.text_primary'))
                   .layoutWeight(1)
 
                 Text(this.reminderTime)
                   .fontSize(16)
-                  .fontColor('#007AFF')
+                  .fontColor($r('app.color.brand_primary'))
                   .onClick((): void => {
                     toast('时间选择器功能开发中...');
                     // 实际应用中，这里应该弹出时间选择器
@@ -141,7 +141,7 @@ export struct ReminderSettingsPage {
               .padding({ left: 16, right: 16 })
             }
             .width('100%')
-            .backgroundColor(Color.White)
+            .backgroundColor($r('app.color.card_background'))
             .borderRadius(12)
             .margin({ left: 16, right: 16 })
 
@@ -149,13 +149,13 @@ export struct ReminderSettingsPage {
             Column({ space: 0 }) {
               Text('提醒日期')
                 .fontSize(16)
-                .fontColor('#333333')
+                .fontColor($r('app.color.text_primary'))
                 .width('100%')
                 .padding({ left: 16, top: 12, bottom: 12 })
 
               Divider()
                 .strokeWidth(0.5)
-                .color('#E0E0E0')
+                .color($r('app.color.outline'))
                 .margin({ left: 16, right: 16 })
 
               // 星期选择
@@ -164,12 +164,12 @@ export struct ReminderSettingsPage {
                   Column() {
                     Text(day)
                       .fontSize(14)
-                      .fontColor(this.reminderDays[index] ? Color.White : '#666666')
+                      .fontColor(this.reminderDays[index] ? Color.White : $r('app.color.text_secondary'))
                       .fontWeight(this.reminderDays[index] ? FontWeight.Medium : FontWeight.Normal)
                   }
                   .width(40)
                   .height(40)
-                  .backgroundColor(this.reminderDays[index] ? '#007AFF' : '#F0F0F0')
+                  .backgroundColor(this.reminderDays[index] ? $r('app.color.brand_primary') : $r('app.color.outline'))
                   .borderRadius(20)
                   .justifyContent(FlexAlign.Center)
                   .onClick((): void => {
@@ -182,7 +182,7 @@ export struct ReminderSettingsPage {
               .justifyContent(FlexAlign.SpaceBetween)
             }
             .width('100%')
-            .backgroundColor(Color.White)
+            .backgroundColor($r('app.color.card_background'))
             .borderRadius(12)
             .margin({ left: 16, right: 16 })
           }
@@ -190,7 +190,7 @@ export struct ReminderSettingsPage {
           // 提示信息
           Text('设置训练提醒可以帮助你养成良好的健身习惯')
             .fontSize(13)
-            .fontColor('#999999')
+            .fontColor($r('app.color.text_hint'))
             .width('100%')
             .padding({ left: 24, right: 24, top: 8 })
             .textAlign(TextAlign.Center)
@@ -201,7 +201,7 @@ export struct ReminderSettingsPage {
               .width('90%')
               .height(48)
               .fontSize(16)
-              .backgroundColor('#007AFF')
+              .backgroundColor($r('app.color.brand_primary'))
               .fontColor(Color.White)
               .borderRadius(8)
               .margin({ top: 16, bottom: 40 })
@@ -213,7 +213,7 @@ export struct ReminderSettingsPage {
         .width('100%')
       }
       .layoutWeight(1)
-      .backgroundColor('#F5F5F5')
+      .backgroundColor($r('app.color.page_background'))
     }
     .title('训练提醒')
     .onReady((context: NavDestinationContext) => {

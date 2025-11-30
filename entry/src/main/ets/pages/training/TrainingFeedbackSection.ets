@@ -13,7 +13,7 @@ export struct TrainingFeedbackSection {
       Text('训练状态')
         .fontSize(15)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1A1A1A')
+        .fontColor($r('app.color.text_primary'))
         .width('100%')
 
       Row({ space: 8 }) {
@@ -26,7 +26,7 @@ export struct TrainingFeedbackSection {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
     .borderRadius(16)
     .shadow({
       radius: 8,
@@ -46,20 +46,19 @@ export struct TrainingFeedbackSection {
       Text(mood)
         .fontSize(12)
         .fontWeight(FontWeight.Medium)
-        .fontColor(this.selectedMood === mood ? '#007AFF' : '#666666')
+        .fontColor(this.selectedMood === mood ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
     }
     .layoutWeight(1)
     .height(68)
     .justifyContent(FlexAlign.Center)
-    .backgroundColor(this.selectedMood === mood ? '#EBF5FF' : '#F8F9FA')
+    .backgroundColor(this.selectedMood === mood ? $r('app.color.brand_primary_light') : $r('app.color.card_background_secondary'))
     .borderRadius(12)
     .border({
       width: this.selectedMood === mood ? 2 : 0,
-      color: '#007AFF'
+      color: $r('app.color.brand_primary')
     })
     .onClick((): void => {
       this.onSelect(mood);
     })
   }
 }
-

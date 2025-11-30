@@ -204,7 +204,7 @@ export struct ProfileEditPage {
             .width('90%')
             .height(48)
             .fontSize(16)
-            .backgroundColor(this.isLoading ? '#CCCCCC' : '#007AFF')
+            .backgroundColor(this.isLoading ? $r('app.color.text_placeholder') : $r('app.color.brand_primary'))
             .fontColor(Color.White)
             .borderRadius(8)
             .margin({ top: 32, bottom: 40 })
@@ -216,7 +216,7 @@ export struct ProfileEditPage {
         .width('100%')
       }
       .layoutWeight(1)
-      .backgroundColor('#F5F5F5')
+      .backgroundColor($r('app.color.page_background'))
     }
     .title('编辑个人资料')
     .onReady((context: NavDestinationContext) => {
@@ -228,7 +228,7 @@ export struct ProfileEditPage {
   SectionTitle(title: string) {
     Text(title)
       .fontSize(13)
-      .fontColor('#999999')
+      .fontColor($r('app.color.text_hint'))
       .width('100%')
       .padding({ left: 16, top: 16, bottom: 8 })
   }
@@ -238,13 +238,13 @@ export struct ProfileEditPage {
     Row() {
       Text(label)
         .fontSize(16)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
         .width(100)
 
       TextInput({ text: value, placeholder: placeholder })
         .layoutWeight(1)
         .fontSize(16)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
         .backgroundColor(Color.Transparent)
         .type(isNumber ? InputType.Number : InputType.Normal)
         .onChange((value: string): void => {
@@ -254,7 +254,7 @@ export struct ProfileEditPage {
     .width('100%')
     .height(56)
     .padding({ left: 16, right: 16 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
   }
 
   @Builder
@@ -262,16 +262,16 @@ export struct ProfileEditPage {
     Row() {
       Text(label)
         .fontSize(16)
-        .fontColor('#333333')
+        .fontColor($r('app.color.text_primary'))
         .width(100)
 
       Row({ space: 8 }) {
         ForEach(options, (option: string) => {
           Text(option)
             .fontSize(14)
-            .fontColor(value === option ? Color.White : '#666666')
+            .fontColor(value === option ? Color.White : $r('app.color.text_secondary'))
             .padding({ left: 12, right: 12, top: 6, bottom: 6 })
-            .backgroundColor(value === option ? '#007AFF' : '#F0F0F0')
+            .backgroundColor(value === option ? $r('app.color.brand_primary') : $r('app.color.outline'))
             .borderRadius(6)
             .onClick((): void => {
               onChange(option);
@@ -284,14 +284,14 @@ export struct ProfileEditPage {
     .width('100%')
     .height(56)
     .padding({ left: 16, right: 16 })
-    .backgroundColor(Color.White)
+    .backgroundColor($r('app.color.card_background'))
   }
 
   @Builder
   ItemDivider() {
     Divider()
       .strokeWidth(0.5)
-      .color('#E0E0E0')
+      .color($r('app.color.outline'))
       .margin({ left: 16, right: 16 })
   }
 }
