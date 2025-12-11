@@ -4,7 +4,7 @@
  * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { ActionModel, MuscleGroupModel, ActionDataService, toast } from '@tbs/common';
+import { ActionModel, MuscleGroupModel, ActionDataService, toast, MuscleGroupConst } from '@tbs/common';
 
 const MAX_SELECT_COUNT: number = 5;
 
@@ -137,6 +137,32 @@ export struct ActionSelectPage {
   build() {
     NavDestination() {
       Column() {
+        // 自定义标题栏
+        Row() {
+          SymbolGlyph($r('sys.symbol.xmark'))
+            .fontSize(24)
+            .fontColor([$r('app.color.text_primary')])
+            .onClick(() => {
+              this.pathStack.pop();
+            })
+
+          Text('选择动作')
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+
+          // 已选数量显示
+          Text(this.selectedActions.length.toString() + '/' + MAX_SELECT_COUNT.toString())
+            .fontSize(14)
+            .fontColor($r('app.color.text_secondary'))
+        }
+        .width('100%')
+        .height(65)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight), bottom: 8 })
+        .backgroundColor($r('app.color.card_background'))
+
         // 主内容区域 - 左右布局
         Row() {
           // 左侧：肌肉部位列表
@@ -155,13 +181,7 @@ export struct ActionSelectPage {
       .height('100%')
       .backgroundColor($r('app.color.page_background'))
     }
-    .title('选择动作')
-    .menus([
-      {
-        value: this.selectedActions.length.toString() + '/' + MAX_SELECT_COUNT.toString(),
-        action: (): void => {}
-      }
-    ])
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
     })
@@ -186,8 +206,11 @@ export struct ActionSelectPage {
   @Builder
   MuscleGroupItem(group: MuscleGroupModel, index: number) {
     Column({ space: 4 }) {
-      Text(group.icon)
-        .fontSize(24)
+      Image(MuscleGroupConst.getImageIcon(group.id))
+        .width(36)
+        .height(36)
+        .objectFit(ImageFit.Contain)
+        .borderRadius(6)
 
       Text(group.name)
         .fontSize(12)
@@ -198,7 +221,6 @@ export struct ActionSelectPage {
     .height(80)
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor(this.currentGroupIndex === index ? $r('app.color.brand_primary_light') : $r('app.color.card_background'))
     .onClick(() => {
       this.switchMuscleGroup(index);
     })

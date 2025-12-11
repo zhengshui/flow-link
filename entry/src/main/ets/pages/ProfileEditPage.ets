@@ -152,11 +152,36 @@ export struct ProfileEditPage {
 
   build() {
     NavDestination() {
-      // 表单内容
-      Scroll() {
-        Column({ space: 0 }) {
-          // 基本信息
-          this.SectionTitle('基本信息')
+      Column() {
+        // 自定义标题栏
+        Row() {
+          SymbolGlyph($r('sys.symbol.chevron_left'))
+            .fontSize(24)
+            .fontColor([$r('app.color.text_primary')])
+            .onClick(() => {
+              this.pathStack.pop();
+            })
+
+          Text('编辑个人资料')
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+
+          // 占位，保持标题居中
+          Column().width(24)
+        }
+        .width('100%')
+        .height(65)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
+        .backgroundColor($r('app.color.card_background'))
+
+        // 表单内容
+        Scroll() {
+          Column({ space: 0 }) {
+            // 基本信息
+            this.SectionTitle('基本信息')
           this.InputItem('昵称', this.nickname, (value: string): void => {
             this.nickname = value;
           }, '请输入昵称')
@@ -212,13 +237,17 @@ export struct ProfileEditPage {
             .onClick((): void => {
               this.saveUserInfo();
             })
+          }
+          .width('100%')
         }
-        .width('100%')
+        .layoutWeight(1)
+        .backgroundColor($r('app.color.page_background'))
       }
-      .layoutWeight(1)
+      .width('100%')
+      .height('100%')
       .backgroundColor($r('app.color.page_background'))
     }
-    .title('编辑个人资料')
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
     })

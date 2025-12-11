@@ -6,4 +6,8 @@ export { SessionSetRow } from './SessionSetRow';
 export { SessionExerciseCard } from './SessionExerciseCard';
 export { SetTypeSelectDialog } from './SetTypeSelectDialog';
 export { TrainingFeedbackSection } from './TrainingFeedbackSection';
-
+export { TrainingTopBar, TrainingTopBarParams, TrainingTopBarCallbacks } from './TrainingTopBar';
+export { TrainingBottomBar } from './TrainingBottomBar';
+export { NoteDialog } from './NoteDialog';
+export { TimeEditDialog } from './TimeEditDialog';
+export { TrainingEmptyState } from './TrainingEmptyState';

@@ -17,7 +17,7 @@ export class ActionDataService {
       MuscleGroupConst.CHEST,
       MuscleGroupConst.getChineseName(MuscleGroupConst.CHEST),
       'Chest',
-      MuscleGroupConst.getIcon(MuscleGroupConst.CHEST),
+      '',
       ActionDataService.getChestActions()
     ));
 
@@ -26,7 +26,7 @@ export class ActionDataService {
       MuscleGroupConst.BACK,
       MuscleGroupConst.getChineseName(MuscleGroupConst.BACK),
       'Back',
-      MuscleGroupConst.getIcon(MuscleGroupConst.BACK),
+      '',
       ActionDataService.getBackActions()
     ));
 
@@ -35,7 +35,7 @@ export class ActionDataService {
       MuscleGroupConst.LEGS,
       MuscleGroupConst.getChineseName(MuscleGroupConst.LEGS),
       'Legs',
-      MuscleGroupConst.getIcon(MuscleGroupConst.LEGS),
+      '',
       ActionDataService.getLegsActions()
     ));
 
@@ -44,7 +44,7 @@ export class ActionDataService {
       MuscleGroupConst.SHOULDERS,
       MuscleGroupConst.getChineseName(MuscleGroupConst.SHOULDERS),
       'Shoulders',
-      MuscleGroupConst.getIcon(MuscleGroupConst.SHOULDERS),
+      '',
       ActionDataService.getShouldersActions()
     ));
 
@@ -53,7 +53,7 @@ export class ActionDataService {
       MuscleGroupConst.BICEPS,
       MuscleGroupConst.getChineseName(MuscleGroupConst.BICEPS),
       'Biceps',
-      MuscleGroupConst.getIcon(MuscleGroupConst.BICEPS),
+      '',
       ActionDataService.getBicepsActions()
     ));
 
@@ -62,7 +62,7 @@ export class ActionDataService {
       MuscleGroupConst.TRICEPS,
       MuscleGroupConst.getChineseName(MuscleGroupConst.TRICEPS),
       'Triceps',
-      MuscleGroupConst.getIcon(MuscleGroupConst.TRICEPS),
+      '',
       ActionDataService.getTricepsActions()
     ));
 
@@ -71,7 +71,7 @@ export class ActionDataService {
       MuscleGroupConst.CALVES,
       MuscleGroupConst.getChineseName(MuscleGroupConst.CALVES),
       'Calves',
-      MuscleGroupConst.getIcon(MuscleGroupConst.CALVES),
+      '',
       ActionDataService.getCalvesActions()
     ));
 
@@ -80,7 +80,7 @@ export class ActionDataService {
       MuscleGroupConst.GLUTES,
       MuscleGroupConst.getChineseName(MuscleGroupConst.GLUTES),
       'Glutes',
-      MuscleGroupConst.getIcon(MuscleGroupConst.GLUTES),
+      '',
       ActionDataService.getGlutesActions()
     ));
 
@@ -89,7 +89,7 @@ export class ActionDataService {
       MuscleGroupConst.ABS,
       MuscleGroupConst.getChineseName(MuscleGroupConst.ABS),
       'Abs',
-      MuscleGroupConst.getIcon(MuscleGroupConst.ABS),
+      '',
       ActionDataService.getAbsActions()
     ));
 

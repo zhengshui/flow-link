@@ -3,7 +3,7 @@
  * 按肌肉部位分组显示训练动作，左右布局
  */
 
-import { ActionModel, MuscleGroupModel, ActionDataService, RouterManager, NavRoutes, NavRouteParams } from '@tbs/common';
+import { ActionModel, MuscleGroupModel, MuscleGroupConst, ActionDataService, RouterManager, NavRoutes, NavRouteParams } from '@tbs/common';
 
 @Component
 export struct ExercisePage {
@@ -85,9 +85,12 @@ export struct ExercisePage {
   @Builder
   MuscleGroupItem(group: MuscleGroupModel, index: number) {
     Column({ space: 4 }) {
-      // 肌肉部位图标
-      Text(group.icon)
-        .fontSize(22)
+      // 肌肉部位图片
+      Image(MuscleGroupConst.getImageIcon(group.id))
+        .width(36)
+        .height(36)
+        .objectFit(ImageFit.Contain)
+        .borderRadius(6)
 
       Text(group.name)
         .fontSize(12)
@@ -142,17 +145,12 @@ export struct ExercisePage {
   @Builder
   ActionItem(action: ActionModel) {
     Row({ space: 12 }) {
-      // 动作缩略图 - 使用肌群对应图标
-      Column() {
-        Text(this.getMuscleGroupIcon(action.muscleGroup))
-          .fontSize(28)
-      }
-      .width(56)
-      .height(56)
-      .backgroundColor(this.getMuscleGroupColor(action.muscleGroup))
-      .borderRadius(12)
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Center)
+      // 动作缩略图 - 使用肌群对应图片
+      Image(this.getMuscleGroupImageIcon(action.muscleGroup))
+        .width(56)
+        .height(56)
+        .objectFit(ImageFit.Cover)
+        .borderRadius(12)
 
       // 动作信息
       Column({ space: 4 }) {
@@ -213,68 +211,28 @@ export struct ExercisePage {
   }
 
   /**
-   * 获取难度等级背景色（较浅）
+   * 根据肌肉部位中文名称获取对应图片资源
    */
-  getDifficultyBgColor(difficulty: string): string {
-    if (difficulty === '初级') {
-      return '#66BB6A';
-    } else if (difficulty === '中级') {
-      return '#FFA726';
-    } else if (difficulty === '高级') {
-      return '#EF5350';
-    }
-    return '#BDBDBD';
-  }
-
-  /**
-   * 根据肌肉部位名称获取对应图标
-   */
-  getMuscleGroupIcon(muscleGroup: string): string {
+  getMuscleGroupImageIcon(muscleGroup: string): Resource {
     if (muscleGroup === '胸肌') {
-      return '💪';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.CHEST);
     } else if (muscleGroup === '背肌') {
-      return '🦾';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.BACK);
     } else if (muscleGroup === '腿部') {
-      return '🦵';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.LEGS);
     } else if (muscleGroup === '肩部') {
-      return '🤸';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.SHOULDERS);
     } else if (muscleGroup === '二头肌') {
-      return '💪';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.BICEPS);
     } else if (muscleGroup === '三头肌') {
-      return '💪';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.TRICEPS);
     } else if (muscleGroup === '小腿') {
-      return '🦿';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.CALVES);
     } else if (muscleGroup === '臀部') {
-      return '🍑';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.GLUTES);
     } else if (muscleGroup === '腹肌') {
-      return '🎯';
+      return MuscleGroupConst.getImageIcon(MuscleGroupConst.ABS);
     }
-    return '💪';
-  }
-
-  /**
-   * 根据肌肉部位名称获取对应背景色
-   */
-  getMuscleGroupColor(muscleGroup: string): string {
-    if (muscleGroup === '胸肌') {
-      return '#E57373'; // 红色系
-    } else if (muscleGroup === '背肌') {
-      return '#64B5F6'; // 蓝色系
-    } else if (muscleGroup === '腿部') {
-      return '#81C784'; // 绿色系
-    } else if (muscleGroup === '肩部') {
-      return '#FFB74D'; // 橙色系
-    } else if (muscleGroup === '二头肌') {
-      return '#BA68C8'; // 紫色系
-    } else if (muscleGroup === '三头肌') {
-      return '#9575CD'; // 深紫色系
-    } else if (muscleGroup === '小腿') {
-      return '#4DB6AC'; // 青色系
-    } else if (muscleGroup === '臀部') {
-      return '#F06292'; // 粉色系
-    } else if (muscleGroup === '腹肌') {
-      return '#FFD54F'; // 黄色系
-    }
-    return '#90A4AE'; // 默认灰色
+    return MuscleGroupConst.getImageIcon(MuscleGroupConst.CHEST);
   }
 }

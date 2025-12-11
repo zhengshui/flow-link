@@ -109,29 +109,30 @@ export class MuscleGroupConst {
   }
 
   /**
-   * 获取肌肉部位图标
+   * 获取肌肉部位图片图标资源
    */
-  static getIcon(id: string): string {
+  static getImageIcon(id: string): Resource {
     if (id === MuscleGroupConst.CHEST) {
-      return '💪';
+      return $r('app.media.chest');
     } else if (id === MuscleGroupConst.BACK) {
-      return '🦾';
+      return $r('app.media.back');
     } else if (id === MuscleGroupConst.LEGS) {
-      return '🦵';
+      return $r('app.media.legs');
     } else if (id === MuscleGroupConst.SHOULDERS) {
-      return '🤸';
+      return $r('app.media.shoulders');
     } else if (id === MuscleGroupConst.BICEPS) {
-      return '💪';
+      return $r('app.media.biceps');
     } else if (id === MuscleGroupConst.TRICEPS) {
-      return '💪';
+      return $r('app.media.triceps');
     } else if (id === MuscleGroupConst.CALVES) {
-      return '🦿';
+      return $r('app.media.calves');
     } else if (id === MuscleGroupConst.GLUTES) {
-      return '🍑';
+      return $r('app.media.glutes');
     } else if (id === MuscleGroupConst.ABS) {
-      return '🎯';
+      return $r('app.media.abs');
     }
-    return '💪';
+    // 默认返回胸肌图片
+    return $r('app.media.chest');
   }
 }
 

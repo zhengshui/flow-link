@@ -52,11 +52,40 @@ export struct AddTrainingPage {
 
   build() {
     NavDestination() {
-      Scroll() {
-        Column({ space: 16 }) {
-          Column({ space: 0 }) {
-            Row() {
-              Text('训练标题')
+      Column() {
+        // 自定义标题栏
+        Row() {
+          SymbolGlyph($r('sys.symbol.chevron_left'))
+            .fontSize(24)
+            .fontColor([$r('app.color.text_primary')])
+            .onClick(() => {
+              this.pathStack.pop();
+            })
+
+          Text('添加训练记录')
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+
+          Text('保存')
+            .fontSize(16)
+            .fontColor($r('app.color.brand_primary'))
+            .onClick(() => {
+              this.saveTraining();
+            })
+        }
+        .width('100%')
+        .height(56)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
+        .backgroundColor($r('app.color.card_background'))
+
+        Scroll() {
+          Column({ space: 16 }) {
+            Column({ space: 0 }) {
+              Row() {
+                Text('训练标题')
                 .fontSize(14)
                 .fontColor($r('app.color.text_primary'))
                 .width(100)
@@ -166,24 +195,20 @@ export struct AddTrainingPage {
           .borderRadius(12)
           .alignItems(HorizontalAlign.Start)
 
-          Column()
-            .height(40)
+            Column()
+              .height(40)
+          }
+          .width('100%')
+          .padding(16)
         }
-        .width('100%')
-        .padding(16)
+        .layoutWeight(1)
+        .backgroundColor($r('app.color.page_background'))
       }
-      .layoutWeight(1)
+      .width('100%')
+      .height('100%')
       .backgroundColor($r('app.color.page_background'))
     }
-    .title('添加训练记录')
-    .menus([
-      {
-        value: '保存',
-        action: (): void => {
-          this.saveTraining();
-        }
-      }
-    ])
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
     })

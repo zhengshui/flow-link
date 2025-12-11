@@ -31,6 +31,30 @@ export struct ExerciseDetailPage {
   build() {
     NavDestination() {
       Column() {
+        // 自定义标题栏
+        Row() {
+          SymbolGlyph($r('sys.symbol.chevron_left'))
+            .fontSize(24)
+            .fontColor([$r('app.color.text_primary')])
+            .onClick(() => {
+              this.pathStack.pop();
+            })
+
+          Text(this.action?.name ?? '动作详情')
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+
+          // 占位，保持标题居中
+          Column().width(24)
+        }
+        .width('100%')
+        .height(65)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
+        .backgroundColor($r('app.color.card_background'))
+
         if (this.action !== null) {
           // 主内容区域
           Scroll() {
@@ -78,7 +102,7 @@ export struct ExerciseDetailPage {
       .height('100%')
       .backgroundColor($r('app.color.page_background'))
     }
-    .title(this.action?.name ?? '动作详情')
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
       // 获取路由参数

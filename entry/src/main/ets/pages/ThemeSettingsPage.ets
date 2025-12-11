@@ -101,6 +101,30 @@ export struct ThemeSettingsPage {
   build() {
     NavDestination() {
       Column() {
+        // 自定义标题栏
+        Row() {
+          SymbolGlyph($r('sys.symbol.chevron_left'))
+            .fontSize(24)
+            .fontColor([$r('app.color.text_primary')])
+            .onClick(() => {
+              this.pathStack.pop();
+            })
+
+          Text('主题设置')
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+
+          // 占位，保持标题居中
+          Column().width(24)
+        }
+        .width('100%')
+        .height(65)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight), bottom: 8 })
+        .backgroundColor($r('app.color.card_background'))
+
         // 主题预览卡片
         Column({ space: 16 }) {
           Text('当前预览')
@@ -169,7 +193,7 @@ export struct ThemeSettingsPage {
       .height('100%')
       .backgroundColor($r('app.color.page_background'))
     }
-    .title('主题设置')
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
     })

@@ -21,7 +21,14 @@ import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 import {
   SessionExerciseCard,
   SetTypeSelectDialog,
-  TrainingFeedbackSection
+  TrainingFeedbackSection,
+  TrainingTopBar,
+  TrainingTopBarParams,
+  TrainingTopBarCallbacks,
+  TrainingBottomBar,
+  NoteDialog,
+  TimeEditDialog,
+  TrainingEmptyState
 } from './training/index';
 
 /**
@@ -625,13 +632,43 @@ export struct TrainingSessionPage {
     }).catch((): void => {});
   }
 
+  // ==================== 顶部栏回调 ====================
+
+  private getTopBarCallbacks(): TrainingTopBarCallbacks {
+    const callbacks: TrainingTopBarCallbacks = {
+      onClose: (): void => { this.pathStack.pop(); },
+      onTitleChange: (value: string): void => { this.session.title = value; },
+      onFinish: (): void => { this.finishTraining(); },
+      onTimeClick: (): void => { this.openTimeEditDialog(); },
+      onToggleTimer: (): void => { this.toggleTimer(); },
+      onResetTimer: (): void => { this.resetTimer(); }
+    };
+    return callbacks;
+  }
+
+  private getTopBarParams(): TrainingTopBarParams {
+    const params: TrainingTopBarParams = {
+      title: this.session.title,
+      currentTime: this.currentTime,
+      isRunning: this.session.isRunning,
+      totalSets: this.session.getTotalCompletedSets(),
+      completedExercises: this.session.getCompletedExercisesCount(),
+      totalVolume: this.session.getTotalVolume(),
+      topRectHeight: this.topRectHeight
+    };
+    return params;
+  }
+
   // ==================== UI 构建 ====================
 
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.Bottom }) {
         Column() {
-          this.TopBar()
+          TrainingTopBar({
+            params: this.getTopBarParams(),
+            callbacks: this.getTopBarCallbacks()
+          })
 
           if (this.isLoadingRecord) {
             // 加载训练记录中
@@ -652,7 +689,7 @@ export struct TrainingSessionPage {
             Scroll() {
               Column({ space: 16 }) {
                 if (this.session.exercises.length === 0) {
-                  this.EmptyState()
+                  TrainingEmptyState()
                 } else {
                   ForEach(this.session.exercises, (exercise: SessionExerciseModel, index: number) => {
                     SessionExerciseCard({
@@ -684,10 +721,18 @@ export struct TrainingSessionPage {
         .height('100%')
         .backgroundColor($r('app.color.page_background'))
 
-        this.BottomBar()
+        TrainingBottomBar({
+          bottomRectHeight: this.bottomRectHeight,
+          onAddExercise: (): void => { this.addExercise(); },
+          onShowNote: (): void => { this.showNoteInput(); }
+        })
 
         if (this.showNoteDialog) {
-          this.NoteDialog()
+          NoteDialog({
+            tempNote: this.tempNote,
+            onSave: (): void => { this.saveNote(); },
+            onCancel: (): void => { this.showNoteDialog = false; }
+          })
         }
 
         if (this.showSetTypeMenu) {
@@ -703,7 +748,13 @@ export struct TrainingSessionPage {
         }
 
         if (this.showTimeEditDialog) {
-          this.TimeEditDialog()
+          TimeEditDialog({
+            editHours: this.editHours,
+            editMinutes: this.editMinutes,
+            editSeconds: this.editSeconds,
+            onSave: (): void => { this.saveEditedTime(); },
+            onCancel: (): void => { this.showTimeEditDialog = false; }
+          })
         }
       }
       .width('100%')
@@ -740,344 +791,5 @@ export struct TrainingSessionPage {
     .onShown(() => {
       this.checkSelectedActions()
     })
-  }
-
-  @Builder
-  TopBar() {
-    Column({ space: 0 }) {
-      // 状态栏占位
-      Row()
-        .width('100%')
-        .height(this.getUIContext().px2vp(this.topRectHeight))
-
-      Row() {
-        // 关闭按钮
-        Button() {
-          SymbolGlyph($r('sys.symbol.xmark'))
-            .fontSize(18)
-            .fontColor([$r('app.color.text_secondary')])
-        }
-        .width(40)
-        .height(40)
-        .backgroundColor(Color.Transparent)
-        .onClick((): void => { this.pathStack.pop(); })
-
-        TextInput({ text: this.session.title })
-          .layoutWeight(1)
-          .fontSize(17)
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
-          .backgroundColor(Color.Transparent)
-          .margin({ left: 8, right: 8 })
-          .onChange((value: string): void => { this.session.title = value; })
-
-        Button('完成')
-          .fontSize(14)
-          .fontWeight(FontWeight.Medium)
-          .height(34)
-          .padding({ left: 16, right: 16 })
-          .backgroundColor($r('app.color.color_success'))
-          .borderRadius(17)
-          .onClick((): void => { this.finishTraining(); })
-      }
-      .width('100%')
-      .height(56)
-      .padding({ left: 12, right: 16 })
-
-      Row() {
-        Row({ space: 6 }) {
-          // 时间显示，点击可编辑
-          Text(this.currentTime)
-            .fontSize(28)
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.brand_primary'))
-            .onClick((): void => { this.openTimeEditDialog(); })
-
-          // 暂停/继续按钮
-          Button() {
-            SymbolGlyph(this.session.isRunning ? $r('sys.symbol.pause') : $r('sys.symbol.play_fill'))
-              .fontSize(14)
-              .fontColor([$r('app.color.brand_primary')])
-          }
-          .width(32).height(32).backgroundColor($r('app.color.brand_primary_light')).borderRadius(16)
-          .onClick((): void => { this.toggleTimer(); })
-
-          // 重置按钮
-          Button() {
-            SymbolGlyph($r('sys.symbol.arrow_counterclockwise'))
-              .fontSize(14)
-              .fontColor([$r('app.color.color_danger')])
-          }
-          .width(32).height(32).backgroundColor('#FFF0F0').borderRadius(16)
-          .onClick((): void => { this.resetTimer(); })
-        }
-
-        Row({ space: 16 }) {
-          this.StatItem(this.session.getTotalCompletedSets().toString(), '组')
-          this.StatItem(this.session.getCompletedExercisesCount().toString(), '动作')
-          this.StatItem(this.session.getTotalVolume().toString(), 'kg')
-        }
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 8, bottom: 16 })
-      .justifyContent(FlexAlign.SpaceBetween)
-    }
-    .width('100%')
-    .backgroundColor($r('app.color.card_background'))
-    .shadow({ radius: 4, color: 'rgba(0, 0, 0, 0.04)', offsetX: 0, offsetY: 2 })
-  }
-
-  @Builder
-  StatItem(value: string, label: string) {
-    Column({ space: 2 }) {
-      Text(value).fontSize(18).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
-      Text(label).fontSize(11).fontColor($r('app.color.text_hint'))
-    }.alignItems(HorizontalAlign.Center)
-  }
-
-  @Builder
-  EmptyState() {
-    Column({ space: 20 }) {
-      Column() {
-        SymbolGlyph($r('sys.symbol.dumbbell'))
-          .fontSize(48)
-          .fontColor([$r('app.color.brand_primary')])
-      }
-      .width(100).height(100).backgroundColor($r('app.color.card_background_secondary')).borderRadius(50).justifyContent(FlexAlign.Center)
-
-      Column({ space: 8 }) {
-        Text('准备开始训练').fontSize(18).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
-        Text('点击下方「添加动作」开始记录').fontSize(14).fontColor($r('app.color.text_hint'))
-      }.alignItems(HorizontalAlign.Center)
-    }
-    .width('100%')
-    .margin({ top: 60 })
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
-  }
-
-  @Builder
-  BottomBar() {
-    Column() {
-      Row({ space: 10 }) {
-        Button() {
-          Row({ space: 6 }) {
-            SymbolGlyph($r('sys.symbol.plus'))
-              .fontSize(16)
-              .fontColor([Color.White])
-            Text('添加动作').fontSize(14).fontWeight(FontWeight.Medium).fontColor(Color.White)
-          }
-        }
-        .height(48).layoutWeight(1).backgroundColor($r('app.color.brand_primary')).borderRadius(12)
-        .onClick((): void => { this.addExercise(); })
-
-        Button() {
-          Row({ space: 6 }) {
-            SymbolGlyph($r('sys.symbol.square_and_pencil'))
-              .fontSize(16)
-              .fontColor([$r('app.color.text_primary')])
-            Text('心得').fontSize(14).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
-          }
-        }
-        .height(48).layoutWeight(0.6).backgroundColor($r('app.color.card_background_secondary')).borderRadius(12)
-        .onClick((): void => { this.showNoteInput(); })
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-
-      // 底部导航区域避让
-      Row()
-        .width('100%')
-        .height(this.getUIContext().px2vp(this.bottomRectHeight))
-    }
-    .width('100%')
-    .backgroundColor($r('app.color.card_background'))
-    .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.08)', offsetX: 0, offsetY: -2 })
-  }
-
-  @Builder
-  NoteDialog() {
-    Column() {
-      Column({ space: 0 }) {
-        Text('训练心得')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
-          .width('100%')
-          .textAlign(TextAlign.Center)
-          .padding(16)
-
-        TextArea({ text: this.tempNote })
-          .width('100%')
-          .height(200)
-          .fontSize(14)
-          .fontColor($r('app.color.text_primary'))
-          .backgroundColor($r('app.color.card_background'))
-          .onChange((value: string): void => { this.tempNote = value; })
-
-        Row({ space: 12 }) {
-          Button('取消')
-            .layoutWeight(1)
-            .height(44)
-            .backgroundColor($r('app.color.outline'))
-            .fontColor($r('app.color.text_primary'))
-            .onClick((): void => { this.showNoteDialog = false; })
-
-          Button('保存')
-            .layoutWeight(1)
-            .height(44)
-            .backgroundColor($r('app.color.brand_primary'))
-            .onClick((): void => { this.saveNote(); })
-        }
-        .width('100%')
-        .padding(16)
-      }
-      .width('90%')
-      .backgroundColor($r('app.color.card_background'))
-      .borderRadius(12)
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('app.color.overlay_background'))
-    .justifyContent(FlexAlign.Center)
-    .onClick((): void => { this.showNoteDialog = false; })
-  }
-
-  @Builder
-  TimeEditDialog() {
-    Column() {
-      Column({ space: 0 }) {
-        Text('编辑训练时间')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
-          .width('100%')
-          .textAlign(TextAlign.Center)
-          .padding(16)
-
-        Row({ space: 8 }) {
-          // 小时输入
-          Column({ space: 4 }) {
-            TextInput({ text: this.editHours })
-              .width(70)
-              .height(50)
-              .fontSize(22)
-              .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
-              .textAlign(TextAlign.Center)
-              .type(InputType.Number)
-              .backgroundColor($r('app.color.card_background_secondary'))
-              .borderRadius(8)
-              .onChange((value: string): void => {
-                this.editHours = value;
-              })
-            Text('小时')
-              .fontSize(12)
-              .fontColor($r('app.color.text_hint'))
-          }
-          .alignItems(HorizontalAlign.Center)
-
-          Text(':')
-            .fontSize(28)
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
-
-          // 分钟输入
-          Column({ space: 4 }) {
-            TextInput({ text: this.editMinutes })
-              .width(70)
-              .height(50)
-              .fontSize(22)
-              .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
-              .textAlign(TextAlign.Center)
-              .type(InputType.Number)
-              .backgroundColor($r('app.color.card_background_secondary'))
-              .borderRadius(8)
-              .onChange((value: string): void => {
-                // 限制分钟在 0-59
-                const min: number = parseInt(value) || 0;
-                if (min > 59) {
-                  this.editMinutes = '59';
-                } else {
-                  this.editMinutes = value;
-                }
-              })
-            Text('分钟')
-              .fontSize(12)
-              .fontColor($r('app.color.text_hint'))
-          }
-          .alignItems(HorizontalAlign.Center)
-
-          Text(':')
-            .fontSize(28)
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
-
-          // 秒数输入
-          Column({ space: 4 }) {
-            TextInput({ text: this.editSeconds })
-              .width(70)
-              .height(50)
-              .fontSize(22)
-              .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
-              .textAlign(TextAlign.Center)
-              .type(InputType.Number)
-              .backgroundColor($r('app.color.card_background_secondary'))
-              .borderRadius(8)
-              .onChange((value: string): void => {
-                // 限制秒数在 0-59
-                const sec: number = parseInt(value) || 0;
-                if (sec > 59) {
-                  this.editSeconds = '59';
-                } else {
-                  this.editSeconds = value;
-                }
-              })
-            Text('秒')
-              .fontSize(12)
-              .fontColor($r('app.color.text_hint'))
-          }
-          .alignItems(HorizontalAlign.Center)
-        }
-        .width('100%')
-        .justifyContent(FlexAlign.Center)
-        .padding({ top: 8, bottom: 16 })
-
-        Text('点击数字可以直接输入修改')
-          .fontSize(12)
-          .fontColor($r('app.color.text_hint'))
-          .margin({ bottom: 16 })
-
-        Row({ space: 12 }) {
-          Button('取消')
-            .layoutWeight(1)
-            .height(44)
-            .backgroundColor($r('app.color.outline'))
-            .fontColor($r('app.color.text_primary'))
-            .onClick((): void => { this.showTimeEditDialog = false; })
-
-          Button('确定')
-            .layoutWeight(1)
-            .height(44)
-            .backgroundColor($r('app.color.brand_primary'))
-            .onClick((): void => { this.saveEditedTime(); })
-        }
-        .width('100%')
-        .padding(16)
-      }
-      .width('90%')
-      .backgroundColor($r('app.color.card_background'))
-      .borderRadius(12)
-      .onClick((): void => {
-        // 阻止点击内部关闭对话框
-      })
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor($r('app.color.overlay_background'))
-    .justifyContent(FlexAlign.Center)
-    .onClick((): void => { this.showTimeEditDialog = false; })
   }
 }

@@ -28,98 +28,127 @@ export struct AboutPage {
 
   build() {
     NavDestination() {
-      // 内容区域
-      Scroll() {
-        Column({ space: 24 }) {
-          // 应用图标和名称
-          Column({ space: 12 }) {
-            // 应用图标 (使用文字代替实际图标)
-            Column() {
-              Text('FE')
-                .fontSize(48)
-                .fontColor(Color.White)
-                .fontWeight(FontWeight.Bold)
-            }
-            .width(100)
-            .height(100)
-            .backgroundColor($r('app.color.brand_primary'))
-            .borderRadius(20)
-            .justifyContent(FlexAlign.Center)
-            .margin({ top: 40 })
+      Column() {
+        // 自定义标题栏
+        Row() {
+          SymbolGlyph($r('sys.symbol.chevron_left'))
+            .fontSize(24)
+            .fontColor([$r('app.color.text_primary')])
+            .onClick(() => {
+              this.pathStack.pop();
+            })
 
-            Text(this.appName)
-              .fontSize(24)
-              .fontColor($r('app.color.text_primary'))
-              .fontWeight(FontWeight.Bold)
-
-            Text('v' + this.appVersion)
-              .fontSize(16)
-              .fontColor($r('app.color.text_hint'))
-          }
-          .width('100%')
-          .alignItems(HorizontalAlign.Center)
-
-          // 应用描述
-          Text(this.appDescription)
-            .fontSize(14)
-            .fontColor($r('app.color.text_secondary'))
+          Text('关于')
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
             .textAlign(TextAlign.Center)
-            .width('80%')
-            .margin({ left: '10%' })
 
-          // 核心功能
-          Column({ space: 12 }) {
-            Text('核心功能')
-              .fontSize(16)
-              .fontColor($r('app.color.text_primary'))
-              .fontWeight(FontWeight.Medium)
+          // 占位，保持标题居中
+          Column().width(24)
+        }
+        .width('100%')
+        .height(65)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight), bottom: 8 })
+        .backgroundColor($r('app.color.card_background'))
+
+        // 内容区域
+        Scroll() {
+          Column({ space: 24 }) {
+            // 应用图标和名称
+            Column({ space: 12 }) {
+              // 应用图标 (使用文字代替实际图标)
+              Column() {
+                Text('FE')
+                  .fontSize(48)
+                  .fontColor(Color.White)
+                  .fontWeight(FontWeight.Bold)
+              }
+              .width(100)
+              .height(100)
+              .backgroundColor($r('app.color.brand_primary'))
+              .borderRadius(20)
+              .justifyContent(FlexAlign.Center)
+              .margin({ top: 24 })
+
+              Text(this.appName)
+                .fontSize(24)
+                .fontColor($r('app.color.text_primary'))
+                .fontWeight(FontWeight.Bold)
+
+              Text('v' + this.appVersion)
+                .fontSize(16)
+                .fontColor($r('app.color.text_hint'))
+            }
+            .width('100%')
+            .alignItems(HorizontalAlign.Center)
+
+            // 应用描述
+            Text(this.appDescription)
+              .fontSize(14)
+              .fontColor($r('app.color.text_secondary'))
+              .textAlign(TextAlign.Center)
+              .width('80%')
+              .margin({ left: '10%' })
+
+            // 核心功能
+            Column({ space: 12 }) {
+              Text('核心功能')
+                .fontSize(16)
+                .fontColor($r('app.color.text_primary'))
+                .fontWeight(FontWeight.Medium)
+                .width('100%')
+                .padding({ left: 16 })
+
+              Column({ space: 0 }) {
+                ForEach(this.features, (feature: string, index: number) => {
+                  this.FeatureItem(feature, index === this.features.length - 1)
+                })
+              }
               .width('100%')
-              .padding({ left: 16 })
+              .backgroundColor($r('app.color.card_background'))
+              .borderRadius(12)
+              .margin({ left: 16, right: 16 })
+            }
+            .width('100%')
+            .margin({ top: 16 })
 
+            // 项目信息
             Column({ space: 0 }) {
-              ForEach(this.features, (feature: string, index: number) => {
-                this.FeatureItem(feature, index === this.features.length - 1)
-              })
+              this.InfoItem('开发者', 'FitEasy Team')
+              this.ItemDivider()
+              this.InfoItem('发布日期', '2025-11-03')
             }
             .width('100%')
             .backgroundColor($r('app.color.card_background'))
             .borderRadius(12)
             .margin({ left: 16, right: 16 })
+
+            // 版权信息
+            Column({ space: 8 }) {
+              Text('© 2025 FitEasy')
+                .fontSize(12)
+                .fontColor($r('app.color.text_hint'))
+
+              Text('让健身成为一种生活方式')
+                .fontSize(12)
+                .fontColor($r('app.color.text_placeholder'))
+            }
+            .width('100%')
+            .alignItems(HorizontalAlign.Center)
+            .margin({ top: 24, bottom: 40 })
           }
           .width('100%')
-          .margin({ top: 16 })
-
-          // 项目信息
-          Column({ space: 0 }) {
-            this.InfoItem('开发者', 'FitEasy Team')
-            this.ItemDivider()
-            this.InfoItem('发布日期', '2025-11-03')
-          }
-          .width('100%')
-          .backgroundColor($r('app.color.card_background'))
-          .borderRadius(12)
-          .margin({ left: 16, right: 16 })
-
-          // 版权信息
-          Column({ space: 8 }) {
-            Text('© 2025 FitEasy')
-              .fontSize(12)
-              .fontColor($r('app.color.text_hint'))
-
-            Text('让健身成为一种生活方式')
-              .fontSize(12)
-              .fontColor($r('app.color.text_placeholder'))
-          }
-          .width('100%')
-          .alignItems(HorizontalAlign.Center)
-          .margin({ top: 24, bottom: 40 })
         }
-        .width('100%')
+        .layoutWeight(1)
+        .backgroundColor($r('app.color.page_background'))
       }
-      .layoutWeight(1)
+      .width('100%')
+      .height('100%')
       .backgroundColor($r('app.color.page_background'))
     }
-    .title('关于')
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
     })

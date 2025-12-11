@@ -94,11 +94,36 @@ export struct ReminderSettingsPage {
 
   build() {
     NavDestination() {
-      // 设置内容
-      Scroll() {
-        Column({ space: 16 }) {
-          // 开关
-          Column({ space: 0 }) {
+      Column() {
+        // 自定义标题栏
+        Row() {
+          SymbolGlyph($r('sys.symbol.chevron_left'))
+            .fontSize(24)
+            .fontColor([$r('app.color.text_primary')])
+            .onClick(() => {
+              this.pathStack.pop();
+            })
+
+          Text('训练提醒')
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+
+          // 占位，保持标题居中
+          Column().width(24)
+        }
+        .width('100%')
+        .height(65)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
+        .backgroundColor($r('app.color.card_background'))
+
+        // 设置内容
+        Scroll() {
+          Column({ space: 16 }) {
+            // 开关
+            Column({ space: 0 }) {
             Row() {
               Text('启用训练提醒')
                 .fontSize(16)
@@ -208,14 +233,18 @@ export struct ReminderSettingsPage {
               .onClick((): void => {
                 this.saveReminderSettings();
               })
+            }
           }
+          .width('100%')
         }
-        .width('100%')
+        .layoutWeight(1)
+        .backgroundColor($r('app.color.page_background'))
       }
-      .layoutWeight(1)
+      .width('100%')
+      .height('100%')
       .backgroundColor($r('app.color.page_background'))
     }
-    .title('训练提醒')
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
     })
