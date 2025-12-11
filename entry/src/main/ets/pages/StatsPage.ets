@@ -88,14 +88,14 @@ export struct StatsPage {
       // 顶部标题栏
       Row() {
         Text('数据分析')
-          .fontSize(20)
-          .fontWeight(FontWeight.Bold)
+          .fontSize(18)
+          .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.text_primary'))
       }
       .width('100%')
       .height(56)
-      .padding({ left: 16, right: 16, top: 12 })
-      .justifyContent(FlexAlign.Start)
+      .padding({ left: 16, right: 16 })
+      .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .backgroundColor($r('app.color.card_background'))
 
@@ -179,34 +179,34 @@ export struct StatsPage {
       Row({ space: 20 }) {
         Column({ space: 4 }) {
           Text((this.stats?.totalTrainingCount ?? 0).toString())
-            .fontSize(24)
+            .fontSize(22)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.brand_primary'))
           Text('训练次数')
-            .fontSize(12)
-            .fontColor($r('app.color.text_secondary'))
+            .fontSize(11)
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
 
         Column({ space: 4 }) {
           Text((this.stats?.totalDuration ?? 0).toString())
-            .fontSize(24)
+            .fontSize(22)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.color_success'))
-          Text('训练时长(分钟)')
-            .fontSize(12)
-            .fontColor($r('app.color.text_secondary'))
+          Text('时长(分钟)')
+            .fontSize(11)
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
 
         Column({ space: 4 }) {
           Text((this.stats?.totalWeight ?? 0).toString())
-            .fontSize(24)
+            .fontSize(22)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.color_warning'))
-          Text('总重量(kg)')
-            .fontSize(12)
-            .fontColor($r('app.color.text_secondary'))
+          Text('重量(kg)')
+            .fontSize(11)
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
       }
@@ -218,34 +218,34 @@ export struct StatsPage {
       Row() {
         Column({ space: 4 }) {
           Text((this.stats?.totalCalories ?? 0).toString())
-            .fontSize(24)
+            .fontSize(22)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.color_danger'))
-          Text('消耗卡路里')
-            .fontSize(12)
-            .fontColor($r('app.color.text_secondary'))
+          Text('卡路里')
+            .fontSize(11)
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
 
         Column({ space: 4 }) {
           Text((this.stats?.avgDuration ?? 0).toString())
-            .fontSize(24)
+            .fontSize(22)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.color_info'))
-          Text('平均时长(分钟)')
-            .fontSize(12)
-            .fontColor($r('app.color.text_secondary'))
+          Text('平均时长')
+            .fontSize(11)
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
 
         Column({ space: 4 }) {
           Text((this.stats?.totalSets ?? 0).toString())
-            .fontSize(24)
+            .fontSize(22)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.color_accent'))
           Text('总组数')
-            .fontSize(12)
-            .fontColor($r('app.color.text_secondary'))
+            .fontSize(11)
+            .fontColor($r('app.color.text_hint'))
         }
         .layoutWeight(1)
       }
@@ -265,7 +265,7 @@ export struct StatsPage {
   TrainingCountChart() {
     Column({ space: 12 }) {
       Text('训练次数趋势')
-        .fontSize(14)
+        .fontSize(16)
         .fontWeight(FontWeight.Medium)
         .fontColor($r('app.color.text_primary'))
 
@@ -334,7 +334,7 @@ export struct StatsPage {
   MuscleGroupChart() {
     Column({ space: 12 }) {
       Text('肌肉部位训练分布')
-        .fontSize(14)
+        .fontSize(16)
         .fontWeight(FontWeight.Medium)
         .fontColor($r('app.color.text_primary'))
 
@@ -387,10 +387,10 @@ export struct StatsPage {
   /**
    * 获取肌肉部位颜色
    */
-  getMuscleGroupColor(name: string): string {
-    const colors: string[] = [
-      '#007AFF', '#34C759', '#FF9500', '#FF3B30',
-      '#5AC8FA', '#AF52DE', '#FFCC00'
+  getMuscleGroupColor(name: string): Resource {
+    const colors: Resource[] = [
+      $r('app.color.brand_primary'), $r('app.color.color_success'), $r('app.color.color_warning'), $r('app.color.color_danger'),
+      $r('app.color.color_info'), $r('app.color.color_accent'), $r('app.color.set_warmup')
     ];
     const index: number = name.charCodeAt(0) % colors.length;
     return colors[index];

@@ -173,7 +173,7 @@ export struct ProfileEditPage {
           Column().width(24)
         }
         .width('100%')
-        .height(65)
+        .height(70)
         .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
         .backgroundColor($r('app.color.card_background'))
 
@@ -227,11 +227,12 @@ export struct ProfileEditPage {
           // 保存按钮
           Button(this.isLoading ? '保存中...' : '保存')
             .width('90%')
-            .height(48)
-            .fontSize(16)
+            .height(46)
+            .fontSize(15)
+            .fontWeight(FontWeight.Medium)
             .backgroundColor(this.isLoading ? $r('app.color.text_placeholder') : $r('app.color.brand_primary'))
             .fontColor(Color.White)
-            .borderRadius(8)
+            .borderRadius(10)
             .margin({ top: 32, bottom: 40 })
             .enabled(!this.isLoading)
             .onClick((): void => {
@@ -256,23 +257,23 @@ export struct ProfileEditPage {
   @Builder
   SectionTitle(title: string) {
     Text(title)
-      .fontSize(13)
+      .fontSize(12)
       .fontColor($r('app.color.text_hint'))
       .width('100%')
-      .padding({ left: 16, top: 16, bottom: 8 })
+      .padding({ left: 16, top: 20, bottom: 8 })
   }
 
   @Builder
   InputItem(label: string, value: string, onChange: (value: string) => void, placeholder: string, isNumber: boolean = false) {
     Row() {
       Text(label)
-        .fontSize(16)
+        .fontSize(15)
         .fontColor($r('app.color.text_primary'))
         .width(100)
 
       TextInput({ text: value, placeholder: placeholder })
         .layoutWeight(1)
-        .fontSize(16)
+        .fontSize(15)
         .fontColor($r('app.color.text_primary'))
         .backgroundColor(Color.Transparent)
         .type(isNumber ? InputType.Number : InputType.Normal)
@@ -281,7 +282,7 @@ export struct ProfileEditPage {
         })
     }
     .width('100%')
-    .height(56)
+    .height(52)
     .padding({ left: 16, right: 16 })
     .backgroundColor($r('app.color.card_background'))
   }
@@ -290,16 +291,16 @@ export struct ProfileEditPage {
   SelectItem(label: string, value: string, options: string[], onChange: (value: string) => void) {
     Row() {
       Text(label)
-        .fontSize(16)
+        .fontSize(15)
         .fontColor($r('app.color.text_primary'))
         .width(100)
 
-      Row({ space: 8 }) {
+      Row({ space: 6 }) {
         ForEach(options, (option: string) => {
           Text(option)
-            .fontSize(14)
+            .fontSize(13)
             .fontColor(value === option ? Color.White : $r('app.color.text_secondary'))
-            .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+            .padding({ left: 10, right: 10, top: 5, bottom: 5 })
             .backgroundColor(value === option ? $r('app.color.brand_primary') : $r('app.color.outline'))
             .borderRadius(6)
             .onClick((): void => {
@@ -311,7 +312,7 @@ export struct ProfileEditPage {
       .justifyContent(FlexAlign.End)
     }
     .width('100%')
-    .height(56)
+    .height(52)
     .padding({ left: 16, right: 16 })
     .backgroundColor($r('app.color.card_background'))
   }

@@ -159,8 +159,8 @@ export struct ActionSelectPage {
             .fontColor($r('app.color.text_secondary'))
         }
         .width('100%')
-        .height(65)
-        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight), bottom: 8 })
+        .height(70)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
         .backgroundColor($r('app.color.card_background'))
 
         // 主内容区域 - 左右布局
@@ -374,6 +374,7 @@ export struct ActionSelectPage {
     .width('100%')
     .backgroundColor($r('app.color.card_background'))
     .padding({ top: 12 })
+    .shadow({ radius: 4, color: 'rgba(0, 0, 0, 0.06)', offsetX: 0, offsetY: -2 })
   }
 
   @Builder
@@ -398,14 +399,14 @@ export struct ActionSelectPage {
   /**
    * 获取难度等级颜色
    */
-  getDifficultyColor(difficulty: string): string {
+  getDifficultyColor(difficulty: string): Resource {
     if (difficulty === '初级') {
-      return '#4CAF50';
+      return $r('app.color.color_success');
     } else if (difficulty === '中级') {
-      return '#FF9800';
+      return $r('app.color.color_warning');
     } else if (difficulty === '高级') {
-      return '#F44336';
+      return $r('app.color.color_danger');
     }
-    return '#999999';
+    return $r('app.color.text_hint');
   }
 }

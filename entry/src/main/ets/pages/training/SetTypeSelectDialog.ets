@@ -24,17 +24,17 @@ export struct SetTypeSelectDialog {
 
         Column({ space: 0 }) {
           // 热身选项
-          this.SetTypeOption('热身', '🔥', SetTypeConst.WARMUP, '#E67E22', '低强度，准备肌肉')
+          this.SetTypeOption('热身', '🔥', SetTypeConst.WARMUP, $r('app.color.set_warmup'), '低强度，准备肌肉')
 
-          Divider().color($r('app.color.outline')).margin({ left: 20, right: 20 })
+          Divider().color($r('app.color.divider')).margin({ left: 20, right: 20 })
 
           // 正式选项
-          this.SetTypeOption('正式', '💪', SetTypeConst.WORKING, '#3498DB', '主要训练组')
+          this.SetTypeOption('正式', '💪', SetTypeConst.WORKING, $r('app.color.set_working'), '主要训练组')
 
-          Divider().color($r('app.color.outline')).margin({ left: 20, right: 20 })
+          Divider().color($r('app.color.divider')).margin({ left: 20, right: 20 })
 
           // 放松选项
-          this.SetTypeOption('放松', '🧘', SetTypeConst.COOLDOWN, '#27AE60', '低强度，恢复肌肉')
+          this.SetTypeOption('放松', '🧘', SetTypeConst.COOLDOWN, $r('app.color.set_cooldown'), '低强度，恢复肌肉')
         }
         .width('100%')
 
@@ -65,7 +65,7 @@ export struct SetTypeSelectDialog {
   }
 
   @Builder
-  SetTypeOption(title: string, icon: string, setType: string, checkColor: string, description: string) {
+  SetTypeOption(title: string, icon: string, setType: string, checkColor: Resource, description: string): void {
     Row() {
       Row({ space: 12 }) {
         Text(icon)
@@ -73,7 +73,7 @@ export struct SetTypeSelectDialog {
 
         Column({ space: 2 }) {
           Text(title)
-            .fontSize(16)
+            .fontSize(15)
             .fontWeight(FontWeight.Medium)
             .fontColor($r('app.color.text_primary'))
 

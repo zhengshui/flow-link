@@ -121,8 +121,8 @@ export struct ThemeSettingsPage {
           Column().width(24)
         }
         .width('100%')
-        .height(65)
-        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight), bottom: 8 })
+        .height(70)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
         .backgroundColor($r('app.color.card_background'))
 
         // 主题预览卡片
@@ -137,7 +137,7 @@ export struct ThemeSettingsPage {
               Column()
                 .width(80)
                 .height(60)
-                .backgroundColor('#FFFFFF')
+                .backgroundColor('#F7F8FA')
                 .borderRadius(8)
                 .border({ width: this.currentTheme === 'light' || (this.currentTheme === 'auto' && !this.isDarkMode()) ? 2 : 1,
                   color: this.currentTheme === 'light' || (this.currentTheme === 'auto' && !this.isDarkMode()) ? $r('app.color.brand_primary') : $r('app.color.outline') })
@@ -151,7 +151,7 @@ export struct ThemeSettingsPage {
               Column()
                 .width(80)
                 .height(60)
-                .backgroundColor('#1E1E1E')
+                .backgroundColor('#1A1A1A')
                 .borderRadius(8)
                 .border({ width: this.currentTheme === 'dark' || (this.currentTheme === 'auto' && this.isDarkMode()) ? 2 : 1,
                   color: this.currentTheme === 'dark' || (this.currentTheme === 'auto' && this.isDarkMode()) ? $r('app.color.brand_primary') : $r('app.color.outline') })

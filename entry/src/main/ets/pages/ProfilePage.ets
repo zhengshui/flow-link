@@ -70,11 +70,11 @@ export struct ProfilePage {
       buttons: [
         {
           text: '取消',
-          color: '#666666'
+          color: '#646A73'
         },
         {
           text: '确定',
-          color: '#FF0000'
+          color: '#F54A45'
         }
       ]
     }).then((data: promptAction.ShowDialogSuccessResponse) => {
@@ -139,11 +139,12 @@ export struct ProfilePage {
           // 登出按钮
           Button('退出登录')
             .width('90%')
-            .height(48)
-            .fontSize(16)
+            .height(46)
+            .fontSize(15)
+            .fontWeight(FontWeight.Medium)
             .backgroundColor($r('app.color.color_danger'))
             .fontColor(Color.White)
-            .borderRadius(8)
+            .borderRadius(10)
             .margin({ left: 16, right: 16, top: 8, bottom: 40 })
             .onClick(() => {
               this.logout();
@@ -260,51 +261,54 @@ export struct ProfilePage {
         if (this.userInfo !== null && this.userInfo.height > 0) {
           Column({ space: 4 }) {
             Text(this.userInfo.height.toString())
-              .fontSize(20)
+              .fontSize(22)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.brand_primary'))
             Text('身高(cm)')
               .fontSize(11)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
           .padding(12)
           .backgroundColor($r('app.color.card_background_secondary'))
           .borderRadius(8)
+          .alignItems(HorizontalAlign.Center)
         }
 
         // 体重
         if (this.userInfo !== null && this.userInfo.weight > 0) {
           Column({ space: 4 }) {
             Text(this.userInfo.weight.toString())
-              .fontSize(20)
+              .fontSize(22)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.color_success'))
             Text('体重(kg)')
               .fontSize(11)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
           .padding(12)
           .backgroundColor($r('app.color.card_background_secondary'))
           .borderRadius(8)
+          .alignItems(HorizontalAlign.Center)
         }
 
         // 目标体重
         if (this.userInfo !== null && this.userInfo.targetWeight > 0) {
           Column({ space: 4 }) {
             Text(this.userInfo.targetWeight.toString())
-              .fontSize(20)
+              .fontSize(22)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.color_warning'))
-            Text('目标体重(kg)')
+            Text('目标(kg)')
               .fontSize(11)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
           .padding(12)
           .backgroundColor($r('app.color.card_background_secondary'))
           .borderRadius(8)
+          .alignItems(HorizontalAlign.Center)
         }
       }
       .width('100%')
@@ -323,21 +327,21 @@ export struct ProfilePage {
       Column({ space: 4 }) {
         Row({ space: 8 }) {
           Text(title)
-            .fontSize(16)
+            .fontSize(15)
             .fontColor($r('app.color.text_primary'))
 
           if (isComingSoon) {
             Text('即将上线')
-              .fontSize(12)
+              .fontSize(11)
               .fontColor($r('app.color.brand_primary'))
-              .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+              .padding({ left: 6, right: 6, top: 2, bottom: 2 })
               .backgroundColor($r('app.color.brand_primary_light'))
               .borderRadius(4)
           }
         }
 
         Text(subtitle)
-          .fontSize(14)
+          .fontSize(13)
           .fontColor($r('app.color.text_hint'))
       }
       .alignItems(HorizontalAlign.Start)
@@ -348,7 +352,7 @@ export struct ProfilePage {
         .fontColor([$r('app.color.text_placeholder')])
     }
     .width('100%')
-    .height(60)
+    .height(56)
     .padding({ left: 16, right: 16 })
     .onClick(onClick)
   }

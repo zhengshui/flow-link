@@ -28,13 +28,13 @@ export struct SessionSetRow {
       Text(this.set.setType)
         .fontSize(11)
         .fontWeight(FontWeight.Medium)
-        .fontColor(this.set.setType === SetTypeConst.WARMUP ? '#E67E22' :
-          this.set.setType === SetTypeConst.COOLDOWN ? '#27AE60' : '#3498DB')
+        .fontColor(this.set.setType === SetTypeConst.WARMUP ? $r('app.color.set_warmup') :
+          this.set.setType === SetTypeConst.COOLDOWN ? $r('app.color.set_cooldown') : $r('app.color.set_working'))
         .width(56)
         .height(24)
         .textAlign(TextAlign.Center)
-        .backgroundColor(this.set.setType === SetTypeConst.WARMUP ? '#FDF2E9' :
-          this.set.setType === SetTypeConst.COOLDOWN ? '#E8F8F5' : '#EBF5FB')
+        .backgroundColor(this.set.setType === SetTypeConst.WARMUP ? $r('app.color.set_warmup_light') :
+          this.set.setType === SetTypeConst.COOLDOWN ? $r('app.color.set_cooldown_light') : $r('app.color.set_working_light'))
         .borderRadius(12)
         .onClick((): void => {
           this.onShowTypeSelector(this.exerciseIndex, this.setIndex);

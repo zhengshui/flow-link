@@ -376,7 +376,7 @@ export struct TrainingSessionPage {
     promptAction.showDialog({
       title: '删除动作',
       message: '确定要删除这个动作吗？',
-      buttons: [{ text: '取消', color: '#666666' }, { text: '删除', color: '#FF0000' }]
+      buttons: [{ text: '取消', color: '#646A73' }, { text: '删除', color: '#F54A45' }]
     }).then((data: promptAction.ShowDialogSuccessResponse): void => {
       if (data.index === 1) {
         this.session.removeExercise(index);
@@ -443,7 +443,7 @@ export struct TrainingSessionPage {
     promptAction.showDialog({
       title: '完成训练',
       message: '确定要结束并保存本次训练吗？',
-      buttons: [{ text: '取消', color: '#666666' }, { text: '保存', color: '#007AFF' }]
+      buttons: [{ text: '取消', color: '#646A73' }, { text: '保存', color: '#3370FF' }]
     }).then((data: promptAction.ShowDialogSuccessResponse): void => {
       if (data.index === 1) {
         this.saveTraining();
@@ -620,7 +620,7 @@ export struct TrainingSessionPage {
     promptAction.showDialog({
       title: '重置时间',
       message: '确定要将训练时间重置为 00:00:00 吗？',
-      buttons: [{ text: '取消', color: '#666666' }, { text: '重置', color: '#FF0000' }]
+      buttons: [{ text: '取消', color: '#646A73' }, { text: '重置', color: '#F54A45' }]
     }).then((data: promptAction.ShowDialogSuccessResponse): void => {
       if (data.index === 1) {
         this.session.startTime = Date.now();

@@ -70,14 +70,15 @@ export struct AddTrainingPage {
             .textAlign(TextAlign.Center)
 
           Text('保存')
-            .fontSize(16)
+            .fontSize(15)
+            .fontWeight(FontWeight.Medium)
             .fontColor($r('app.color.brand_primary'))
             .onClick(() => {
               this.saveTraining();
             })
         }
         .width('100%')
-        .height(56)
+        .height(70)
         .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
         .backgroundColor($r('app.color.card_background'))
 
@@ -86,7 +87,7 @@ export struct AddTrainingPage {
             Column({ space: 0 }) {
               Row() {
                 Text('训练标题')
-                .fontSize(14)
+                .fontSize(15)
                 .fontColor($r('app.color.text_primary'))
                 .width(100)
 
@@ -94,12 +95,13 @@ export struct AddTrainingPage {
                 .layoutWeight(1)
                 .backgroundColor(Color.Transparent)
                 .fontColor($r('app.color.text_primary'))
+                .fontSize(15)
                 .onChange((value: string) => {
                   this.title = value;
                 })
             }
             .width('100%')
-            .height(56)
+            .height(52)
             .padding({ left: 16, right: 16 })
             .alignItems(VerticalAlign.Center)
 
@@ -107,16 +109,16 @@ export struct AddTrainingPage {
 
             Row() {
               Text('日期')
-                .fontSize(14)
+                .fontSize(15)
                 .fontColor($r('app.color.text_primary'))
                 .width(100)
 
               Text(this.date)
-                .fontSize(16)
+                .fontSize(15)
                 .fontColor($r('app.color.text_primary'))
             }
             .width('100%')
-            .height(56)
+            .height(52)
             .padding({ left: 16, right: 16 })
             .alignItems(VerticalAlign.Center)
 
@@ -124,7 +126,7 @@ export struct AddTrainingPage {
 
             Row() {
               Text('时长(分钟)')
-                .fontSize(14)
+                .fontSize(15)
                 .fontColor($r('app.color.text_primary'))
                 .width(100)
 
@@ -132,13 +134,14 @@ export struct AddTrainingPage {
                 .layoutWeight(1)
                 .backgroundColor(Color.Transparent)
                 .fontColor($r('app.color.text_primary'))
+                .fontSize(15)
                 .type(InputType.Number)
                 .onChange((value: string) => {
                   this.duration = value;
                 })
             }
             .width('100%')
-            .height(56)
+            .height(52)
             .padding({ left: 16, right: 16 })
             .alignItems(VerticalAlign.Center)
           }
@@ -147,19 +150,20 @@ export struct AddTrainingPage {
           .borderRadius(12)
           .margin({ top: 16 })
 
-          Column({ space: 16 }) {
+          Column({ space: 12 }) {
             Text('训练状态')
-              .fontSize(14)
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
               .fontColor($r('app.color.text_primary'))
               .width('100%')
 
             Row({ space: 8 }) {
               ForEach(['良好', '一般', '疲劳'], (moodItem: string) => {
                 Text(moodItem)
-                  .fontSize(14)
+                  .fontSize(13)
                   .fontColor(this.mood === moodItem ? Color.White : $r('app.color.text_secondary'))
                   .backgroundColor(this.mood === moodItem ? $r('app.color.brand_primary') : $r('app.color.outline'))
-                  .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+                  .padding({ left: 14, right: 14, top: 7, bottom: 7 })
                   .borderRadius(16)
                   .onClick(() => {
                     this.mood = moodItem;
@@ -175,7 +179,8 @@ export struct AddTrainingPage {
 
           Column({ space: 12 }) {
             Text('备注')
-              .fontSize(14)
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
               .fontColor($r('app.color.text_primary'))
               .width('100%')
 

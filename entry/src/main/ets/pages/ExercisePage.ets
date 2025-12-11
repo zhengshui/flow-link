@@ -199,15 +199,15 @@ export struct ExercisePage {
   /**
    * 获取难度等级颜色
    */
-  getDifficultyColor(difficulty: string): string {
+  getDifficultyColor(difficulty: string): Resource {
     if (difficulty === '初级') {
-      return '#4CAF50';
+      return $r('app.color.color_success');
     } else if (difficulty === '中级') {
-      return '#FF9800';
+      return $r('app.color.color_warning');
     } else if (difficulty === '高级') {
-      return '#F44336';
+      return $r('app.color.color_danger');
     }
-    return '#999999';
+    return $r('app.color.text_hint');
   }
 
   /**

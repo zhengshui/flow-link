@@ -86,27 +86,53 @@ export struct RegisterPage {
 
   build() {
     NavDestination() {
-      Scroll() {
-        Column({ space: 20 }) {
-          // Logo
-          Column() {
-            Text('💪')
-              .fontSize(60)
-          }
-          .margin({ top: 40 })
+      Column() {
+        // 自定义标题栏
+        Row() {
+          SymbolGlyph($r('sys.symbol.chevron_left'))
+            .fontSize(24)
+            .fontColor([$r('app.color.text_primary')])
+            .onClick(() => {
+              this.pathStack.pop();
+            })
+
+          Text('注册')
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+
+          // 占位，保持标题居中
+          Column().width(24)
+        }
+        .width('100%')
+        .height(70)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
+        .backgroundColor($r('app.color.card_background'))
+
+        Scroll() {
+          Column({ space: 20 }) {
+            // Logo
+            Column() {
+              Text('💪')
+                .fontSize(60)
+            }
+            .margin({ top: 20 })
 
           // 表单区域
-          Column({ space: 16 }) {
+          Column({ space: 14 }) {
             // 用户名
-            Column({ space: 8 }) {
+            Column({ space: 6 }) {
               Text('用户名')
-                .fontSize(14)
-                .fontColor($r('app.color.text_primary'))
+                .fontSize(13)
+                .fontColor($r('app.color.text_secondary'))
                 .width('100%')
 
               TextInput({ placeholder: '请输入用户名（至少4个字符）' })
                 .width('100%')
-                .height(48)
+                .height(46)
+                .fontSize(15)
                 .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
                 .onChange((value: string) => {
@@ -117,15 +143,16 @@ export struct RegisterPage {
             .alignItems(HorizontalAlign.Start)
 
             // 密码
-            Column({ space: 8 }) {
+            Column({ space: 6 }) {
               Text('密码')
-                .fontSize(14)
-                .fontColor($r('app.color.text_primary'))
+                .fontSize(13)
+                .fontColor($r('app.color.text_secondary'))
                 .width('100%')
 
               TextInput({ placeholder: '请输入密码（至少6个字符）' })
                 .width('100%')
-                .height(48)
+                .height(46)
+                .fontSize(15)
                 .type(InputType.Password)
                 .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
@@ -137,15 +164,16 @@ export struct RegisterPage {
             .alignItems(HorizontalAlign.Start)
 
             // 确认密码
-            Column({ space: 8 }) {
+            Column({ space: 6 }) {
               Text('确认密码')
-                .fontSize(14)
-                .fontColor($r('app.color.text_primary'))
+                .fontSize(13)
+                .fontColor($r('app.color.text_secondary'))
                 .width('100%')
 
               TextInput({ placeholder: '请再次输入密码' })
                 .width('100%')
-                .height(48)
+                .height(46)
+                .fontSize(15)
                 .type(InputType.Password)
                 .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
@@ -157,15 +185,16 @@ export struct RegisterPage {
             .alignItems(HorizontalAlign.Start)
 
             // 昵称
-            Column({ space: 8 }) {
+            Column({ space: 6 }) {
               Text('昵称')
-                .fontSize(14)
-                .fontColor($r('app.color.text_primary'))
+                .fontSize(13)
+                .fontColor($r('app.color.text_secondary'))
                 .width('100%')
 
               TextInput({ placeholder: '请输入昵称' })
                 .width('100%')
-                .height(48)
+                .height(46)
+                .fontSize(15)
                 .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
                 .onChange((value: string) => {
@@ -176,15 +205,16 @@ export struct RegisterPage {
             .alignItems(HorizontalAlign.Start)
 
             // 邮箱（可选）
-            Column({ space: 8 }) {
+            Column({ space: 6 }) {
               Text('邮箱（可选）')
-                .fontSize(14)
-                .fontColor($r('app.color.text_primary'))
+                .fontSize(13)
+                .fontColor($r('app.color.text_secondary'))
                 .width('100%')
 
               TextInput({ placeholder: '请输入邮箱' })
                 .width('100%')
-                .height(48)
+                .height(46)
+                .fontSize(15)
                 .backgroundColor($r('app.color.card_background'))
                 .borderRadius(8)
                 .onChange((value: string) => {
@@ -197,11 +227,12 @@ export struct RegisterPage {
             // 注册按钮
             Button(this.isLoading ? '注册中...' : '立即注册')
               .width('100%')
-              .height(48)
-              .fontSize(16)
+              .height(46)
+              .fontSize(15)
+              .fontWeight(FontWeight.Medium)
               .backgroundColor($r('app.color.brand_primary'))
-              .borderRadius(8)
-              .margin({ top: 20 })
+              .borderRadius(10)
+              .margin({ top: 16 })
               .opacity((this.username.length > 0 && this.password.length > 0 &&
                 this.confirmPassword.length > 0 && this.nickname.length > 0 && !this.isLoading) ? 1 : 0.5)
               .enabled(this.username.length > 0 && this.password.length > 0 &&
@@ -211,8 +242,8 @@ export struct RegisterPage {
               })
           }
           .width('90%')
-          .padding(20)
-          .margin({ top: 20 })
+          .padding(16)
+          .margin({ top: 16 })
 
           // 底部提示
           Row({ space: 4 }) {
@@ -234,9 +265,12 @@ export struct RegisterPage {
         .alignItems(HorizontalAlign.Center)
       }
       .layoutWeight(1)
+      }
+      .width('100%')
+      .height('100%')
       .backgroundColor($r('app.color.page_background'))
     }
-    .title('注册')
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
     })

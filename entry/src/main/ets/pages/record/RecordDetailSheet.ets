@@ -69,7 +69,7 @@ export struct RecordDetailSheet {
       Blank()
 
       Text(this.selectedDay?.dateStr ?? '')
-        .fontSize(17)
+        .fontSize(18)
         .fontWeight(FontWeight.Medium)
         .fontColor($r('app.color.text_primary'))
 
@@ -87,8 +87,8 @@ export struct RecordDetailSheet {
       }
     }
     .width('100%')
-    .height(65)
-    .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight), bottom: 8 })
+    .height(70)
+    .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
     .backgroundColor($r('app.color.card_background'))
   }
 
@@ -101,7 +101,7 @@ export struct RecordDetailSheet {
           Row() {
             Column({ space: 4 }) {
               Text(record.title)
-                .fontSize(20)
+                .fontSize(18)
                 .fontWeight(FontWeight.Bold)
                 .fontColor($r('app.color.text_primary'))
               Text(this.extractTimeFromDateTime(record.startTime) + ' - ' + this.extractTimeFromDateTime(record.endTime))
@@ -113,10 +113,10 @@ export struct RecordDetailSheet {
 
             if (record.mood.length > 0) {
               Text(record.mood)
-                .fontSize(12)
+                .fontSize(11)
                 .fontColor(Color.White)
                 .backgroundColor(this.getMoodColor(record.mood))
-                .padding({ left: 10, right: 10, top: 5, bottom: 5 })
+                .padding({ left: 8, right: 8, top: 4, bottom: 4 })
                 .borderRadius(4)
             }
           }
@@ -124,9 +124,9 @@ export struct RecordDetailSheet {
 
           // 训练数据统计
           Row({ space: 8 }) {
-            this.DataTag('时长', record.duration.toString() + '分钟', '#4CAF50')
-            this.DataTag('组数', record.totalSets.toString() + '组', '#FF9800')
-            this.DataTag('容量', (record.totalWeight / 1000).toFixed(1) + 'T', '#2196F3')
+            this.DataTag('时长', record.duration.toString() + '分钟', $r('app.color.color_success'))
+            this.DataTag('组数', record.totalSets.toString() + '组', $r('app.color.color_warning'))
+            this.DataTag('容量', (record.totalWeight / 1000).toFixed(1) + 'T', $r('app.color.brand_primary'))
           }
           .width('100%')
         }
@@ -240,11 +240,12 @@ export struct RecordDetailSheet {
 
   @Builder
   BottomActionBar(record: TrainingRecordModel): void {
-    Row({ space: 12 }) {
+    Row({ space: 10 }) {
       // 编辑/继续训练
       Button('继续训练')
-        .fontSize(14)
-        .height(44)
+        .fontSize(13)
+        .fontWeight(FontWeight.Medium)
+        .height(42)
         .layoutWeight(1)
         .backgroundColor($r('app.color.brand_primary'))
         .borderRadius(8)
@@ -256,8 +257,9 @@ export struct RecordDetailSheet {
 
       // 复制到今天
       Button('复制到今天')
-        .fontSize(14)
-        .height(44)
+        .fontSize(13)
+        .fontWeight(FontWeight.Medium)
+        .height(42)
         .layoutWeight(1)
         .backgroundColor($r('app.color.color_success'))
         .borderRadius(8)
@@ -267,9 +269,10 @@ export struct RecordDetailSheet {
 
       // 删除
       Button('删除')
-        .fontSize(14)
-        .height(44)
-        .width(70)
+        .fontSize(13)
+        .fontWeight(FontWeight.Medium)
+        .height(42)
+        .width(64)
         .backgroundColor($r('app.color.color_danger'))
         .borderRadius(8)
         .onClick(() => {
@@ -277,8 +280,8 @@ export struct RecordDetailSheet {
             title: '确认删除',
             message: '确定要删除这条训练记录吗？',
             buttons: [
-              { text: '取消', color: '#666666' },
-              { text: '删除', color: '#FF0000' }
+              { text: '取消', color: '#646A73' },
+              { text: '删除', color: '#F54A45' }
             ]
           }).then((result: promptAction.ShowDialogSuccessResponse) => {
             if (result.index === 1) {
@@ -292,24 +295,24 @@ export struct RecordDetailSheet {
     .width('100%')
     .padding({ left: 16, right: 16, top: 12, bottom: 12 })
     .backgroundColor($r('app.color.card_background'))
-    .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.08)', offsetX: 0, offsetY: -2 })
+    .shadow({ radius: 4, color: 'rgba(0, 0, 0, 0.06)', offsetX: 0, offsetY: -2 })
   }
 
   @Builder
-  DataTag(label: string, value: string, color: string): void {
+  DataTag(label: string, value: string, color: Resource): void {
     Column({ space: 2 }) {
       Text(value)
-        .fontSize(14)
+        .fontSize(15)
         .fontWeight(FontWeight.Bold)
         .fontColor(color)
       Text(label)
-        .fontSize(10)
+        .fontSize(11)
         .fontColor($r('app.color.text_hint'))
     }
     .layoutWeight(1)
-    .padding(8)
-    .backgroundColor($r('app.color.card_background'))
-    .borderRadius(6)
+    .padding(10)
+    .backgroundColor($r('app.color.card_background_secondary'))
+    .borderRadius(8)
     .alignItems(HorizontalAlign.Center)
   }
 
@@ -385,17 +388,17 @@ export struct RecordDetailSheet {
   /**
    * 获取心情状态颜色
    */
-  private getMoodColor(mood: string): string {
+  private getMoodColor(mood: string): Resource {
     if (mood === '优秀') {
-      return '#4CAF50';
+      return $r('app.color.color_success');
     } else if (mood === '良好') {
-      return '#8BC34A';
+      return $r('app.color.set_cooldown');
     } else if (mood === '一般') {
-      return '#FF9800';
+      return $r('app.color.color_warning');
     } else if (mood === '疲劳') {
-      return '#F44336';
+      return $r('app.color.color_danger');
     }
-    return '#999999';
+    return $r('app.color.text_hint');
   }
 }
 

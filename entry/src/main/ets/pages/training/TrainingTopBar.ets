@@ -110,7 +110,7 @@ export struct TrainingTopBar {
           }
           .width(32)
           .height(32)
-          .backgroundColor('#FFF0F0')
+          .backgroundColor($r('app.color.color_danger_light'))
           .borderRadius(16)
           .onClick((): void => { this.callbacks.onResetTimer(); })
         }

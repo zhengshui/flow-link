@@ -6,7 +6,7 @@
     },
     {
       "name": "page_background",
-      "value": "#F5F5F5"
+      "value": "#F7F8FA"
     },
     {
       "name": "card_background",
@@ -14,59 +14,115 @@
     },
     {
       "name": "card_background_secondary",
-      "value": "#F9F9F9"
+      "value": "#F5F6F8"
+    },
+    {
+      "name": "card_background_hover",
+      "value": "#F0F1F3"
+    },
+    {
+      "name": "item_background_active",
+      "value": "#E8EAED"
     },
     {
       "name": "text_primary",
-      "value": "#333333"
+      "value": "#1F2329"
     },
     {
       "name": "text_secondary",
-      "value": "#666666"
+      "value": "#646A73"
     },
     {
       "name": "text_hint",
-      "value": "#999999"
+      "value": "#8F959E"
     },
     {
       "name": "text_placeholder",
-      "value": "#CCCCCC"
+      "value": "#BFC3C9"
     },
     {
       "name": "brand_primary",
-      "value": "#007AFF"
+      "value": "#3370FF"
     },
     {
       "name": "brand_primary_light",
-      "value": "#E3F2FF"
+      "value": "#E1EAFF"
+    },
+    {
+      "name": "brand_primary_pressed",
+      "value": "#245BDB"
     },
     {
       "name": "outline",
-      "value": "#E0E0E0"
+      "value": "#E8E9EB"
+    },
+    {
+      "name": "divider",
+      "value": "#E8E9EB"
     },
     {
       "name": "color_success",
       "value": "#34C759"
     },
     {
+      "name": "color_success_light",
+      "value": "#E8F8EC"
+    },
+    {
       "name": "color_warning",
       "value": "#FF9500"
     },
     {
+      "name": "color_warning_light",
+      "value": "#FFF4E6"
+    },
+    {
       "name": "color_danger",
-      "value": "#FF3B30"
+      "value": "#F54A45"
+    },
+    {
+      "name": "color_danger_light",
+      "value": "#FEECEB"
     },
     {
       "name": "color_info",
-      "value": "#5AC8FA"
+      "value": "#4E83FD"
     },
     {
       "name": "color_accent",
-      "value": "#AF52DE"
+      "value": "#8B5CF6"
     },
     {
       "name": "overlay_background",
-      "value": "#80000000"
+      "value": "#66000000"
+    },
+    {
+      "name": "skeleton_background",
+      "value": "#E8E9EB"
+    },
+    {
+      "name": "set_warmup",
+      "value": "#FF9500"
+    },
+    {
+      "name": "set_warmup_light",
+      "value": "#FFF4E6"
+    },
+    {
+      "name": "set_working",
+      "value": "#3370FF"
+    },
+    {
+      "name": "set_working_light",
+      "value": "#E1EAFF"
+    },
+    {
+      "name": "set_cooldown",
+      "value": "#34C759"
+    },
+    {
+      "name": "set_cooldown_light",
+      "value": "#E8F8EC"
     }
   ]
 }

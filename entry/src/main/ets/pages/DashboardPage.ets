@@ -228,11 +228,11 @@ export struct DashboardPage {
   DataItem(label: string, value: string, color: Resource) {
     Column({ space: 4 }) {
       Text(value)
-        .fontSize(20)
+        .fontSize(18)
         .fontWeight(FontWeight.Bold)
         .fontColor(color)
       Text(label)
-        .fontSize(12)
+        .fontSize(11)
         .fontColor($r('app.color.text_hint'))
     }
     .layoutWeight(1)
@@ -262,29 +262,31 @@ export struct DashboardPage {
         Row({ space: 12 }) {
           Column({ space: 4 }) {
             Text(this.weekTotalDuration.toString())
-              .fontSize(18)
+              .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.brand_primary'))
-            Text('总时长(分钟)')
+            Text('时长(分钟)')
               .fontSize(11)
               .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
+          .alignItems(HorizontalAlign.Center)
 
           Column({ space: 4 }) {
             Text(this.weekTotalWeight.toString())
-              .fontSize(18)
+              .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.color_warning'))
-            Text('总重量(kg)')
+            Text('重量(kg)')
               .fontSize(11)
               .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
+          .alignItems(HorizontalAlign.Center)
 
           Column({ space: 4 }) {
             Text(this.weekTotalCount.toString())
-              .fontSize(18)
+              .fontSize(20)
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.color_success'))
             Text('训练次数')
@@ -292,6 +294,7 @@ export struct DashboardPage {
               .fontColor($r('app.color.text_hint'))
           }
           .layoutWeight(1)
+          .alignItems(HorizontalAlign.Center)
         }
         .width('100%')
         .padding({ top: 12, bottom: 12 })
@@ -380,9 +383,10 @@ export struct DashboardPage {
     Button('快速添加训练')
       .width('100%')
       .height(48)
-      .fontSize(16)
+      .fontSize(15)
+      .fontWeight(FontWeight.Medium)
       .backgroundColor($r('app.color.brand_primary'))
-      .borderRadius(8)
+      .borderRadius(10)
       .onClick(() => {
         RouterManager.pushPath(NavRoutes.TRAINING_SESSION);
       })
@@ -484,10 +488,11 @@ export struct DashboardPage {
       // 按钮
       Button('继续训练')
         .width('100%')
-        .height(36)
+        .height(38)
         .fontSize(14)
+        .fontWeight(FontWeight.Medium)
         .backgroundColor($r('app.color.color_success'))
-        .borderRadius(6)
+        .borderRadius(8)
         .margin({ top: 4 })
         .onClick(() => {
           toast('继续训练计划');
@@ -590,28 +595,28 @@ export struct DashboardPage {
   /**
    * 获取计划状态颜色
    */
-  getStatusColor(status: string): string {
+  getStatusColor(status: string): Resource {
     if (status === '进行中') {
-      return '#4CAF50';
+      return $r('app.color.color_success');
     } else if (status === '已完成') {
-      return '#2196F3';
+      return $r('app.color.brand_primary');
     } else if (status === '已暂停') {
-      return '#FF9800';
+      return $r('app.color.color_warning');
     }
-    return '#999999';
+    return $r('app.color.text_hint');
   }
 
   /**
    * 获取难度等级颜色
    */
-  getLevelColor(level: string): string {
+  getLevelColor(level: string): Resource {
     if (level === '初级') {
-      return '#4CAF50';
+      return $r('app.color.color_success');
     } else if (level === '中级') {
-      return '#FF9800';
+      return $r('app.color.color_warning');
     } else if (level === '高级') {
-      return '#F44336';
+      return $r('app.color.color_danger');
     }
-    return '#999999';
+    return $r('app.color.text_hint');
   }
 }

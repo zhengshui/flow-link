@@ -104,13 +104,13 @@ export struct LoginPage {
 
           // 应用名称
           Text('FitEasy')
-            .fontSize(32)
+            .fontSize(28)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.text_primary'))
 
           // 欢迎语
           Text('健身易 - 让健身更简单')
-            .fontSize(16)
+            .fontSize(14)
             .fontColor($r('app.color.text_hint'))
         }
         .width('100%')
@@ -141,10 +141,11 @@ export struct LoginPage {
           // 登录按钮
           Button(this.isLoading ? '登录中...' : '登录')
             .width('100%')
-            .height(48)
-            .fontSize(16)
+            .height(46)
+            .fontSize(15)
+            .fontWeight(FontWeight.Medium)
             .backgroundColor($r('app.color.brand_primary'))
-            .borderRadius(8)
+            .borderRadius(10)
             .opacity((this.username.length > 0 && this.password.length > 0 && !this.isLoading) ? 1 : 0.5)
             .enabled(this.username.length > 0 && this.password.length > 0 && !this.isLoading)
             .onClick(() => {

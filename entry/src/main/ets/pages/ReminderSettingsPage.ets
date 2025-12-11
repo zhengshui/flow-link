@@ -115,7 +115,7 @@ export struct ReminderSettingsPage {
           Column().width(24)
         }
         .width('100%')
-        .height(65)
+        .height(70)
         .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
         .backgroundColor($r('app.color.card_background'))
 
@@ -126,7 +126,7 @@ export struct ReminderSettingsPage {
             Column({ space: 0 }) {
             Row() {
               Text('启用训练提醒')
-                .fontSize(16)
+                .fontSize(15)
                 .fontColor($r('app.color.text_primary'))
                 .layoutWeight(1)
 
@@ -136,7 +136,7 @@ export struct ReminderSettingsPage {
                 })
             }
             .width('100%')
-            .height(56)
+            .height(52)
             .padding({ left: 16, right: 16 })
           }
           .width('100%')
@@ -149,12 +149,13 @@ export struct ReminderSettingsPage {
             Column({ space: 0 }) {
               Row() {
                 Text('提醒时间')
-                  .fontSize(16)
+                  .fontSize(15)
                   .fontColor($r('app.color.text_primary'))
                   .layoutWeight(1)
 
                 Text(this.reminderTime)
-                  .fontSize(16)
+                  .fontSize(15)
+                  .fontWeight(FontWeight.Medium)
                   .fontColor($r('app.color.brand_primary'))
                   .onClick((): void => {
                     toast('时间选择器功能开发中...');
@@ -162,7 +163,7 @@ export struct ReminderSettingsPage {
                   })
               }
               .width('100%')
-              .height(56)
+              .height(52)
               .padding({ left: 16, right: 16 })
             }
             .width('100%')
@@ -174,9 +175,10 @@ export struct ReminderSettingsPage {
             Column({ space: 0 }) {
               Text('提醒日期')
                 .fontSize(16)
+                .fontWeight(FontWeight.Medium)
                 .fontColor($r('app.color.text_primary'))
                 .width('100%')
-                .padding({ left: 16, top: 12, bottom: 12 })
+                .padding({ left: 16, top: 14, bottom: 12 })
 
               Divider()
                 .strokeWidth(0.5)
@@ -188,14 +190,14 @@ export struct ReminderSettingsPage {
                 ForEach(this.weekDays, (day: string, index: number) => {
                   Column() {
                     Text(day)
-                      .fontSize(14)
+                      .fontSize(12)
                       .fontColor(this.reminderDays[index] ? Color.White : $r('app.color.text_secondary'))
                       .fontWeight(this.reminderDays[index] ? FontWeight.Medium : FontWeight.Normal)
                   }
-                  .width(40)
-                  .height(40)
+                  .width(38)
+                  .height(38)
                   .backgroundColor(this.reminderDays[index] ? $r('app.color.brand_primary') : $r('app.color.outline'))
-                  .borderRadius(20)
+                  .borderRadius(19)
                   .justifyContent(FlexAlign.Center)
                   .onClick((): void => {
                     this.toggleDay(index);
@@ -214,22 +216,23 @@ export struct ReminderSettingsPage {
 
           // 提示信息
           Text('设置训练提醒可以帮助你养成良好的健身习惯')
-            .fontSize(13)
+            .fontSize(12)
             .fontColor($r('app.color.text_hint'))
             .width('100%')
-            .padding({ left: 24, right: 24, top: 8 })
+            .padding({ left: 24, right: 24, top: 12 })
             .textAlign(TextAlign.Center)
 
           // 保存按钮
           if (this.reminderEnabled) {
             Button('保存设置')
               .width('90%')
-              .height(48)
-              .fontSize(16)
+              .height(46)
+              .fontSize(15)
+              .fontWeight(FontWeight.Medium)
               .backgroundColor($r('app.color.brand_primary'))
               .fontColor(Color.White)
-              .borderRadius(8)
-              .margin({ top: 16, bottom: 40 })
+              .borderRadius(10)
+              .margin({ top: 20, bottom: 40 })
               .onClick((): void => {
                 this.saveReminderSettings();
               })

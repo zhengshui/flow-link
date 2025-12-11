@@ -49,8 +49,8 @@ export struct AboutPage {
           Column().width(24)
         }
         .width('100%')
-        .height(65)
-        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight), bottom: 8 })
+        .height(70)
+        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
         .backgroundColor($r('app.color.card_background'))
 
         // 内容区域

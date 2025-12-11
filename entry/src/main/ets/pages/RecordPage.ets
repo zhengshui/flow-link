@@ -205,8 +205,8 @@ export struct RecordPage {
         title: day.dateStr,
         message: '今天还没有训练安排哦，快去训练吧~',
         buttons: [
-          { text: '取消', color: '#666666' },
-          { text: '开始训练', color: '#007AFF' }
+          { text: '取消', color: '#646A73' },
+          { text: '开始训练', color: '#3370FF' }
         ]
       }).then((result: promptAction.ShowDialogSuccessResponse) => {
         if (result.index === 1) {
