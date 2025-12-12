@@ -159,32 +159,32 @@ export struct CalendarComponent {
 
   @Builder
   DayCell(day: CalendarDayModel): void {
-    Column({ space: 4 }) {
+    Column({ space: 2 }) {
       // 日期数字
       Stack() {
         if (day.isToday) {
           // 今日背景圆圈
           Circle()
-            .width(32)
-            .height(32)
+            .width(28)
+            .height(28)
             .fill($r('app.color.brand_primary'))
         }
         Text(day.day.toString())
-          .fontSize(15)
+          .fontSize(14)
           .fontColor(this.getDayTextColor(day))
           .fontWeight(day.isToday ? FontWeight.Medium : FontWeight.Normal)
       }
-      .width(32)
-      .height(32)
+      .width(28)
+      .height(28)
       .alignContent(Alignment.Center)
 
-      // 训练标记点
+      // 训练标记
       if (day.records.length > 0 && day.isCurrentMonth) {
         this.TrainingIndicator(day)
       }
     }
     .width('13.5%')
-    .height(72)
+    .height(68)
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Start)
     .padding({ top: 4 })
@@ -199,37 +199,34 @@ export struct CalendarComponent {
 
   @Builder
   TrainingIndicator(day: CalendarDayModel): void {
-    if (day.records.length === 1) {
-      // 单条记录 - 显示单个圆点
-      Circle()
-        .width(6)
-        .height(6)
-        .fill($r('app.color.color_success'))
-    } else if (day.records.length === 2) {
-      // 两条记录 - 显示两个圆点
-      Row({ space: 3 }) {
-        Circle()
-          .width(5)
-          .height(5)
-          .fill($r('app.color.color_success'))
-        Circle()
-          .width(5)
-          .height(5)
-          .fill($r('app.color.brand_primary'))
-      }
-    } else {
-      // 多条记录 - 显示圆点和数字
-      Row({ space: 2 }) {
-        Circle()
-          .width(5)
-          .height(5)
-          .fill($r('app.color.color_success'))
-        Text('+' + (day.records.length - 1).toString())
+    Column({ space: 1 }) {
+      if (day.records.length === 1) {
+        // 单条记录 - 显示训练名称和容量
+        Text(this.getTrainingAbbr(day.records[0]))
           .fontSize(9)
-          .fontColor($r('app.color.text_hint'))
           .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.color_success'))
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Clip })
+        Text(this.getTrainingVolume(day.records[0]))
+          .fontSize(8)
+          .fontColor($r('app.color.text_hint'))
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Clip })
+      } else {
+        // 多条记录 - 显示记录数和合计容量
+        Text(day.records.length.toString() + '次')
+          .fontSize(9)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.brand_primary'))
+        Text(this.getTotalVolume(day.records))
+          .fontSize(8)
+          .fontColor($r('app.color.text_hint'))
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Clip })
       }
     }
+    .alignItems(HorizontalAlign.Center)
   }
 
   /**
@@ -268,5 +265,24 @@ export struct CalendarComponent {
       return record.totalWeight.toString() + 'kg';
     }
     return record.totalSets.toString() + '组';
+  }
+
+  /**
+   * 获取多条记录的总容量
+   */
+  private getTotalVolume(records: TrainingRecordModel[]): string {
+    let totalWeight: number = 0;
+    let totalSets: number = 0;
+    for (let i: number = 0; i < records.length; i++) {
+      totalWeight += records[i].totalWeight;
+      totalSets += records[i].totalSets;
+    }
+    if (totalWeight > 0) {
+      if (totalWeight >= 1000) {
+        return (totalWeight / 1000).toFixed(1) + 'T';
+      }
+      return totalWeight.toString() + 'kg';
+    }
+    return totalSets.toString() + '组';
   }
 }

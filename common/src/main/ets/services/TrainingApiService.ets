@@ -135,29 +135,36 @@ export class TrainingApiService {
         'planId': record.planId
       };
 
-      // 转换训练项目
+      // 转换训练项目（只添加有效的动作）
       const exercisesArray: Object[] = [];
       for (let i: number = 0; i < record.exercises.length; i++) {
         const exercise: ExerciseModel = record.exercises[i];
-        const exerciseData: Record<string, number | boolean | string | Object | undefined> = {
-          'name': exercise.name,
-          'sets': exercise.sets,
-          'reps': exercise.reps,
-          'weight': exercise.weight,
-          'restTime': exercise.restTime,
-          'muscleGroup': exercise.muscleGroup,
-          'notes': exercise.notes,
-          'duration': exercise.duration
-        };
-        exercisesArray.push(exerciseData);
+        // 确保动作名称不为空且有完成的组数
+        if (exercise.name.length > 0 && exercise.sets > 0) {
+          const exerciseData: Record<string, number | boolean | string | Object | undefined> = {
+            'name': exercise.name,
+            'sets': exercise.sets,
+            'reps': exercise.reps,
+            'weight': exercise.weight,
+            'restTime': exercise.restTime,
+            'muscleGroup': exercise.muscleGroup.length > 0 ? exercise.muscleGroup : '其他',
+            'notes': exercise.notes,
+            'duration': exercise.duration
+          };
+          exercisesArray.push(exerciseData);
+        }
       }
       requestData['exercises'] = exercisesArray;
+
+      console.log('[TrainingApiService] createTrainingRecord - Request data:', JSON.stringify(requestData));
 
       const response: ResponseResult = await requestApiCall(
         '/training/records',
         http.RequestMethod.POST,
         requestData
       );
+
+      console.log('[TrainingApiService] createTrainingRecord - Response code:', response.code, 'message:', response.message);
 
       if (response.code === 200 && response.data) {
         const recordData: Record<string, Object> = response.data as Record<string, Object>;
@@ -170,6 +177,7 @@ export class TrainingApiService {
 
       return response;
     } catch (error) {
+      console.error('[TrainingApiService] createTrainingRecord - Error:', JSON.stringify(error));
       return TrainingApiService.createErrorResponse(4003, '创建训练记录失败: ' + JSON.stringify(error));
     }
   }
@@ -195,23 +203,28 @@ export class TrainingApiService {
         'planId': record.planId
       };
 
-      // 转换训练项目
+      // 转换训练项目（只添加有效的动作）
       const exercisesArray: Object[] = [];
       for (let i: number = 0; i < record.exercises.length; i++) {
         const exercise: ExerciseModel = record.exercises[i];
-        const exerciseData: Record<string, number | boolean | string | Object | undefined> = {
-          'name': exercise.name,
-          'sets': exercise.sets,
-          'reps': exercise.reps,
-          'weight': exercise.weight,
-          'restTime': exercise.restTime,
-          'muscleGroup': exercise.muscleGroup,
-          'notes': exercise.notes,
-          'duration': exercise.duration
-        };
-        exercisesArray.push(exerciseData);
+        // 确保动作名称不为空且有完成的组数
+        if (exercise.name.length > 0 && exercise.sets > 0) {
+          const exerciseData: Record<string, number | boolean | string | Object | undefined> = {
+            'name': exercise.name,
+            'sets': exercise.sets,
+            'reps': exercise.reps,
+            'weight': exercise.weight,
+            'restTime': exercise.restTime,
+            'muscleGroup': exercise.muscleGroup.length > 0 ? exercise.muscleGroup : '其他',
+            'notes': exercise.notes,
+            'duration': exercise.duration
+          };
+          exercisesArray.push(exerciseData);
+        }
       }
       requestData['exercises'] = exercisesArray;
+
+      console.log('[TrainingApiService] updateTrainingRecord - Request data:', JSON.stringify(requestData));
 
       const response: ResponseResult = await requestApiCall(
         `/training/records/${recordId}`,
@@ -219,12 +232,15 @@ export class TrainingApiService {
         requestData
       );
 
+      console.log('[TrainingApiService] updateTrainingRecord - Response code:', response.code, 'message:', response.message);
+
       if (response.code === 200) {
         response.code = 0;
       }
 
       return response;
     } catch (error) {
+      console.error('[TrainingApiService] updateTrainingRecord - Error:', JSON.stringify(error));
       return TrainingApiService.createErrorResponse(4004, '更新训练记录失败: ' + JSON.stringify(error));
     }
   }

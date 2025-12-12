@@ -29,9 +29,22 @@ export struct DashboardPage {
   @State recommendedTemplates: PlanTemplateModel[] = []
   @State isLoading: boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp('needRefreshDashboard') @Watch('onNeedRefreshChange') needRefresh: boolean = false
 
   aboutToAppear(): void {
     this.loadData();
+  }
+
+  /**
+   * 监听刷新标志变化，当从训练页面返回时刷新数据
+   */
+  onNeedRefreshChange(): void {
+    if (this.needRefresh) {
+      // 清除刷新标志
+      AppStorage.setOrCreate<boolean>('needRefreshDashboard', false);
+      // 刷新数据
+      this.loadData();
+    }
   }
 
   /**

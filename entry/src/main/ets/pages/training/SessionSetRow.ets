@@ -21,31 +21,30 @@ export struct SessionSetRow {
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
         .fontColor(this.set.isCompleted ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
-        .width(32)
+        .width(28)
         .textAlign(TextAlign.Center)
 
       // 类型标签（可点击切换）
       Text(this.set.setType)
-        .fontSize(11)
+        .fontSize(10)
         .fontWeight(FontWeight.Medium)
         .fontColor(this.set.setType === SetTypeConst.WARMUP ? $r('app.color.set_warmup') :
           this.set.setType === SetTypeConst.COOLDOWN ? $r('app.color.set_cooldown') : $r('app.color.set_working'))
-        .width(56)
-        .height(24)
+        .width(40)
+        .height(22)
         .textAlign(TextAlign.Center)
         .backgroundColor(this.set.setType === SetTypeConst.WARMUP ? $r('app.color.set_warmup_light') :
           this.set.setType === SetTypeConst.COOLDOWN ? $r('app.color.set_cooldown_light') : $r('app.color.set_working_light'))
-        .borderRadius(12)
+        .borderRadius(11)
         .onClick((): void => {
           this.onShowTypeSelector(this.exerciseIndex, this.setIndex);
         })
 
-      Blank().layoutWeight(0.2)
-
       // 重量输入
       Row() {
         TextInput({ text: this.set.weight.toString() })
-          .width(56)
+          .layoutWeight(1)
+          .constraintSize({ maxWidth: 72 })
           .height(36)
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
@@ -60,21 +59,16 @@ export struct SessionSetRow {
               this.set.weight = weight;
             }
           })
-
-        Text('kg')
-          .fontSize(12)
-          .fontColor($r('app.color.text_hint'))
-          .margin({ left: 4 })
       }
       .layoutWeight(1)
       .justifyContent(FlexAlign.Center)
-
-      Blank().layoutWeight(0.2)
+      .padding({ left: 4, right: 4 })
 
       // 次数输入
       Row() {
         TextInput({ text: this.set.reps.toString() })
-          .width(48)
+          .layoutWeight(1)
+          .constraintSize({ maxWidth: 64 })
           .height(36)
           .fontSize(15)
           .fontWeight(FontWeight.Medium)
@@ -89,45 +83,39 @@ export struct SessionSetRow {
               this.set.reps = reps;
             }
           })
-
-        Text('次')
-          .fontSize(12)
-          .fontColor($r('app.color.text_hint'))
-          .margin({ left: 4 })
       }
-      .layoutWeight(0.8)
+      .layoutWeight(1)
       .justifyContent(FlexAlign.Center)
+      .padding({ left: 4, right: 4 })
 
       // 完成状态按钮
       Button() {
         Text(this.set.isCompleted ? '✓' : '')
-          .fontSize(14)
+          .fontSize(13)
           .fontWeight(FontWeight.Bold)
           .fontColor(Color.White)
       }
-      .width(32)
-      .height(32)
+      .width(30)
+      .height(30)
       .backgroundColor(this.set.isCompleted ? $r('app.color.brand_primary') : $r('app.color.outline'))
-      .borderRadius(16)
-      .margin({ left: 8 })
+      .borderRadius(15)
       .onClick((): void => {
         this.onToggleComplete(this.exerciseIndex, this.setIndex);
       })
 
       // 删除按钮
       Text('×')
-        .fontSize(18)
+        .fontSize(16)
         .fontColor($r('app.color.text_placeholder'))
-        .width(32)
+        .width(38)
         .textAlign(TextAlign.Center)
         .onClick((): void => {
           this.onRemoveSet(this.exerciseIndex, this.setIndex);
         })
     }
     .width('100%')
-    .height(52)
-    .padding({ left: 4, right: 4, top: 4, bottom: 4 })
+    .height(48)
     .backgroundColor(this.set.isCompleted ? $r('app.color.brand_primary_light') : Color.Transparent)
-    .borderRadius(10)
+    .borderRadius(8)
   }
 }

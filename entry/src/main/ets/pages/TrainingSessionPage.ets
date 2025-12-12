@@ -468,8 +468,10 @@ export struct TrainingSessionPage {
 
       if (res.code === 0) {
         toast(this.existingRecordId.length > 0 ? '训练记录更新成功' : '训练记录保存成功');
-        // 设置刷新标志，通知 RecordPage 刷新数据
+        // 设置刷新标志，通知相关页面刷新数据
         AppStorage.setOrCreate<boolean>('needRefreshRecordPage', true);
+        AppStorage.setOrCreate<boolean>('needRefreshDashboard', true);
+        AppStorage.setOrCreate<boolean>('needRefreshStats', true);
         this.pathStack.pop();
       } else {
         toast(res.message ?? '保存失败');
@@ -509,21 +511,36 @@ export struct TrainingSessionPage {
     const exercises: ExerciseModel[] = [];
     for (let i: number = 0; i < this.session.exercises.length; i++) {
       const sessionEx: SessionExerciseModel = this.session.exercises[i];
-      const completedSets: number = sessionEx.getCompletedSetsCount();
 
-      if (completedSets > 0) {
-        let totalReps: number = 0;
-        let totalWeight: number = 0;
-        for (let j: number = 0; j < sessionEx.sets.length; j++) {
-          if (sessionEx.sets[j].isCompleted) {
-            totalReps += sessionEx.sets[j].reps;
-            totalWeight += sessionEx.sets[j].weight;
-          }
+      // 只统计已勾选完成的组
+      let completedSets: number = 0;
+      let totalReps: number = 0;
+      let totalWeight: number = 0;
+
+      for (let j: number = 0; j < sessionEx.sets.length; j++) {
+        // 只计算勾选完成的组
+        if (sessionEx.sets[j].isCompleted) {
+          completedSets++;
+          totalReps += sessionEx.sets[j].reps;
+          totalWeight += sessionEx.sets[j].weight;
         }
+      }
+
+      // 只添加有完成组且动作名称有效的动作
+      if (completedSets > 0 && sessionEx.actionName.length > 0) {
+        const avgReps: number = completedSets > 0 ? Math.floor(totalReps / completedSets) : 0;
+        const avgWeight: number = completedSets > 0 ? Math.floor(totalWeight / completedSets) : 0;
+
         exercises.push(new ExerciseModel(
-          0, sessionEx.actionName, completedSets,
-          Math.floor(totalReps / completedSets), Math.floor(totalWeight / completedSets),
-          0, sessionEx.muscleGroup, sessionEx.note, 0
+          0,
+          sessionEx.actionName,
+          completedSets,
+          avgReps,
+          avgWeight,
+          0,
+          sessionEx.muscleGroup.length > 0 ? sessionEx.muscleGroup : '其他',
+          sessionEx.note,
+          0
         ));
       }
     }

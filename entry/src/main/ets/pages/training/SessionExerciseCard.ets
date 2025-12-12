@@ -66,46 +66,39 @@ export struct SessionExerciseCard {
 
       // 表头
       Row() {
-          Text('#')
-            .fontSize(12)
-            .fontColor($r('app.color.text_hint'))
-            .fontWeight(FontWeight.Medium)
-            .width(32)
-            .textAlign(TextAlign.Center)
+        Text('#')
+          .fontSize(12)
+          .fontColor($r('app.color.text_hint'))
+          .fontWeight(FontWeight.Medium)
+          .width(28)
+          .textAlign(TextAlign.Center)
 
-          Text('类型')
-            .fontSize(12)
-            .fontColor($r('app.color.text_hint'))
-            .fontWeight(FontWeight.Medium)
-            .width(56)
-            .textAlign(TextAlign.Center)
+        Text('类型')
+          .fontSize(12)
+          .fontColor($r('app.color.text_hint'))
+          .fontWeight(FontWeight.Medium)
+          .width(40)
+          .textAlign(TextAlign.Center)
 
-          Blank().layoutWeight(0.2)
+        Text('重量')
+          .fontSize(12)
+          .fontColor($r('app.color.text_hint'))
+          .fontWeight(FontWeight.Medium)
+          .layoutWeight(1)
+          .textAlign(TextAlign.Center)
 
-          Text('重量')
-            .fontSize(12)
-            .fontColor($r('app.color.text_hint'))
-            .fontWeight(FontWeight.Medium)
-            .layoutWeight(1)
-            .textAlign(TextAlign.Center)
+        Text('次数')
+          .fontSize(12)
+          .fontColor($r('app.color.text_hint'))
+          .fontWeight(FontWeight.Medium)
+          .layoutWeight(1)
+          .textAlign(TextAlign.Center)
 
-          Blank().layoutWeight(0.2)
-
-          Text('次数')
-            .fontSize(12)
-            .fontColor($r('app.color.text_hint'))
-            .fontWeight(FontWeight.Medium)
-            .layoutWeight(0.8)
-            .textAlign(TextAlign.Center)
-
-          Text('')
-            .width(44)
-
-          Text('')
-            .width(32)
-        }
-        .width('100%')
-        .padding({ left: 4, right: 4 })
+        // 操作列占位
+        Row()
+          .width(68)
+      }
+      .width('100%')
 
         // 训练组列表
         Column({ space: 8 }) {
