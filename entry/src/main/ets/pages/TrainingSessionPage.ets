@@ -715,6 +715,7 @@ export struct TrainingSessionPage {
               .padding(16)
             }
             .layoutWeight(1)
+            .align(Alignment.Top)
           }
         }
         .width('100%')

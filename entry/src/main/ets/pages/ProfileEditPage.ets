@@ -130,7 +130,10 @@ export struct ProfileEditPage {
 
         if (infoResponse.code === 200 && infoResponse.data !== null) {
           // 保存到本地存储
-          StorageUtils.saveValueSync(StorageConst.USER_INFO, JSON.stringify(infoResponse.data));
+          const userInfoJson: string = JSON.stringify(infoResponse.data);
+          StorageUtils.saveValueSync(StorageConst.USER_INFO, userInfoJson);
+          // 同步更新 AppStorage，触发 ProfilePage 刷新
+          AppStorage.setOrCreate<string>('userInfoJson', userInfoJson);
           toast('保存成功');
 
           // 延迟返回，让用户看到成功提示
@@ -196,9 +199,7 @@ export struct ProfileEditPage {
 
           // 个人信息
           this.SectionTitle('个人信息')
-          this.SelectItem('性别', this.gender, this.genderOptions, (value: string): void => {
-            this.gender = value;
-          })
+          this.GenderSelector()
           this.ItemDivider()
           this.InputItem('年龄', this.age, (value: string): void => {
             this.age = value;
@@ -220,9 +221,7 @@ export struct ProfileEditPage {
 
           // 健身目标
           this.SectionTitle('健身目标')
-          this.SelectItem('健身目标', this.fitnessGoal, this.fitnessGoalOptions, (value: string): void => {
-            this.fitnessGoal = value;
-          })
+          this.FitnessGoalSelector()
 
           // 保存按钮
           Button(this.isLoading ? '保存中...' : '保存')
@@ -243,6 +242,7 @@ export struct ProfileEditPage {
         }
         .layoutWeight(1)
         .backgroundColor($r('app.color.page_background'))
+        .align(Alignment.Top)
       }
       .width('100%')
       .height('100%')
@@ -288,28 +288,63 @@ export struct ProfileEditPage {
   }
 
   @Builder
-  SelectItem(label: string, value: string, options: string[], onChange: (value: string) => void) {
+  GenderSelector() {
     Row() {
-      Text(label)
+      Text('性别')
         .fontSize(15)
         .fontColor($r('app.color.text_primary'))
         .width(100)
+        .flexShrink(0)
 
       Row({ space: 6 }) {
-        ForEach(options, (option: string) => {
+        ForEach(this.genderOptions, (option: string) => {
           Text(option)
             .fontSize(13)
-            .fontColor(value === option ? Color.White : $r('app.color.text_secondary'))
-            .padding({ left: 10, right: 10, top: 5, bottom: 5 })
-            .backgroundColor(value === option ? $r('app.color.brand_primary') : $r('app.color.outline'))
+            .fontColor(this.gender === option ? Color.White : $r('app.color.text_secondary'))
+            .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+            .backgroundColor(this.gender === option ? $r('app.color.brand_primary') : $r('app.color.outline'))
             .borderRadius(6)
-            .onClick((): void => {
-              onChange(option);
+            .onClick(() => {
+              this.gender = option;
             })
         })
       }
       .layoutWeight(1)
       .justifyContent(FlexAlign.End)
+    }
+    .width('100%')
+    .height(52)
+    .padding({ left: 16, right: 16 })
+    .backgroundColor($r('app.color.card_background'))
+  }
+
+  @Builder
+  FitnessGoalSelector() {
+    Row() {
+      Text('健身目标')
+        .fontSize(15)
+        .fontColor($r('app.color.text_primary'))
+        .width(100)
+        .flexShrink(0)
+
+      Scroll() {
+        Row({ space: 6 }) {
+          ForEach(this.fitnessGoalOptions, (option: string) => {
+            Text(option)
+              .fontSize(13)
+              .fontColor(this.fitnessGoal === option ? Color.White : $r('app.color.text_secondary'))
+              .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+              .backgroundColor(this.fitnessGoal === option ? $r('app.color.brand_primary') : $r('app.color.outline'))
+              .borderRadius(6)
+              .onClick(() => {
+                this.fitnessGoal = option;
+              })
+          })
+        }
+      }
+      .scrollable(ScrollDirection.Horizontal)
+      .scrollBar(BarState.Off)
+      .layoutWeight(1)
     }
     .width('100%')
     .height(52)

@@ -24,7 +24,6 @@ export struct ThemeSettingsPage {
   private themeOptions: ThemeOption[] = [
     { name: '浅色模式', value: 'light', description: '明亮清爽，适合白天使用', icon: '☀️' },
     { name: '深色模式', value: 'dark', description: '舒适护眼，适合夜间使用', icon: '🌙' },
-    { name: '跟随系统', value: 'auto', description: '自动跟随系统主题设置', icon: '🔄' }
   ]
 
   aboutToAppear(): void {

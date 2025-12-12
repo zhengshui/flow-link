@@ -159,6 +159,7 @@ export struct StatsPage {
         .width('100%')
         .padding({ bottom: 16 })
       }
+      .align(Alignment.Top)
       .layoutWeight(1)
     }
     .width('100%')

@@ -208,6 +208,7 @@ export struct AddTrainingPage {
         }
         .layoutWeight(1)
         .backgroundColor($r('app.color.page_background'))
+        .align(Alignment.Top)
       }
       .width('100%')
       .height('100%')

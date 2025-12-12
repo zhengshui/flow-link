@@ -31,11 +31,11 @@ export struct CalendarComponent {
       if (this.isLoading) {
         Column({ space: 16 }) {
           LoadingProgress()
-            .width(40)
-            .height(40)
+            .width(36)
+            .height(36)
             .color($r('app.color.brand_primary'))
           Text('加载中...')
-            .fontSize(14)
+            .fontSize(13)
             .fontColor($r('app.color.text_hint'))
         }
         .width('100%')
@@ -43,19 +43,16 @@ export struct CalendarComponent {
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
       } else {
-        Scroll() {
-          Column() {
-            // 星期标题行
-            this.WeekHeader()
+        Column() {
+          // 星期标题行
+          this.WeekHeader()
 
-            // 日历格子
-            this.CalendarGrid()
-          }
-          .width('100%')
-          .padding({ left: 8, right: 8, bottom: 16 })
+          // 日历格子
+          this.CalendarGrid()
         }
         .width('100%')
         .layoutWeight(1)
+        .padding({ left: 16, right: 16, bottom: 16 })
       }
     }
     .width('100%')
@@ -66,44 +63,66 @@ export struct CalendarComponent {
   MonthSelector(): void {
     Row() {
       // 上月按钮
-      SymbolGlyph($r('sys.symbol.chevron_left'))
-        .fontSize(20)
-        .fontColor([$r('app.color.text_primary')])
-        .fontWeight(FontWeight.Medium)
-        .width(40)
-        .height(40)
-        .onClick(() => {
-          this.onPrevMonth();
-        })
+      Row() {
+        SymbolGlyph($r('sys.symbol.chevron_left'))
+          .fontSize(18)
+          .fontColor([$r('app.color.text_secondary')])
+      }
+      .width(40)
+      .height(40)
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+      .borderRadius(20)
+      .backgroundColor($r('app.color.card_background_secondary'))
+      .onClick(() => {
+        this.onPrevMonth();
+      })
+
+      Blank()
 
       // 年月显示
       Row({ space: 4 }) {
-        Text(this.currentYear.toString() + '年' + this.currentMonth.toString() + '月')
-          .fontSize(18)
-          .fontWeight(FontWeight.Medium)
+        Text(this.currentYear.toString())
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
           .fontColor($r('app.color.text_primary'))
+        Text('年')
+          .fontSize(14)
+          .fontColor($r('app.color.text_secondary'))
+        Text(this.currentMonth.toString().padStart(2, '0'))
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .fontColor($r('app.color.text_primary'))
+        Text('月')
+          .fontSize(14)
+          .fontColor($r('app.color.text_secondary'))
       }
-      .layoutWeight(1)
-      .justifyContent(FlexAlign.Center)
       .onClick(() => {
         this.onToday();
       })
 
+      Blank()
+
       // 下月按钮
-      SymbolGlyph($r('sys.symbol.chevron_right'))
-        .fontSize(20)
-        .fontColor([$r('app.color.text_primary')])
-        .fontWeight(FontWeight.Medium)
-        .width(40)
-        .height(40)
-        .onClick(() => {
-          this.onNextMonth();
-        })
+      Row() {
+        SymbolGlyph($r('sys.symbol.chevron_right'))
+          .fontSize(18)
+          .fontColor([$r('app.color.text_secondary')])
+      }
+      .width(40)
+      .height(40)
+      .justifyContent(FlexAlign.Center)
+      .alignItems(VerticalAlign.Center)
+      .borderRadius(20)
+      .backgroundColor($r('app.color.card_background_secondary'))
+      .onClick(() => {
+        this.onNextMonth();
+      })
     }
     .width('100%')
-    .height(56)
-    .padding({ left: 8, right: 8 })
-    .backgroundColor($r('app.color.card_background'))
+    .height(64)
+    .padding({ left: 16, right: 16 })
+    .alignItems(VerticalAlign.Center)
   }
 
   @Builder
@@ -111,23 +130,23 @@ export struct CalendarComponent {
     Row() {
       ForEach(this.weekDays, (day: string, index: number) => {
         Text(day)
-          .fontSize(13)
-          .fontColor(index === 0 || index === 6 ? $r('app.color.color_danger') : $r('app.color.text_secondary'))
+          .fontSize(12)
+          .fontWeight(FontWeight.Medium)
+          .fontColor(index === 0 || index === 6 ? $r('app.color.color_danger') : $r('app.color.text_hint'))
           .width('14.28%')
           .textAlign(TextAlign.Center)
-          .padding({ top: 12, bottom: 8 })
+          .padding({ top: 8, bottom: 12 })
       })
     }
     .width('100%')
-    .backgroundColor($r('app.color.card_background'))
   }
 
   @Builder
   CalendarGrid(): void {
-    Column() {
+    Column({ space: 4 }) {
       // 6行日历格子
       ForEach([0, 1, 2, 3, 4, 5], (rowIndex: number) => {
-        Row() {
+        Row({ space: 4 }) {
           ForEach([0, 1, 2, 3, 4, 5, 6], (colIndex: number) => {
             this.DayCell(this.calendarDays[rowIndex * 7 + colIndex])
           })
@@ -136,67 +155,94 @@ export struct CalendarComponent {
       })
     }
     .width('100%')
-    .backgroundColor($r('app.color.card_background'))
-    .borderRadius(12)
   }
 
   @Builder
   DayCell(day: CalendarDayModel): void {
-    Column({ space: 2 }) {
+    Column({ space: 4 }) {
       // 日期数字
-      Text(day.day.toString())
-        .fontSize(14)
-        .fontColor(day.isCurrentMonth ? (day.isToday ? Color.White : $r('app.color.text_primary')) : $r('app.color.text_placeholder'))
-        .fontWeight(day.isToday ? FontWeight.Medium : FontWeight.Normal)
-        .width(28)
-        .height(28)
-        .textAlign(TextAlign.Center)
-        .borderRadius(14)
-        .backgroundColor(day.isToday ? $r('app.color.brand_primary') : Color.Transparent)
-
-      // 训练信息
-      if (day.records.length > 0 && day.isCurrentMonth) {
-        Column({ space: 1 }) {
-          ForEach(day.records.slice(0, 2), (record: TrainingRecordModel) => {
-            Row({ space: 2 }) {
-              Text(this.getTrainingAbbr(record))
-                .fontSize(9)
-                .fontColor(Color.White)
-                .maxLines(1)
-              Text(this.getTrainingVolume(record))
-                .fontSize(8)
-                .fontColor('rgba(255,255,255,0.8)')
-                .maxLines(1)
-            }
-            .width('100%')
-            .height(14)
-            .padding({ left: 2, right: 2 })
-            .backgroundColor($r('app.color.color_success'))
-            .borderRadius(3)
-            .justifyContent(FlexAlign.Center)
-          })
-
-          // 如果有更多记录
-          if (day.records.length > 2) {
-            Text('+' + (day.records.length - 2).toString())
-              .fontSize(8)
-              .fontColor($r('app.color.text_secondary'))
-          }
+      Stack() {
+        if (day.isToday) {
+          // 今日背景圆圈
+          Circle()
+            .width(32)
+            .height(32)
+            .fill($r('app.color.brand_primary'))
         }
-        .width('100%')
-        .alignItems(HorizontalAlign.Center)
+        Text(day.day.toString())
+          .fontSize(15)
+          .fontColor(this.getDayTextColor(day))
+          .fontWeight(day.isToday ? FontWeight.Medium : FontWeight.Normal)
+      }
+      .width(32)
+      .height(32)
+      .alignContent(Alignment.Center)
+
+      // 训练标记点
+      if (day.records.length > 0 && day.isCurrentMonth) {
+        this.TrainingIndicator(day)
       }
     }
-    .width('14.28%')
-    .height(80)
-    .padding(2)
+    .width('13.5%')
+    .height(72)
     .alignItems(HorizontalAlign.Center)
     .justifyContent(FlexAlign.Start)
+    .padding({ top: 4 })
+    .borderRadius(8)
+    .backgroundColor(day.isCurrentMonth && day.records.length > 0 ? $r('app.color.card_background') : Color.Transparent)
     .onClick(() => {
       if (day.isCurrentMonth) {
         this.onDayClick(day);
       }
     })
+  }
+
+  @Builder
+  TrainingIndicator(day: CalendarDayModel): void {
+    if (day.records.length === 1) {
+      // 单条记录 - 显示单个圆点
+      Circle()
+        .width(6)
+        .height(6)
+        .fill($r('app.color.color_success'))
+    } else if (day.records.length === 2) {
+      // 两条记录 - 显示两个圆点
+      Row({ space: 3 }) {
+        Circle()
+          .width(5)
+          .height(5)
+          .fill($r('app.color.color_success'))
+        Circle()
+          .width(5)
+          .height(5)
+          .fill($r('app.color.brand_primary'))
+      }
+    } else {
+      // 多条记录 - 显示圆点和数字
+      Row({ space: 2 }) {
+        Circle()
+          .width(5)
+          .height(5)
+          .fill($r('app.color.color_success'))
+        Text('+' + (day.records.length - 1).toString())
+          .fontSize(9)
+          .fontColor($r('app.color.text_hint'))
+          .fontWeight(FontWeight.Medium)
+      }
+    }
+  }
+
+  /**
+   * 获取日期文字颜色
+   */
+  private getDayTextColor(day: CalendarDayModel): ResourceColor {
+    if (!day.isCurrentMonth) {
+      return $r('app.color.text_placeholder');
+    }
+    if (day.isToday) {
+      return Color.White;
+    }
+    return $r('app.color.text_primary');
   }
 
   /**
@@ -224,4 +270,3 @@ export struct CalendarComponent {
     return record.totalSets.toString() + '组';
   }
 }
-

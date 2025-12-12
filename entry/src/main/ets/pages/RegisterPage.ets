@@ -265,6 +265,7 @@ export struct RegisterPage {
         .alignItems(HorizontalAlign.Center)
       }
       .layoutWeight(1)
+      .align(Alignment.Top)
       }
       .width('100%')
       .height('100%')

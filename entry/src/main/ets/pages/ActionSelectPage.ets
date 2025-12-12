@@ -4,7 +4,7 @@
  * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { ActionModel, MuscleGroupModel, ActionDataService, toast, MuscleGroupConst } from '@tbs/common';
+import { ActionModel, MuscleGroupModel, ActionDataService, toast } from '@tbs/common';
 
 const MAX_SELECT_COUNT: number = 5;
 
@@ -196,31 +196,37 @@ export struct ActionSelectPage {
         })
       }
       .width('100%')
+      .padding({ top: 8, bottom: 8 })
     }
-    .width(100)
+    .width(80)
     .height('100%')
-    .backgroundColor($r('app.color.card_background'))
     .scrollBar(BarState.Off)
+    .align(Alignment.Top)
   }
 
   @Builder
   MuscleGroupItem(group: MuscleGroupModel, index: number) {
-    Column({ space: 4 }) {
-      Image(MuscleGroupConst.getImageIcon(group.id))
-        .width(36)
-        .height(36)
-        .objectFit(ImageFit.Contain)
-        .borderRadius(6)
+    Stack({ alignContent: Alignment.Start }) {
+      // 选中指示条
+      if (this.currentGroupIndex === index) {
+        Column()
+          .width(3)
+          .height(20)
+          .backgroundColor($r('app.color.brand_primary'))
+          .borderRadius(2)
+      }
 
+      // 部位名称
       Text(group.name)
-        .fontSize(12)
+        .fontSize(13)
         .fontColor(this.currentGroupIndex === index ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
         .fontWeight(this.currentGroupIndex === index ? FontWeight.Medium : FontWeight.Normal)
+        .width('100%')
+        .textAlign(TextAlign.Center)
     }
     .width('100%')
-    .height(80)
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
+    .height(48)
+    .backgroundColor(this.currentGroupIndex === index ? $r('app.color.brand_primary_light') : Color.Transparent)
     .onClick(() => {
       this.switchMuscleGroup(index);
     })
@@ -258,6 +264,7 @@ export struct ActionSelectPage {
     .layoutWeight(1)
     .height('100%')
     .backgroundColor($r('app.color.page_background'))
+    .align(Alignment.Top)
   }
 
   @Builder

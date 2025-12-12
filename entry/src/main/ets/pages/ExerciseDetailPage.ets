@@ -19,6 +19,7 @@ export struct ExerciseDetailPage {
   @State action: ActionModel | null = null
   @State actionId: string = ''
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   private pathStack: NavPathStack = new NavPathStack()
 
   /**
@@ -76,15 +77,16 @@ export struct ExerciseDetailPage {
                 this.TipsSection()
               }
 
-              // 底部间距
+              // 底部安全区域避让
               Column()
-                .height(20)
+                .height(20 + this.getUIContext().px2vp(this.bottomRectHeight))
             }
             .width('100%')
             .padding(16)
           }
           .width('100%')
           .height('100%')
+          .align(Alignment.Top)
         } else {
           // 无数据
           Column() {

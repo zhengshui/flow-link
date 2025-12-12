@@ -11,9 +11,23 @@ export struct ProfilePage {
   @State userInfo: UserInfoData | null = null
   @State isLoading: boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
+  @StorageLink('userInfoJson') @Watch('onUserInfoChange') userInfoJson: string = ''
 
   aboutToAppear(): void {
     this.loadUserInfo();
+  }
+
+  /**
+   * 监听 AppStorage 中用户信息变化
+   */
+  onUserInfoChange(): void {
+    if (this.userInfoJson.length > 0) {
+      try {
+        this.userInfo = JSON.parse(this.userInfoJson) as UserInfoData;
+      } catch (err) {
+        console.error('解析用户信息失败:', JSON.stringify(err));
+      }
+    }
   }
 
   /**
@@ -154,6 +168,7 @@ export struct ProfilePage {
         .padding({ top: 16 })
       }
       .layoutWeight(1)
+      .align(Alignment.Top)
     }
     .width('100%')
     .height('100%')
@@ -229,8 +244,6 @@ export struct ProfilePage {
     const theme: string = StorageUtils.getStringValueSync('app_theme', 'auto');
     if (theme === 'dark') {
       return '深色模式';
-    } else if (theme === 'auto') {
-      return '跟随系统';
     }
     return '浅色模式';
   }

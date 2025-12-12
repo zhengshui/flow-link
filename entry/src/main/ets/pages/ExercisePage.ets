@@ -3,7 +3,7 @@
  * 按肌肉部位分组显示训练动作，左右布局
  */
 
-import { ActionModel, MuscleGroupModel, MuscleGroupConst, ActionDataService, RouterManager, NavRoutes, NavRouteParams } from '@tbs/common';
+import { ActionModel, MuscleGroupModel, ActionDataService, RouterManager, NavRoutes, NavRouteParams } from '@tbs/common';
 
 @Component
 export struct ExercisePage {
@@ -75,32 +75,37 @@ export struct ExercisePage {
         })
       }
       .width('100%')
+      .padding({ top: 8, bottom: 8 })
     }
-    .width(100)
+    .width(80)
     .height('100%')
-    .backgroundColor($r('app.color.card_background'))
     .scrollBar(BarState.Off)
+    .align(Alignment.Top)
   }
 
   @Builder
   MuscleGroupItem(group: MuscleGroupModel, index: number) {
-    Column({ space: 4 }) {
-      // 肌肉部位图片
-      Image(MuscleGroupConst.getImageIcon(group.id))
-        .width(36)
-        .height(36)
-        .objectFit(ImageFit.Contain)
-        .borderRadius(6)
+    Stack({ alignContent: Alignment.Start }) {
+      // 选中指示条
+      if (this.currentGroupIndex === index) {
+        Column()
+          .width(3)
+          .height(20)
+          .backgroundColor($r('app.color.brand_primary'))
+          .borderRadius(2)
+      }
 
+      // 部位名称
       Text(group.name)
-        .fontSize(12)
+        .fontSize(13)
         .fontColor(this.currentGroupIndex === index ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
         .fontWeight(this.currentGroupIndex === index ? FontWeight.Medium : FontWeight.Normal)
+        .width('100%')
+        .textAlign(TextAlign.Center)
     }
     .width('100%')
-    .height(72)
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
+    .height(48)
+    .backgroundColor(this.currentGroupIndex === index ? $r('app.color.brand_primary_light') : Color.Transparent)
     .onClick(() => {
       this.switchMuscleGroup(index);
     })
@@ -138,12 +143,13 @@ export struct ExercisePage {
     .layoutWeight(1)
     .height('100%')
     .backgroundColor($r('app.color.page_background'))
+    .align(Alignment.Top)
   }
 
   @Builder
   ActionItem(action: ActionModel) {
     Row({ space: 12 }) {
-      // 动作缩略图 - 优先使用GIF，否则使用肌群图片
+      // 动作缩略图 - 优先使用GIF，否则使用默认占位
       if (action.gifUrl.length > 0) {
         Image($rawfile('exercises/' + action.gifUrl))
           .width(56)
@@ -151,11 +157,16 @@ export struct ExercisePage {
           .objectFit(ImageFit.Cover)
           .borderRadius(12)
       } else {
-        Image(this.getMuscleGroupImageIcon(action.muscleGroup))
-          .width(56)
-          .height(56)
-          .objectFit(ImageFit.Cover)
-          .borderRadius(12)
+        Column() {
+          Text('🏋️')
+            .fontSize(24)
+        }
+        .width(56)
+        .height(56)
+        .backgroundColor($r('app.color.outline'))
+        .borderRadius(12)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
       }
 
       // 动作信息
@@ -216,29 +227,4 @@ export struct ExercisePage {
     return $r('app.color.text_hint');
   }
 
-  /**
-   * 根据肌肉部位中文名称获取对应图片资源
-   */
-  getMuscleGroupImageIcon(muscleGroup: string): Resource {
-    if (muscleGroup === '胸肌') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.CHEST);
-    } else if (muscleGroup === '背肌') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.BACK);
-    } else if (muscleGroup === '腿部') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.LEGS);
-    } else if (muscleGroup === '肩部') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.SHOULDERS);
-    } else if (muscleGroup === '二头肌') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.BICEPS);
-    } else if (muscleGroup === '三头肌') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.TRICEPS);
-    } else if (muscleGroup === '小腿') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.CALVES);
-    } else if (muscleGroup === '臀部') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.GLUTES);
-    } else if (muscleGroup === '腹肌') {
-      return MuscleGroupConst.getImageIcon(MuscleGroupConst.ABS);
-    }
-    return MuscleGroupConst.getImageIcon(MuscleGroupConst.CHEST);
-  }
 }

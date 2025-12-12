@@ -183,6 +183,7 @@ export struct RecordDetailSheet {
     }
     .width('100%')
     .layoutWeight(1)
+    .align(Alignment.Top)
   }
 
   @Builder
