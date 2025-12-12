@@ -32,8 +32,8 @@ const tabInfo: TabInfoModel[] = [
   {
     index: 3,
     title: '数据',
-    icon: $r('sys.symbol.waveform'),
-    iconFilled: $r('sys.symbol.waveform')
+    icon: $r('sys.symbol.square_grid_2x2'),
+    iconFilled: $r('sys.symbol.square_grid_2x2')
   },
   {
     index: 4,

@@ -268,17 +268,29 @@ export struct ActionSelectPage {
         .fontSize(22)
         .fontColor(this.isActionSelected(action.id) ? $r('app.color.brand_primary') : $r('app.color.text_placeholder'))
 
-      // 动作缩略图
-      Column() {
-        Text('🏋️')
-          .fontSize(28)
+      // 动作缩略图 - 优先使用GIF，否则显示占位符
+      if (action.gifUrl.length > 0) {
+        Image($rawfile('exercises/' + action.gifUrl))
+          .width(60)
+          .height(60)
+          .objectFit(ImageFit.Cover)
+          .borderRadius(8)
+          .border({
+            width: this.isActionSelected(action.id) ? 2 : 0,
+            color: $r('app.color.brand_primary')
+          })
+      } else {
+        Column() {
+          Text('🏋️')
+            .fontSize(28)
+        }
+        .width(60)
+        .height(60)
+        .backgroundColor(this.isActionSelected(action.id) ? $r('app.color.brand_primary_light') : $r('app.color.outline'))
+        .borderRadius(8)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
       }
-      .width(60)
-      .height(60)
-      .backgroundColor(this.isActionSelected(action.id) ? $r('app.color.brand_primary_light') : $r('app.color.outline'))
-      .borderRadius(8)
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Center)
 
       // 动作信息
       Column({ space: 4 }) {
@@ -287,7 +299,7 @@ export struct ActionSelectPage {
           .fontWeight(FontWeight.Medium)
           .fontColor(this.isActionSelected(action.id) ? $r('app.color.brand_primary') : $r('app.color.text_primary'))
 
-        Text(action.englishName)
+        Text(action.equipment)
           .fontSize(11)
           .fontColor($r('app.color.text_hint'))
 
@@ -299,8 +311,8 @@ export struct ActionSelectPage {
             .padding({ left: 6, right: 6, top: 2, bottom: 2 })
             .borderRadius(3)
 
-          if (action.equipment.length > 0) {
-            Text(action.equipment)
+          if (action.muscleGroup.length > 0) {
+            Text(action.muscleGroup)
               .fontSize(10)
               .fontColor($r('app.color.text_secondary'))
           }

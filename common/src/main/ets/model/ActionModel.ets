@@ -10,6 +10,7 @@ export class ActionModel {
   muscleGroup: string = ''
   thumbnailUrl: string = ''
   videoUrl: string = ''
+  gifUrl: string = ''
   description: string = ''
   steps: string[] = []
   difficulty: string = ''
@@ -27,7 +28,8 @@ export class ActionModel {
     steps: string[] = [],
     difficulty: string = '中级',
     equipment: string = '',
-    tips: string[] = []
+    tips: string[] = [],
+    gifUrl: string = ''
   ) {
     this.id = id;
     this.name = name;
@@ -35,6 +37,7 @@ export class ActionModel {
     this.muscleGroup = muscleGroup;
     this.thumbnailUrl = thumbnailUrl;
     this.videoUrl = videoUrl;
+    this.gifUrl = gifUrl;
     this.description = description;
     this.steps = steps;
     this.difficulty = difficulty;

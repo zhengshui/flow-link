@@ -101,8 +101,6 @@ export struct ExercisePage {
     .height(72)
     .justifyContent(FlexAlign.Center)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor(this.currentGroupIndex === index ? $r('app.color.brand_primary_light') : $r('app.color.card_background'))
-    .borderRadius(this.currentGroupIndex === index ? 8 : 0)
     .onClick(() => {
       this.switchMuscleGroup(index);
     })
@@ -145,12 +143,20 @@ export struct ExercisePage {
   @Builder
   ActionItem(action: ActionModel) {
     Row({ space: 12 }) {
-      // 动作缩略图 - 使用肌群对应图片
-      Image(this.getMuscleGroupImageIcon(action.muscleGroup))
-        .width(56)
-        .height(56)
-        .objectFit(ImageFit.Cover)
-        .borderRadius(12)
+      // 动作缩略图 - 优先使用GIF，否则使用肌群图片
+      if (action.gifUrl.length > 0) {
+        Image($rawfile('exercises/' + action.gifUrl))
+          .width(56)
+          .height(56)
+          .objectFit(ImageFit.Cover)
+          .borderRadius(12)
+      } else {
+        Image(this.getMuscleGroupImageIcon(action.muscleGroup))
+          .width(56)
+          .height(56)
+          .objectFit(ImageFit.Cover)
+          .borderRadius(12)
+      }
 
       // 动作信息
       Column({ space: 4 }) {
@@ -159,7 +165,7 @@ export struct ExercisePage {
           .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.text_primary'))
 
-        Text(action.englishName)
+        Text(action.equipment)
           .fontSize(11)
           .fontColor($r('app.color.text_hint'))
 

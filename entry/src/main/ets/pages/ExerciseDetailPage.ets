@@ -4,7 +4,7 @@
  * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { ActionModel, ActionDataService, toast, NavRouteParams } from '@tbs/common';
+import { ActionModel, ActionDataService, NavRouteParams } from '@tbs/common';
 
 /**
  * 系统路由表构建函数
@@ -117,28 +117,40 @@ export struct ExerciseDetailPage {
   @Builder
   VideoSection() {
     Column({ space: 12 }) {
-      // 视频封面/播放区域
+      // 动作演示GIF区域
       Column() {
-        Column() {
-          Text('▶️')
-            .fontSize(48)
+        if (this.action !== null && this.action.gifUrl.length > 0) {
+          // 显示GIF动画
+          Image($rawfile(`exercises/${this.action.gifUrl}`))
+            .width('100%')
+            .height(220)
+            .objectFit(ImageFit.Contain)
+            .borderRadius(12)
+        } else {
+          // 无GIF资源时显示占位符
+          Column() {
+            Text('🎬')
+              .fontSize(48)
+
+            Text('暂无动作演示')
+              .fontSize(14)
+              .fontColor($r('app.color.text_hint'))
+              .margin({ top: 8 })
+          }
+          .width('100%')
+          .height(220)
+          .backgroundColor($r('app.color.outline'))
+          .borderRadius(12)
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
         }
-        .justifyContent(FlexAlign.Center)
-        .alignItems(HorizontalAlign.Center)
       }
       .width('100%')
-      .height(200)
-      .backgroundColor($r('app.color.outline'))
-      .borderRadius(12)
-      .justifyContent(FlexAlign.Center)
-      .alignItems(HorizontalAlign.Center)
-      .onClick(() => {
-        toast('视频播放功能开发中...');
-      })
 
-      Text(this.action?.englishName ?? '')
-        .fontSize(14)
-        .fontColor($r('app.color.text_secondary'))
+      Text(this.action?.name ?? '')
+        .fontSize(16)
+        .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
         .textAlign(TextAlign.Center)
     }
     .width('100%')
