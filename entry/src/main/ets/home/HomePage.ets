@@ -11,6 +11,7 @@ import { StatsPage } from '../pages/StatsPage'
 import { ProfilePage } from '../pages/ProfilePage'
 import { TabInfoModel, tabInfo } from './viewModel/homeData'
 import { RouterManager, StorageConst, StorageUtils, NavRoutes } from '@tbs/common'
+import { TrainingFloatingBar } from '../pages/training/index'
 
 @Entry
 @Component
@@ -18,6 +19,7 @@ struct HomePage {
   @State currentIndex: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('isLoggedIn') @Watch('onLoginStateChange') isLoggedIn: boolean = false
+  @StorageLink('trainingMinimized') trainingMinimized: boolean = false
   private controller: TabsController = new TabsController()
   // Navigation 路由栈
   private pathStack: NavPathStack = new NavPathStack()
@@ -27,6 +29,19 @@ struct HomePage {
     RouterManager.initNavPathStack(this.pathStack)
     // 检查登录状态
     this.checkLoginState()
+    // 初始化训练状态
+    AppStorage.setOrCreate<boolean>('trainingMinimized', false)
+    AppStorage.setOrCreate<string>('trainingTime', '00:00')
+    AppStorage.setOrCreate<boolean>('trainingIsRunning', false)
+  }
+
+  /**
+   * 展开训练页面
+   */
+  expandTraining(): void {
+    this.trainingMinimized = false
+    AppStorage.setOrCreate<boolean>('trainingMinimized', false)
+    this.pathStack.pushPathByName(NavRoutes.TRAINING_SESSION, undefined)
   }
 
   /**
@@ -60,57 +75,68 @@ struct HomePage {
     Navigation(this.pathStack) {
       // 主内容：Tab 页面（仅在已登录时显示）
       if (this.isLoggedIn) {
-        Column() {
-          Tabs({
-            barPosition: BarPosition.End,
-            index: this.currentIndex,
-            controller: this.controller
-          }) {
-            // 首页
-            TabContent() {
-              DashboardPage()
-            }
-            .tabBar(this.TabBuilder(tabInfo[0]))
+        Stack({ alignContent: Alignment.BottomEnd }) {
+          Column() {
+            Tabs({
+              barPosition: BarPosition.End,
+              index: this.currentIndex,
+              controller: this.controller
+            }) {
+              // 首页
+              TabContent() {
+                DashboardPage()
+              }
+              .tabBar(this.TabBuilder(tabInfo[0]))
 
-            // 训练记录
-            TabContent() {
-              RecordPage({ currentTabIndex: this.currentIndex })
-            }
-            .tabBar(this.TabBuilder(tabInfo[1]))
+              // 训练记录
+              TabContent() {
+                RecordPage({ currentTabIndex: this.currentIndex })
+              }
+              .tabBar(this.TabBuilder(tabInfo[1]))
 
-            // 动作库
-            TabContent() {
-              ExercisePage()
-            }
-            .tabBar(this.TabBuilder(tabInfo[2]))
+              // 动作库
+              TabContent() {
+                ExercisePage()
+              }
+              .tabBar(this.TabBuilder(tabInfo[2]))
 
-            // 数据分析
-            TabContent() {
-              StatsPage()
-            }
-            .tabBar(this.TabBuilder(tabInfo[3]))
+              // 数据分析
+              TabContent() {
+                StatsPage()
+              }
+              .tabBar(this.TabBuilder(tabInfo[3]))
 
-            // 我的
-            TabContent() {
-              ProfilePage()
+              // 我的
+              TabContent() {
+                ProfilePage()
+              }
+              .tabBar(this.TabBuilder(tabInfo[4]))
             }
-            .tabBar(this.TabBuilder(tabInfo[4]))
+            .width('100%')
+            .height('100%')
+            .barHeight(56)
+            .barMode(BarMode.Fixed)
+            .scrollable(false)
+            .animationDuration(0)
+            .onChange((index: number) => {
+              this.currentIndex = index
+            })
+            // 底部导航区域避让
+            .padding({ bottom: this.getUIContext().px2vp(this.bottomRectHeight) })
           }
           .width('100%')
           .height('100%')
-          .barHeight(56)
-          .barMode(BarMode.Fixed)
-          .scrollable(false)
-          .animationDuration(0)
-          .onChange((index: number) => {
-            this.currentIndex = index
-          })
-          // 底部导航区域避让
-          .padding({ bottom: this.getUIContext().px2vp(this.bottomRectHeight) })
+          .backgroundColor($r('app.color.page_background'))
+
+          // 训练悬浮bar（最小化时显示）
+          if (this.trainingMinimized) {
+            TrainingFloatingBar({
+              onExpand: (): void => { this.expandTraining(); }
+            })
+          }
         }
         .width('100%')
         .height('100%')
-        .backgroundColor($r('app.color.page_background'))
       }
     }
     .width('100%')

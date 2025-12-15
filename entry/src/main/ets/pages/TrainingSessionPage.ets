@@ -26,6 +26,7 @@ import {
   TrainingTopBarParams,
   TrainingTopBarCallbacks,
   TrainingBottomBar,
+  TrainingSettingsPanel,
   NoteDialog,
   TimeEditDialog,
   TrainingEmptyState
@@ -39,6 +40,23 @@ class SelectedActionData {
   name: string = '';
   muscleGroup: string = '';
   thumbnailUrl: string = '';
+}
+
+/**
+ * 训练会话存储数据类
+ */
+class TrainingSessionStorageData {
+  title: string = '';
+  startTime: number = 0;
+  pausedTime: number = 0;
+  mood: string = '';
+  notes: string = '';
+  isRunning: boolean = true;
+  planId: number = 0;
+  exercises: string = '[]';
+  existingRecordId: string = '';
+  selectedDate: string = '';
+  pauseStartTime: number = 0;
 }
 
 /**
@@ -68,8 +86,10 @@ export struct TrainingSessionPage {
   @State editHours: string = '0'
   @State editMinutes: string = '0'
   @State editSeconds: string = '0'
+  @State showSettingsPanel: boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('trainingMinimized') trainingMinimized: boolean = false
   private pathStack: NavPathStack = new NavPathStack()
 
   /**
@@ -295,6 +315,10 @@ export struct TrainingSessionPage {
     } else {
       this.currentTime = minutesStr + ':' + secsStr;
     }
+
+    // 同步到全局状态（用于悬浮bar显示）
+    AppStorage.setOrCreate<string>('trainingTime', this.currentTime);
+    AppStorage.setOrCreate<boolean>('trainingIsRunning', this.session.isRunning);
   }
 
   toggleTimer(): void {
@@ -597,6 +621,123 @@ export struct TrainingSessionPage {
     return SetTypeConst.WORKING;
   }
 
+  // ==================== 最小化相关 ====================
+
+  /**
+   * 最小化训练页面
+   */
+  minimizeTraining(): void {
+    // 更新全局状态
+    AppStorage.setOrCreate<string>('trainingTime', this.currentTime);
+    AppStorage.setOrCreate<boolean>('trainingIsRunning', this.session.isRunning);
+    AppStorage.setOrCreate<boolean>('trainingMinimized', true);
+    // 保存计时相关数据到全局（用于悬浮bar独立计时）
+    AppStorage.setOrCreate<number>('trainingStartTime', this.session.startTime);
+    AppStorage.setOrCreate<number>('trainingPausedTime', this.session.pausedTime);
+    AppStorage.setOrCreate<number>('trainingPauseStartTime', this.pauseStartTime);
+    // 保存会话数据到全局
+    this.saveSessionToGlobal();
+    // 返回上一页
+    this.pathStack.pop();
+  }
+
+  /**
+   * 保存会话数据到全局存储
+   */
+  saveSessionToGlobal(): void {
+    const sessionData: TrainingSessionStorageData = new TrainingSessionStorageData();
+    sessionData.title = this.session.title;
+    sessionData.startTime = this.session.startTime;
+    sessionData.pausedTime = this.session.pausedTime;
+    sessionData.mood = this.session.mood;
+    sessionData.notes = this.session.notes;
+    sessionData.isRunning = this.session.isRunning;
+    sessionData.planId = this.session.planId;
+    sessionData.exercises = JSON.stringify(this.session.exercises);
+    sessionData.existingRecordId = this.existingRecordId;
+    sessionData.selectedDate = this.selectedDate;
+    sessionData.pauseStartTime = this.pauseStartTime;
+    AppStorage.setOrCreate<string>('trainingSessionData', JSON.stringify(sessionData));
+  }
+
+  /**
+   * 从全局存储恢复会话数据
+   */
+  restoreSessionFromGlobal(): boolean {
+    const sessionDataStr: string | undefined = AppStorage.get<string>('trainingSessionData');
+    if (sessionDataStr === undefined || sessionDataStr.length === 0) {
+      return false;
+    }
+
+    try {
+      const sessionData: TrainingSessionStorageData = JSON.parse(sessionDataStr) as TrainingSessionStorageData;
+
+      // 恢复动作数据
+      const exercisesJson: string = sessionData.exercises;
+      const exercisesArray: Object[] = JSON.parse(exercisesJson) as Object[];
+      const exercises: SessionExerciseModel[] = [];
+
+      for (let i: number = 0; i < exercisesArray.length; i++) {
+        const exData: Record<string, Object> = exercisesArray[i] as Record<string, Object>;
+        const sessionEx: SessionExerciseModel = new SessionExerciseModel(
+          exData['actionId'] as string ?? '',
+          exData['actionName'] as string ?? '',
+          exData['muscleGroup'] as string ?? '',
+          [],
+          0,
+          exData['targetSets'] as number ?? 4,
+          exData['targetReps'] as number ?? 8,
+          exData['note'] as string ?? '',
+          exData['thumbnailUrl'] as string ?? ''
+        );
+
+        // 恢复训练组
+        const setsArray: Object[] = exData['sets'] as Object[] ?? [];
+        for (let j: number = 0; j < setsArray.length; j++) {
+          const setData: Record<string, Object> = setsArray[j] as Record<string, Object>;
+          const set: TrainingSetModel = new TrainingSetModel(
+            setData['setType'] as string ?? SetTypeConst.WORKING,
+            setData['weight'] as number ?? 0,
+            setData['reps'] as number ?? 8,
+            setData['isCompleted'] as boolean ?? false,
+            setData['note'] as string ?? ''
+          );
+          sessionEx.sets.push(set);
+        }
+
+        exercises.push(sessionEx);
+      }
+
+      // 恢复会话
+      this.session = new TrainingSessionModel(
+        sessionData.title.length > 0 ? sessionData.title : '训练记录',
+        sessionData.startTime > 0 ? sessionData.startTime : Date.now(),
+        sessionData.pausedTime,
+        exercises,
+        sessionData.mood,
+        sessionData.notes,
+        sessionData.isRunning,
+        sessionData.planId
+      );
+
+      this.existingRecordId = sessionData.existingRecordId;
+      this.selectedDate = sessionData.selectedDate;
+      this.pauseStartTime = sessionData.pauseStartTime;
+
+      // 清除全局存储的会话数据
+      AppStorage.delete('trainingSessionData');
+      AppStorage.setOrCreate<boolean>('trainingMinimized', false);
+
+      // 启动计时器
+      this.startTimer();
+
+      return true;
+    } catch (e) {
+      console.error('恢复训练会话失败:', JSON.stringify(e));
+      return false;
+    }
+  }
+
   // ==================== 时间编辑相关 ====================
 
   /**
@@ -649,11 +790,61 @@ export struct TrainingSessionPage {
     }).catch((): void => {});
   }
 
+  // ==================== 设置面板相关 ====================
+
+  /**
+   * 显示设置面板
+   */
+  showSettings(): void {
+    this.showSettingsPanel = true;
+  }
+
+  /**
+   * 隐藏设置面板
+   */
+  hideSettings(): void {
+    this.showSettingsPanel = false;
+  }
+
+  /**
+   * 取消训练确认
+   */
+  confirmCancelTraining(): void {
+    this.hideSettings();
+    promptAction.showDialog({
+      title: '取消训练',
+      message: '确定要取消本次训练吗？所有训练数据将不会保存。',
+      buttons: [{ text: '继续训练', color: '#3370FF' }, { text: '取消训练', color: '#F54A45' }]
+    }).then((data: promptAction.ShowDialogSuccessResponse): void => {
+      if (data.index === 1) {
+        this.cancelTraining();
+      }
+    }).catch((): void => {});
+  }
+
+  /**
+   * 取消训练
+   */
+  cancelTraining(): void {
+    // 停止计时器
+    this.stopTimer();
+    // 清除全局训练状态
+    AppStorage.setOrCreate<boolean>('trainingMinimized', false);
+    AppStorage.delete('trainingSessionData');
+    AppStorage.delete('trainingTime');
+    AppStorage.delete('trainingIsRunning');
+    AppStorage.delete('trainingStartTime');
+    AppStorage.delete('trainingPausedTime');
+    AppStorage.delete('trainingPauseStartTime');
+    // 返回上一页
+    toast('训练已取消');
+    this.pathStack.pop();
+  }
+
   // ==================== 顶部栏回调 ====================
 
   private getTopBarCallbacks(): TrainingTopBarCallbacks {
     const callbacks: TrainingTopBarCallbacks = {
-      onClose: (): void => { this.pathStack.pop(); },
       onTitleChange: (value: string): void => { this.session.title = value; },
       onFinish: (): void => { this.finishTraining(); },
       onTimeClick: (): void => { this.openTimeEditDialog(); },
@@ -741,8 +932,10 @@ export struct TrainingSessionPage {
 
         TrainingBottomBar({
           bottomRectHeight: this.bottomRectHeight,
+          onMinimize: (): void => { this.minimizeTraining(); },
           onAddExercise: (): void => { this.addExercise(); },
-          onShowNote: (): void => { this.showNoteInput(); }
+          onShowNote: (): void => { this.showNoteInput(); },
+          onShowSettings: (): void => { this.showSettings(); }
         })
 
         if (this.showNoteDialog) {
@@ -774,13 +967,33 @@ export struct TrainingSessionPage {
             onCancel: (): void => { this.showTimeEditDialog = false; }
           })
         }
+
+        if (this.showSettingsPanel) {
+          TrainingSettingsPanel({
+            bottomRectHeight: this.bottomRectHeight,
+            onCancelTraining: (): void => { this.confirmCancelTraining(); },
+            onSaveAndExit: (): void => { this.hideSettings(); this.finishTraining(); },
+            onClose: (): void => { this.hideSettings(); }
+          })
+        }
       }
       .width('100%')
       .height('100%')
     }
     .hideTitleBar(true)
+    .onBackPressed((): boolean => {
+      // 拦截返回事件，执行最小化而不是关闭训练
+      this.minimizeTraining();
+      return true; // 返回true表示已处理，不再执行默认返回
+    })
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
+
+      // 先检查是否从最小化状态恢复
+      if (this.restoreSessionFromGlobal()) {
+        return
+      }
+
       // 获取路由参数
       const params: NavRouteParams | undefined = context.pathInfo.param as NavRouteParams | undefined
       if (params !== undefined) {

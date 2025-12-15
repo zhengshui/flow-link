@@ -20,7 +20,6 @@ export interface TrainingTopBarParams {
  * 顶部栏回调接口
  */
 export interface TrainingTopBarCallbacks {
-  onClose: () => void;
   onTitleChange: (value: string) => void;
   onFinish: () => void;
   onTimeClick: () => void;
@@ -32,7 +31,6 @@ export interface TrainingTopBarCallbacks {
 export struct TrainingTopBar {
   @Prop params: TrainingTopBarParams;
   callbacks: TrainingTopBarCallbacks = {
-    onClose: (): void => {},
     onTitleChange: (_value: string): void => {},
     onFinish: (): void => {},
     onTimeClick: (): void => {},
@@ -48,38 +46,27 @@ export struct TrainingTopBar {
         .height(this.getUIContext().px2vp(this.params.topRectHeight))
 
       Row() {
-        // 关闭按钮
-        Button() {
-          SymbolGlyph($r('sys.symbol.xmark'))
-            .fontSize(18)
-            .fontColor([$r('app.color.text_secondary')])
-        }
-        .width(40)
-        .height(40)
-        .backgroundColor(Color.Transparent)
-        .onClick((): void => { this.callbacks.onClose(); })
-
         TextInput({ text: this.params.title })
           .layoutWeight(1)
-          .fontSize(17)
+          .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor($r('app.color.text_primary'))
           .backgroundColor(Color.Transparent)
-          .margin({ left: 8, right: 8 })
+          .padding({ left: 0, right: 8 })
           .onChange((value: string): void => { this.callbacks.onTitleChange(value); })
 
         Button('完成')
           .fontSize(14)
           .fontWeight(FontWeight.Medium)
-          .height(34)
-          .padding({ left: 16, right: 16 })
+          .height(36)
+          .padding({ left: 20, right: 20 })
           .backgroundColor($r('app.color.color_success'))
-          .borderRadius(17)
+          .borderRadius(18)
           .onClick((): void => { this.callbacks.onFinish(); })
       }
       .width('100%')
       .height(56)
-      .padding({ left: 12, right: 16 })
+      .padding({ left: 16, right: 16 })
 
       Row() {
         Row({ space: 6 }) {
