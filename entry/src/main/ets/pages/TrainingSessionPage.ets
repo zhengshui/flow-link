@@ -492,9 +492,10 @@ export struct TrainingSessionPage {
 
       if (res.code === 0) {
         toast(this.existingRecordId.length > 0 ? '训练记录更新成功' : '训练记录保存成功');
-        // 设置刷新标志，通知相关页面刷新数据
+        // 设置刷新时间戳，通知相关页面刷新数据
+        const refreshTs: number = Date.now();
         AppStorage.setOrCreate<boolean>('needRefreshRecordPage', true);
-        AppStorage.setOrCreate<boolean>('needRefreshDashboard', true);
+        AppStorage.setOrCreate<number>('refreshDashboardTimestamp', refreshTs);
         AppStorage.setOrCreate<boolean>('needRefreshStats', true);
         this.pathStack.pop();
       } else {

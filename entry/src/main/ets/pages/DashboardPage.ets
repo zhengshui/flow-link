@@ -29,20 +29,22 @@ export struct DashboardPage {
   @State recommendedTemplates: PlanTemplateModel[] = []
   @State isLoading: boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
-  @StorageProp('needRefreshDashboard') @Watch('onNeedRefreshChange') needRefresh: boolean = false
+  // 使用时间戳监听刷新，确保每次变化都能触发
+  @StorageLink('refreshDashboardTimestamp') @Watch('onRefreshTimestampChange') refreshTimestamp: number = 0
 
   aboutToAppear(): void {
+    // 初始化刷新时间戳
+    AppStorage.setOrCreate<number>('refreshDashboardTimestamp', 0);
     this.loadData();
   }
 
   /**
-   * 监听刷新标志变化，当从训练页面返回时刷新数据
+   * 监听刷新时间戳变化，当从训练页面返回时刷新数据
    */
-  onNeedRefreshChange(): void {
-    if (this.needRefresh) {
-      // 清除刷新标志
-      AppStorage.setOrCreate<boolean>('needRefreshDashboard', false);
-      // 刷新数据
+  onRefreshTimestampChange(): void {
+    // 时间戳大于0表示需要刷新
+    if (this.refreshTimestamp > 0) {
+      console.info('[DashboardPage] 检测到刷新时间戳变化，刷新数据');
       this.loadData();
     }
   }
@@ -52,6 +54,13 @@ export struct DashboardPage {
    */
   async loadData(): Promise<void> {
     this.isLoading = true;
+    // 重置所有状态为初始值，确保后续赋值能触发 UI 刷新
+    this.todayRecord = null;
+    this.weekStats = [];
+    this.weekTotalCount = 0;
+    this.weekTotalDuration = 0;
+    this.weekTotalWeight = 0;
+    console.info('[DashboardPage] loadData - 状态已重置，开始加载数据');
     try {
       // 并行加载所有数据
       await Promise.all([
@@ -60,6 +69,7 @@ export struct DashboardPage {
         this.loadMyPlan(),
         this.loadRecommendedTemplates()
       ]);
+      console.info('[DashboardPage] loadData - 数据加载完成');
     } catch (err) {
       console.error('加载数据失败:', JSON.stringify(err));
       toast('数据加载失败');
@@ -96,12 +106,37 @@ export struct DashboardPage {
         (today.getMonth() + 1).toString().padStart(2, '0') + '-' +
         today.getDate().toString().padStart(2, '0');
 
+      console.info('[DashboardPage] 加载今日训练记录, 日期:', todayStr);
       const res: ResponseResult = await TrainingApiService.getTrainingRecords(1, 10, todayStr, todayStr);
       if (res.code === 0 && res.data) {
         const apiData: Record<string, Object> = res.data as Record<string, Object>;
         const recordsArray: Object[] = apiData['records'] as Object[] ?? [];
+        console.info('[DashboardPage] 获取到记录数量:', recordsArray.length);
+
         if (recordsArray.length > 0) {
-          this.todayRecord = recordsArray[0] as TrainingRecordModel;
+          // 从 API 数据创建新的 TrainingRecordModel 实例，确保触发 UI 刷新
+          const recordData: Record<string, Object> = recordsArray[0] as Record<string, Object>;
+          const newRecord: TrainingRecordModel = new TrainingRecordModel(
+            recordData['id'] as string ?? '',
+            recordData['userId'] as number ?? 0,
+            recordData['title'] as string ?? '',
+            recordData['date'] as string ?? '',
+            recordData['startTime'] as string ?? '',
+            recordData['endTime'] as string ?? '',
+            recordData['duration'] as number ?? 0,
+            [],
+            recordData['totalWeight'] as number ?? 0,
+            recordData['totalSets'] as number ?? 0,
+            recordData['caloriesBurned'] as number ?? 0,
+            recordData['notes'] as string ?? '',
+            recordData['mood'] as string ?? '',
+            recordData['planId'] as number ?? 0,
+            recordData['createdAt'] as string ?? '',
+            recordData['updatedAt'] as string ?? ''
+          );
+          this.todayRecord = newRecord;
+          console.info('[DashboardPage] 今日训练数据已更新 - duration:', this.todayRecord.duration,
+            'totalSets:', this.todayRecord.totalSets, 'calories:', this.todayRecord.caloriesBurned);
         }
       }
     } catch (err) {
@@ -184,19 +219,41 @@ export struct DashboardPage {
   @Builder
   TodaySummaryCard() {
     Column({ space: 12 }) {
-      Text('今日训练')
-        .fontSize(16)
-        .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+      Row() {
+        Text('今日训练')
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.text_primary'))
+        Blank()
+        if (this.todayRecord !== null) {
+          Text(this.getMoodLabel(this.todayRecord.mood))
+            .fontSize(12)
+            .fontColor(Color.White)
+            .backgroundColor(this.getMoodColor(this.todayRecord.mood))
+            .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+            .borderRadius(4)
+        }
+      }
+      .width('100%')
 
       if (this.todayRecord !== null) {
         // 显示今日训练数据
         Column({ space: 16 }) {
-          // 训练标题
-          Text(this.todayRecord.title)
-            .fontSize(18)
-            .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+          // 训练标题和时间
+          Row() {
+            Text(this.todayRecord.title)
+              .fontSize(18)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.text_primary'))
+              .layoutWeight(1)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+            Text(this.formatTimeRange(this.todayRecord.startTime, this.todayRecord.endTime))
+              .fontSize(12)
+              .fontColor($r('app.color.text_hint'))
+              .flexShrink(0)
+          }
+          .width('100%')
 
           // 数据卡片
           Row({ space: 12 }) {
@@ -207,28 +264,42 @@ export struct DashboardPage {
           .width('100%')
           .justifyContent(FlexAlign.SpaceBetween)
 
-          // 状态和时间
-          Row({ space: 8 }) {
-            Text('状态: ' + this.todayRecord.mood)
-              .fontSize(13)
-              .fontColor($r('app.color.text_secondary'))
-            Text('|')
-              .fontSize(13)
-              .fontColor($r('app.color.text_placeholder'))
-            Text(this.todayRecord.startTime + ' - ' + this.todayRecord.endTime)
-              .fontSize(13)
-              .fontColor($r('app.color.text_secondary'))
-          }
-          .width('100%')
+          // 继续训练按钮
+          Button('继续训练')
+            .width('100%')
+            .height(40)
+            .fontSize(14)
+            .fontWeight(FontWeight.Medium)
+            .backgroundColor($r('app.color.brand_primary'))
+            .borderRadius(8)
+            .onClick(() => {
+              if (this.todayRecord !== null) {
+                RouterManager.pushPath(NavRoutes.TRAINING_SESSION, { recordId: this.todayRecord.id });
+              }
+            })
         }
         .width('100%')
         .padding({ top: 12 })
       } else {
         // 无训练记录
-        Text('暂无训练记录')
-          .fontSize(14)
-          .fontColor($r('app.color.text_hint'))
-          .margin({ top: 20, bottom: 20 })
+        Column({ space: 16 }) {
+          Text('今天还没有训练记录')
+            .fontSize(14)
+            .fontColor($r('app.color.text_hint'))
+            .margin({ top: 12 })
+
+          Button('开始今日训练')
+            .width('100%')
+            .height(40)
+            .fontSize(14)
+            .fontWeight(FontWeight.Medium)
+            .backgroundColor($r('app.color.brand_primary'))
+            .borderRadius(8)
+            .onClick(() => {
+              RouterManager.pushPath(NavRoutes.TRAINING_SESSION);
+            })
+        }
+        .width('100%')
       }
     }
     .width('100%')
@@ -236,6 +307,40 @@ export struct DashboardPage {
     .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
     .alignItems(HorizontalAlign.Start)
+  }
+
+  /**
+   * 格式化时间范围（只显示时分）
+   */
+  formatTimeRange(startTime: string, endTime: string): string {
+    const startParts: string[] = startTime.split(' ');
+    const endParts: string[] = endTime.split(' ');
+    const startHHmm: string = startParts.length > 1 ? startParts[1].substring(0, 5) : startTime;
+    const endHHmm: string = endParts.length > 1 ? endParts[1].substring(0, 5) : endTime;
+    return startHHmm + '-' + endHHmm;
+  }
+
+  /**
+   * 获取状态标签
+   */
+  getMoodLabel(mood: string): string {
+    return mood || '状态未设置';
+  }
+
+  /**
+   * 获取状态颜色
+   */
+  getMoodColor(mood: string): Resource {
+    if (mood === '优秀') {
+      return $r('app.color.color_success');
+    } else if (mood === '良好') {
+      return $r('app.color.brand_primary');
+    } else if (mood === '一般') {
+      return $r('app.color.color_warning');
+    } else if (mood === '疲劳') {
+      return $r('app.color.color_danger');
+    }
+    return $r('app.color.text_hint');
   }
 
   @Builder
