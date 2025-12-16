@@ -393,9 +393,9 @@ export struct ProfilePage {
 
       this.SettingDivider()
 
-      this.SettingItem('训练提醒', () => {
-        RouterManager.pushPath(NavRoutes.REMINDER_SETTINGS);
-      }, this.getReminderDisplay())
+      // this.SettingItem('训练提醒', () => {
+      //   RouterManager.pushPath(NavRoutes.REMINDER_SETTINGS);
+      // }, this.getReminderDisplay())
 
       this.SettingDivider()
 
