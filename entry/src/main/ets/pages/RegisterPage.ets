@@ -1,10 +1,10 @@
 /**
  * 注册页面 - Register
- * 新用户注册
+ * 新用户注册，注册成功后自动登录
  * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { AuthApiService, toast } from '@tbs/common';
+import { AuthApiService, LoginData, StorageConst, StorageUtils, toast, UserInfoData } from '@tbs/common';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
 /**
@@ -23,6 +23,7 @@ export struct RegisterPage {
   @State nickname: string = ''
   @State email: string = ''
   @State isLoading: boolean = false
+  @State loadingText: string = '创建账号中...'
   @StorageProp('topRectHeight') topRectHeight: number = 0
   private pathStack: NavPathStack = new NavPathStack()
 
@@ -60,6 +61,7 @@ export struct RegisterPage {
     }
 
     this.isLoading = true;
+    this.loadingText = '创建账号中...';
 
     try {
       const res: ResponseResult = await AuthApiService.register(
@@ -70,202 +72,236 @@ export struct RegisterPage {
       );
 
       if (res.code === 0) {
-        toast('注册成功，请登录');
-        // 返回登录页
-        this.pathStack.pop();
+        // 注册成功，自动登录
+        this.loadingText = '登录中...';
+        await this.autoLogin();
       } else {
         toast(res.message ?? '注册失败');
+        this.isLoading = false;
       }
     } catch (err) {
       console.error('注册失败:', JSON.stringify(err));
       toast('注册失败，请重试');
+      this.isLoading = false;
+    }
+  }
+
+  /**
+   * 注册成功后自动登录
+   */
+  async autoLogin(): Promise<void> {
+    try {
+      const loginRes: ResponseResult = await AuthApiService.login(this.username, this.password);
+
+      if (loginRes.code === 0 && loginRes.data) {
+        const loginData: LoginData = loginRes.data as LoginData;
+        const token: string = loginData.token;
+
+        // 保存 token
+        StorageUtils.saveValueSync(StorageConst.TOKEN, token);
+
+        // 获取用户信息
+        const userInfoRes: ResponseResult = await AuthApiService.getUserInfo();
+        if (userInfoRes.code === 0 && userInfoRes.data) {
+          const userInfo: UserInfoData = userInfoRes.data as UserInfoData;
+          StorageUtils.saveValueSync(StorageConst.USER_INFO, JSON.stringify(userInfo));
+        }
+
+        toast('欢迎加入 FitEasy！');
+
+        // 设置登录状态并清空路由栈返回首页
+        AppStorage.setOrCreate<boolean>('isLoggedIn', true);
+        this.pathStack.clear();
+      } else {
+        // 自动登录失败，提示用户手动登录
+        toast('注册成功，请登录');
+        this.pathStack.pop();
+      }
+    } catch (err) {
+      console.error('自动登录失败:', JSON.stringify(err));
+      toast('注册成功，请登录');
+      this.pathStack.pop();
     } finally {
       this.isLoading = false;
     }
   }
 
+  /**
+   * 检查表单是否有效
+   */
+  isFormValid(): boolean {
+    return this.username.length >= 4 &&
+      this.password.length >= 6 &&
+      this.confirmPassword.length > 0 &&
+      this.nickname.length > 0 &&
+      !this.isLoading;
+  }
+
   build() {
     NavDestination() {
-      Column() {
-        // 自定义标题栏
-        Row() {
-          SymbolGlyph($r('sys.symbol.chevron_left'))
-            .fontSize(24)
-            .fontColor([$r('app.color.text_primary')])
-            .onClick(() => {
-              this.pathStack.pop();
-            })
-
-          Text('注册')
-            .fontSize(18)
-            .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
-            .layoutWeight(1)
-            .textAlign(TextAlign.Center)
-
-          // 占位，保持标题居中
-          Column().width(24)
-        }
-        .width('100%')
-        .height(70)
-        .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
-        .backgroundColor($r('app.color.card_background'))
-
+      Stack({ alignContent: Alignment.TopStart }) {
+        // 主内容
         Scroll() {
-          Column({ space: 20 }) {
-            // Logo
-            Column() {
-              Text('💪')
-                .fontSize(60)
-            }
-            .margin({ top: 20 })
+          Column() {
+            // 顶部留白
+            Column()
+              .height(80)
 
-          // 表单区域
-          Column({ space: 14 }) {
-            // 用户名
-            Column({ space: 6 }) {
-              Text('用户名')
-                .fontSize(13)
-                .fontColor($r('app.color.text_secondary'))
-                .width('100%')
+            // 欢迎标题区域
+            Column({ space: 8 }) {
+              Text('创建账号')
+                .fontSize(32)
+                .fontWeight(FontWeight.Bold)
+                .fontColor($r('app.color.text_primary'))
 
-              TextInput({ placeholder: '请输入用户名（至少4个字符）' })
-                .width('100%')
-                .height(46)
+              Text('注册即刻开始您的健身之旅')
                 .fontSize(15)
+                .fontColor($r('app.color.text_hint'))
+            }
+            .width('100%')
+            .alignItems(HorizontalAlign.Start)
+            .padding({ left: 24, right: 24 })
+
+            // 表单区域
+            Column({ space: 16 }) {
+              // 用户名
+              TextInput({ placeholder: '用户名（至少4个字符）', text: this.username })
+                .width('100%')
+                .height(52)
+                .fontSize(16)
+                .placeholderFont({ size: 15 })
                 .backgroundColor($r('app.color.card_background'))
-                .borderRadius(8)
+                .borderRadius(12)
+                .padding({ left: 16, right: 16 })
                 .onChange((value: string) => {
                   this.username = value;
                 })
-            }
-            .width('100%')
-            .alignItems(HorizontalAlign.Start)
 
-            // 密码
-            Column({ space: 6 }) {
-              Text('密码')
-                .fontSize(13)
-                .fontColor($r('app.color.text_secondary'))
+              // 昵称
+              TextInput({ placeholder: '昵称', text: this.nickname })
                 .width('100%')
+                .height(52)
+                .fontSize(16)
+                .placeholderFont({ size: 15 })
+                .backgroundColor($r('app.color.card_background'))
+                .borderRadius(12)
+                .padding({ left: 16, right: 16 })
+                .onChange((value: string) => {
+                  this.nickname = value;
+                })
 
-              TextInput({ placeholder: '请输入密码（至少6个字符）' })
+              // 邮箱（可选）
+              TextInput({ placeholder: '邮箱（选填）', text: this.email })
                 .width('100%')
-                .height(46)
-                .fontSize(15)
+                .height(52)
+                .fontSize(16)
+                .placeholderFont({ size: 15 })
+                .backgroundColor($r('app.color.card_background'))
+                .borderRadius(12)
+                .padding({ left: 16, right: 16 })
+                .onChange((value: string) => {
+                  this.email = value;
+                })
+
+              // 密码
+              TextInput({ placeholder: '密码（至少6个字符）', text: this.password })
+                .width('100%')
+                .height(52)
+                .fontSize(16)
+                .placeholderFont({ size: 15 })
                 .type(InputType.Password)
                 .backgroundColor($r('app.color.card_background'))
-                .borderRadius(8)
+                .borderRadius(12)
+                .padding({ left: 16, right: 16 })
                 .onChange((value: string) => {
                   this.password = value;
                 })
-            }
-            .width('100%')
-            .alignItems(HorizontalAlign.Start)
 
-            // 确认密码
-            Column({ space: 6 }) {
-              Text('确认密码')
-                .fontSize(13)
-                .fontColor($r('app.color.text_secondary'))
+              // 确认密码
+              TextInput({ placeholder: '确认密码', text: this.confirmPassword })
                 .width('100%')
-
-              TextInput({ placeholder: '请再次输入密码' })
-                .width('100%')
-                .height(46)
-                .fontSize(15)
+                .height(52)
+                .fontSize(16)
+                .placeholderFont({ size: 15 })
                 .type(InputType.Password)
                 .backgroundColor($r('app.color.card_background'))
-                .borderRadius(8)
+                .borderRadius(12)
+                .padding({ left: 16, right: 16 })
                 .onChange((value: string) => {
                   this.confirmPassword = value;
                 })
             }
             .width('100%')
-            .alignItems(HorizontalAlign.Start)
-
-            // 昵称
-            Column({ space: 6 }) {
-              Text('昵称')
-                .fontSize(13)
-                .fontColor($r('app.color.text_secondary'))
-                .width('100%')
-
-              TextInput({ placeholder: '请输入昵称' })
-                .width('100%')
-                .height(46)
-                .fontSize(15)
-                .backgroundColor($r('app.color.card_background'))
-                .borderRadius(8)
-                .onChange((value: string) => {
-                  this.nickname = value;
-                })
-            }
-            .width('100%')
-            .alignItems(HorizontalAlign.Start)
-
-            // 邮箱（可选）
-            Column({ space: 6 }) {
-              Text('邮箱（可选）')
-                .fontSize(13)
-                .fontColor($r('app.color.text_secondary'))
-                .width('100%')
-
-              TextInput({ placeholder: '请输入邮箱' })
-                .width('100%')
-                .height(46)
-                .fontSize(15)
-                .backgroundColor($r('app.color.card_background'))
-                .borderRadius(8)
-                .onChange((value: string) => {
-                  this.email = value;
-                })
-            }
-            .width('100%')
-            .alignItems(HorizontalAlign.Start)
+            .padding({ left: 24, right: 24, top: 40 })
 
             // 注册按钮
-            Button(this.isLoading ? '注册中...' : '立即注册')
-              .width('100%')
-              .height(46)
-              .fontSize(15)
+            Button(this.isLoading ? this.loadingText : '注册并开始')
+              .width('90%')
+              .height(52)
+              .fontSize(16)
               .fontWeight(FontWeight.Medium)
-              .backgroundColor($r('app.color.brand_primary'))
-              .borderRadius(10)
-              .margin({ top: 16 })
-              .opacity((this.username.length > 0 && this.password.length > 0 &&
-                this.confirmPassword.length > 0 && this.nickname.length > 0 && !this.isLoading) ? 1 : 0.5)
-              .enabled(this.username.length > 0 && this.password.length > 0 &&
-                this.confirmPassword.length > 0 && this.nickname.length > 0 && !this.isLoading)
+              .fontColor(Color.White)
+              .backgroundColor(this.isFormValid() ? $r('app.color.brand_primary') : '#C4D3F7')
+              .borderRadius(12)
+              .margin({ left: 24, right: 24, top: 32 })
+              .enabled(this.isFormValid())
               .onClick(() => {
                 this.register();
               })
-          }
-          .width('90%')
-          .padding(16)
-          .margin({ top: 16 })
 
-          // 底部提示
-          Row({ space: 4 }) {
-            Text('已有账号？')
-              .fontSize(14)
-              .fontColor($r('app.color.text_secondary'))
+            // 底部登录提示
+            Row({ space: 4 }) {
+              Text('已有账号？')
+                .fontSize(14)
+                .fontColor($r('app.color.text_hint'))
 
-            Text('立即登录')
-              .fontSize(14)
-              .fontColor($r('app.color.brand_primary'))
-              .fontWeight(FontWeight.Medium)
-              .onClick(() => {
-                this.pathStack.pop();
-              })
+              Text('立即登录')
+                .fontSize(14)
+                .fontColor($r('app.color.brand_primary'))
+                .fontWeight(FontWeight.Medium)
+                .onClick(() => {
+                  this.pathStack.pop();
+                })
+            }
+            .margin({ top: 24 })
+
+            // 底部留白
+            Column()
+              .height(60)
           }
-          .margin({ bottom: 40 })
+          .width('100%')
+          .alignItems(HorizontalAlign.Center)
         }
         .width('100%')
-        .alignItems(HorizontalAlign.Center)
-      }
-      .layoutWeight(1)
-      .align(Alignment.Top)
+        .height('100%')
+        .scrollBar(BarState.Off)
+        .edgeEffect(EdgeEffect.Spring)
+
+        // 返回按钮（悬浮在顶部）
+        Row() {
+          Row() {
+            SymbolGlyph($r('sys.symbol.chevron_left'))
+              .fontSize(20)
+              .fontColor([$r('app.color.text_primary')])
+          }
+          .width(40)
+          .height(40)
+          .borderRadius(20)
+          .backgroundColor($r('app.color.card_background'))
+          .justifyContent(FlexAlign.Center)
+          .shadow({
+            radius: 8,
+            color: 'rgba(0, 0, 0, 0.06)',
+            offsetX: 0,
+            offsetY: 2
+          })
+          .onClick(() => {
+            this.pathStack.pop();
+          })
+        }
+        .width('100%')
+        .padding({ left: 16, right: 16 })
+        .margin({ top: this.getUIContext().px2vp(this.topRectHeight) + 12 })
       }
       .width('100%')
       .height('100%')
