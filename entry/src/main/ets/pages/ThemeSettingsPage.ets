@@ -1,6 +1,6 @@
 /**
  * 主题设置页面
- * 设置应用的主题（浅色/深色/跟随系统）
+ * 设置应用的主题（浅色/深色）
  * 使用 NavDestination 作为 Navigation 子页面
  */
 
@@ -17,14 +17,10 @@ export function ThemeSettingsPageBuilder(): void {
 
 @Component
 export struct ThemeSettingsPage {
-  @State currentTheme: string = 'auto'
+  @State currentTheme: string = 'light'
   @StorageProp('topRectHeight') topRectHeight: number = 0
   @StorageProp('currentColorMode') @Watch('onColorModeChange') currentColorMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
   private pathStack: NavPathStack = new NavPathStack()
-  private themeOptions: ThemeOption[] = [
-    { name: '浅色模式', value: 'light', description: '明亮清爽，适合白天使用', icon: '☀️' },
-    { name: '深色模式', value: 'dark', description: '舒适护眼，适合夜间使用', icon: '🌙' },
-  ]
 
   aboutToAppear(): void {
     this.loadTheme();
@@ -41,20 +37,23 @@ export struct ThemeSettingsPage {
    * 加载主题设置
    */
   loadTheme(): void {
-    this.currentTheme = StorageUtils.getStringValueSync('app_theme', 'auto');
+    this.currentTheme = StorageUtils.getStringValueSync('app_theme', 'light');
   }
 
   /**
    * 保存主题设置
    */
   saveTheme(theme: string): void {
+    if (this.currentTheme === theme) {
+      return;
+    }
     this.currentTheme = theme;
     StorageUtils.saveValueSync('app_theme', theme);
 
     // 应用主题切换
     this.applyTheme(theme);
 
-    toast('主题已切换为' + this.getThemeName(theme));
+    toast('已切换为' + this.getThemeName(theme));
   }
 
   /**
@@ -82,10 +81,8 @@ export struct ThemeSettingsPage {
    * 获取主题名称
    */
   getThemeName(theme: string): string {
-    for (let i: number = 0; i < this.themeOptions.length; i++) {
-      if (this.themeOptions[i].value === theme) {
-        return this.themeOptions[i].name;
-      }
+    if (theme === 'dark') {
+      return '深色模式';
     }
     return '浅色模式';
   }
@@ -124,69 +121,103 @@ export struct ThemeSettingsPage {
         .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
         .backgroundColor($r('app.color.card_background'))
 
-        // 主题预览卡片
-        Column({ space: 16 }) {
-          Text('当前预览')
-            .fontSize(14)
-            .fontColor($r('app.color.text_hint'))
+        // 内容区域
+        Scroll() {
+          Column({ space: 20 }) {
+            // 主题选择卡片
+            Column({ space: 16 }) {
+              Text('选择外观')
+                .fontSize(17)
+                .fontWeight(FontWeight.Bold)
+                .fontColor($r('app.color.text_primary'))
+                .width('100%')
 
-          Row({ space: 16 }) {
-            // 浅色预览
-            Column({ space: 8 }) {
-              Column()
-                .width(80)
-                .height(60)
-                .backgroundColor('#F7F8FA')
-                .borderRadius(8)
-                .border({ width: this.currentTheme === 'light' || (this.currentTheme === 'auto' && !this.isDarkMode()) ? 2 : 1,
-                  color: this.currentTheme === 'light' || (this.currentTheme === 'auto' && !this.isDarkMode()) ? $r('app.color.brand_primary') : $r('app.color.outline') })
-              Text('浅色')
-                .fontSize(12)
-                .fontColor($r('app.color.text_secondary'))
-            }
+              // 主题选项
+              Row({ space: 16 }) {
+                // 浅色模式
+                this.ThemeCard('light', '浅色', '#F7F8FA', '#1A1A1A')
 
-            // 深色预览
-            Column({ space: 8 }) {
-              Column()
-                .width(80)
-                .height(60)
-                .backgroundColor('#1A1A1A')
-                .borderRadius(8)
-                .border({ width: this.currentTheme === 'dark' || (this.currentTheme === 'auto' && this.isDarkMode()) ? 2 : 1,
-                  color: this.currentTheme === 'dark' || (this.currentTheme === 'auto' && this.isDarkMode()) ? $r('app.color.brand_primary') : $r('app.color.outline') })
-              Text('深色')
-                .fontSize(12)
-                .fontColor($r('app.color.text_secondary'))
+                // 深色模式
+                this.ThemeCard('dark', '深色', '#1A1A1A', '#FFFFFF')
+              }
+              .width('100%')
             }
+            .width('100%')
+            .padding(20)
+            .margin({ left: 20, right: 20 })
+            .backgroundColor($r('app.color.card_background'))
+            .borderRadius(20)
+            .alignItems(HorizontalAlign.Start)
+
+            // 当前主题信息卡片
+            Column({ space: 0 }) {
+              Row() {
+                Column({ space: 4 }) {
+                  Text('当前主题')
+                    .fontSize(14)
+                    .fontColor($r('app.color.text_hint'))
+
+                  Text(this.getThemeName(this.currentTheme))
+                    .fontSize(17)
+                    .fontWeight(FontWeight.Medium)
+                    .fontColor($r('app.color.text_primary'))
+                }
+                .alignItems(HorizontalAlign.Start)
+                .layoutWeight(1)
+
+                // 主题图标
+                Column() {
+                  SymbolGlyph(this.currentTheme === 'dark' ? $r('sys.symbol.moon_fill') : $r('sys.symbol.sun_max_fill'))
+                    .fontSize(28)
+                    .fontColor([$r('app.color.brand_primary')])
+                }
+                .width(56)
+                .height(56)
+                .backgroundColor($r('app.color.brand_primary_light'))
+                .borderRadius(28)
+                .justifyContent(FlexAlign.Center)
+              }
+              .width('100%')
+              .padding(20)
+            }
+            .width('100%')
+            .backgroundColor($r('app.color.card_background'))
+            .borderRadius(20)
+            .margin({ left: 20, right: 20 })
+
+            // 提示说明
+            Column({ space: 8 }) {
+              Text('说明')
+                .fontSize(13)
+                .fontColor($r('app.color.text_hint'))
+                .width('100%')
+
+              Text('• 切换主题后立即生效')
+                .fontSize(13)
+                .fontColor($r('app.color.text_secondary'))
+                .width('100%')
+
+              Text('• 浅色模式适合白天使用')
+                .fontSize(13)
+                .fontColor($r('app.color.text_secondary'))
+                .width('100%')
+
+              Text('• 深色模式适合夜间使用，更护眼')
+                .fontSize(13)
+                .fontColor($r('app.color.text_secondary'))
+                .width('100%')
+            }
+            .width('100%')
+            .padding({ left: 24, right: 24, top: 8 })
+            .alignItems(HorizontalAlign.Start)
           }
-        }
-        .width('100%')
-        .padding(20)
-        .margin({ left: 16, right: 16, top: 16 })
-        .backgroundColor($r('app.color.card_background'))
-        .borderRadius(12)
-        .alignItems(HorizontalAlign.Center)
-
-        // 主题选项列表
-        Column({ space: 0 }) {
-          ForEach(this.themeOptions, (option: ThemeOption, index: number) => {
-            this.ThemeOptionItem(option, index === this.themeOptions.length - 1)
-          })
-        }
-        .width('100%')
-        .backgroundColor($r('app.color.card_background'))
-        .borderRadius(12)
-        .margin({ left: 16, right: 16, top: 16 })
-
-        // 提示信息
-        Text('切换主题后会立即生效，所有页面的配色将同步更新。')
-          .fontSize(12)
-          .fontColor($r('app.color.text_hint'))
           .width('100%')
-          .padding({ left: 24, right: 24, top: 16 })
-          .textAlign(TextAlign.Center)
-
-        Blank()
+          .padding({ top: 20, bottom: 40 })
+        }
+        .layoutWeight(1)
+        .backgroundColor($r('app.color.page_background'))
+        .align(Alignment.Top)
+        .scrollBar(BarState.Off)
       }
       .width('100%')
       .height('100%')
@@ -199,59 +230,85 @@ export struct ThemeSettingsPage {
   }
 
   @Builder
-  ThemeOptionItem(option: ThemeOption, isLast: boolean) {
-    Column({ space: 0 }) {
-      Row() {
-        // 图标
-        Text(option.icon)
-          .fontSize(24)
-          .width(40)
+  ThemeCard(theme: string, label: string, bgColor: string, textColor: string) {
+    Column({ space: 12 }) {
+      // 预览区域
+      Column({ space: 8 }) {
+        // 模拟标题栏
+        Row({ space: 6 }) {
+          Column()
+            .width(8)
+            .height(8)
+            .backgroundColor(textColor)
+            .borderRadius(4)
+            .opacity(0.3)
+          Column()
+            .width(40)
+            .height(6)
+            .backgroundColor(textColor)
+            .borderRadius(3)
+            .opacity(0.4)
+        }
+        .width('100%')
+        .padding({ left: 8, right: 8, top: 8 })
 
-        // 文字内容
+        // 模拟卡片内容
         Column({ space: 4 }) {
-          Text(option.name)
-            .fontSize(16)
-            .fontColor($r('app.color.text_primary'))
-            .fontWeight(FontWeight.Medium)
-
-          Text(option.description)
-            .fontSize(13)
-            .fontColor($r('app.color.text_hint'))
+          Column()
+            .width('80%')
+            .height(6)
+            .backgroundColor(textColor)
+            .borderRadius(3)
+            .opacity(0.3)
+          Column()
+            .width('60%')
+            .height(6)
+            .backgroundColor(textColor)
+            .borderRadius(3)
+            .opacity(0.2)
         }
+        .width('100%')
+        .padding({ left: 8, right: 8 })
         .alignItems(HorizontalAlign.Start)
-        .layoutWeight(1)
 
-        // 选中标记
-        if (this.currentTheme === option.value) {
-          Text('✓')
-            .fontSize(20)
-            .fontColor($r('app.color.brand_primary'))
-            .fontWeight(FontWeight.Bold)
+        // 模拟按钮
+        Row({ space: 6 }) {
+          Column()
+            .width(32)
+            .height(10)
+            .backgroundColor($r('app.color.brand_primary'))
+            .borderRadius(5)
+          Column()
+            .width(32)
+            .height(10)
+            .backgroundColor(textColor)
+            .borderRadius(5)
+            .opacity(0.2)
         }
+        .width('100%')
+        .padding({ left: 8, right: 8, bottom: 8 })
       }
       .width('100%')
-      .height(72)
-      .padding({ left: 16, right: 16 })
-      .onClick((): void => {
-        this.saveTheme(option.value);
-      })
+      .height(90)
+      .backgroundColor(bgColor)
+      .borderRadius(12)
 
-      if (!isLast) {
-        Divider()
-          .strokeWidth(0.5)
-          .color($r('app.color.outline'))
-          .margin({ left: 56, right: 16 })
-      }
+      // 标签
+      Text(label)
+        .fontSize(15)
+        .fontWeight(this.currentTheme === theme ? FontWeight.Medium : FontWeight.Normal)
+        .fontColor(this.currentTheme === theme ? $r('app.color.brand_primary') : $r('app.color.text_secondary'))
     }
+    .layoutWeight(1)
+    .padding(12)
+    .backgroundColor(this.currentTheme === theme ? $r('app.color.brand_primary_light') : $r('app.color.card_background_secondary'))
+    .borderRadius(16)
+    .border({
+      width: this.currentTheme === theme ? 2 : 0,
+      color: $r('app.color.brand_primary')
+    })
+    .onClick((): void => {
+      this.saveTheme(theme);
+    })
   }
-}
-
-/**
- * 主题选项类型
- */
-class ThemeOption {
-  name: string = ''
-  value: string = ''
-  description: string = ''
-  icon: string = ''
 }

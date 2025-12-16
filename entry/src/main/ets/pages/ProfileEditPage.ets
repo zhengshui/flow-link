@@ -4,7 +4,7 @@
  * 使用 NavDestination 作为 Navigation 子页面
  */
 
-import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult } from '@tbs/common';
+import { UserInfoData, StorageConst, StorageUtils, toast, requestApiCall, ResponseResult, AuthApiService } from '@tbs/common';
 import http from '@ohos.net.http';
 
 /**
@@ -28,6 +28,7 @@ export struct ProfileEditPage {
   @State targetWeightValue: string = ''
   @State fitnessGoal: string = '增肌'
   @State isLoading: boolean = false
+  @State isDataLoaded: boolean = false
   @StorageProp('topRectHeight') topRectHeight: number = 0
   private pathStack: NavPathStack = new NavPathStack()
 
@@ -39,13 +40,18 @@ export struct ProfileEditPage {
   }
 
   /**
-   * 加载用户信息
+   * 从服务器加载用户信息
+   * 确保多设备登录时数据一致性
    */
-  loadUserInfo(): void {
-    const userInfoStr: string = StorageUtils.getStringValueSync(StorageConst.USER_INFO, '');
-    if (userInfoStr.length > 0) {
-      try {
-        this.userInfo = JSON.parse(userInfoStr) as UserInfoData;
+  async loadUserInfo(): Promise<void> {
+    this.isDataLoaded = false;
+    this.userInfo = null;
+
+    try {
+      const response: ResponseResult = await AuthApiService.getUserInfo();
+
+      if (response.code === 0 && response.data !== null) {
+        this.userInfo = response.data as UserInfoData;
         this.nickname = this.userInfo.nickname;
         this.email = this.userInfo.email.length > 0 ? this.userInfo.email : '';
         this.phone = this.userInfo.phone.length > 0 ? this.userInfo.phone : '';
@@ -55,9 +61,19 @@ export struct ProfileEditPage {
         this.weightValue = this.userInfo.weight > 0 ? this.userInfo.weight.toString() : '';
         this.targetWeightValue = this.userInfo.targetWeight > 0 ? this.userInfo.targetWeight.toString() : '';
         this.fitnessGoal = this.userInfo.fitnessGoal.length > 0 ? this.userInfo.fitnessGoal : '增肌';
-      } catch (err) {
-        console.error('解析用户信息失败:', JSON.stringify(err));
+
+        // 同步更新本地存储
+        const userInfoJson: string = JSON.stringify(response.data);
+        StorageUtils.saveValueSync(StorageConst.USER_INFO, userInfoJson);
+      } else {
+        const msg: string = response.message !== undefined && response.message.length > 0 ? response.message : '获取用户信息失败';
+        toast(msg);
       }
+    } catch (err) {
+      console.error('获取用户信息失败:', JSON.stringify(err));
+      toast('获取用户信息失败，请重试');
+    } finally {
+      this.isDataLoaded = true;
     }
   }
 
@@ -79,45 +95,50 @@ export struct ProfileEditPage {
 
     try {
       // 构建更新数据
-      const updateData: ESObject = {
-        nickname: this.nickname.trim()
-      };
+      const updateData: Map<string, number | string> = new Map();
+      updateData.set('nickname', this.nickname.trim());
 
       if (this.email.trim().length > 0) {
-        updateData['email'] = this.email.trim();
+        updateData.set('email', this.email.trim());
       }
       if (this.phone.trim().length > 0) {
-        updateData['phone'] = this.phone.trim();
+        updateData.set('phone', this.phone.trim());
       }
-      updateData['gender'] = this.gender;
+      updateData.set('gender', this.gender);
 
       const ageNum: number = parseInt(this.age);
       if (!isNaN(ageNum) && ageNum > 0) {
-        updateData['age'] = ageNum;
+        updateData.set('age', ageNum);
       }
 
       const heightNum: number = parseInt(this.heightValue);
       if (!isNaN(heightNum) && heightNum > 0) {
-        updateData['height'] = heightNum;
+        updateData.set('height', heightNum);
       }
 
       const weightNum: number = parseFloat(this.weightValue);
       if (!isNaN(weightNum) && weightNum > 0) {
-        updateData['weight'] = weightNum;
+        updateData.set('weight', weightNum);
       }
 
       const targetWeightNum: number = parseFloat(this.targetWeightValue);
       if (!isNaN(targetWeightNum) && targetWeightNum > 0) {
-        updateData['targetWeight'] = targetWeightNum;
+        updateData.set('targetWeight', targetWeightNum);
       }
 
-      updateData['fitnessGoal'] = this.fitnessGoal;
+      updateData.set('fitnessGoal', this.fitnessGoal);
+
+      // 转换为 Record 对象
+      const requestBody: Record<string, number | boolean | string | Object | undefined> = {};
+      updateData.forEach((value: number | string, key: string) => {
+        requestBody[key] = value;
+      });
 
       // 调用更新API
       const response: ResponseResult = await requestApiCall(
         '/user/info',
         http.RequestMethod.PUT,
-        updateData as Record<string, number | boolean | string | Object | undefined>
+        requestBody
       );
 
       if (response.code === 200) {
@@ -180,69 +201,195 @@ export struct ProfileEditPage {
         .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
         .backgroundColor($r('app.color.card_background'))
 
-        // 表单内容
-        Scroll() {
-          Column({ space: 0 }) {
-            // 基本信息
-            this.SectionTitle('基本信息')
-          this.InputItem('昵称', this.nickname, (value: string): void => {
-            this.nickname = value;
-          }, '请输入昵称')
-          this.ItemDivider()
-          this.InputItem('邮箱', this.email, (value: string): void => {
-            this.email = value;
-          }, '请输入邮箱')
-          this.ItemDivider()
-          this.InputItem('手机号', this.phone, (value: string): void => {
-            this.phone = value;
-          }, '请输入手机号')
+        // 表单内容 - 等待数据加载完成
+        if (this.isDataLoaded) {
+          Scroll() {
+            Column({ space: 0 }) {
+              // 基本信息
+              this.SectionTitle('基本信息')
 
-          // 个人信息
-          this.SectionTitle('个人信息')
-          this.GenderSelector()
-          this.ItemDivider()
-          this.InputItem('年龄', this.age, (value: string): void => {
-            this.age = value;
-          }, '请输入年龄', true)
+              // 昵称
+              Row() {
+                Text('昵称')
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .width(100)
 
-          // 身体数据
-          this.SectionTitle('身体数据')
-          this.InputItem('身高 (cm)', this.heightValue, (value: string): void => {
-            this.heightValue = value;
-          }, '请输入身高', true)
-          this.ItemDivider()
-          this.InputItem('体重 (kg)', this.weightValue, (value: string): void => {
-            this.weightValue = value;
-          }, '请输入体重', true)
-          this.ItemDivider()
-          this.InputItem('目标体重 (kg)', this.targetWeightValue, (value: string): void => {
-            this.targetWeightValue = value;
-          }, '请输入目标体重', true)
+                TextInput({ text: $$this.nickname, placeholder: '请输入昵称' })
+                  .layoutWeight(1)
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .backgroundColor(Color.Transparent)
+              }
+              .width('100%')
+              .height(52)
+              .padding({ left: 16, right: 16 })
+              .backgroundColor($r('app.color.card_background'))
 
-          // 健身目标
-          this.SectionTitle('健身目标')
-          this.FitnessGoalSelector()
+              this.ItemDivider()
 
-          // 保存按钮
-          Button(this.isLoading ? '保存中...' : '保存')
-            .width('90%')
-            .height(46)
-            .fontSize(15)
-            .fontWeight(FontWeight.Medium)
-            .backgroundColor(this.isLoading ? $r('app.color.text_placeholder') : $r('app.color.brand_primary'))
-            .fontColor(Color.White)
-            .borderRadius(10)
-            .margin({ top: 32, bottom: 40 })
-            .enabled(!this.isLoading)
-            .onClick((): void => {
-              this.saveUserInfo();
-            })
+              // 邮箱
+              Row() {
+                Text('邮箱')
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .width(100)
+
+                TextInput({ text: $$this.email, placeholder: '请输入邮箱' })
+                  .layoutWeight(1)
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .backgroundColor(Color.Transparent)
+              }
+              .width('100%')
+              .height(52)
+              .padding({ left: 16, right: 16 })
+              .backgroundColor($r('app.color.card_background'))
+
+              this.ItemDivider()
+
+              // 手机号
+              Row() {
+                Text('手机号')
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .width(100)
+
+                TextInput({ text: $$this.phone, placeholder: '请输入手机号' })
+                  .layoutWeight(1)
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .backgroundColor(Color.Transparent)
+              }
+              .width('100%')
+              .height(52)
+              .padding({ left: 16, right: 16 })
+              .backgroundColor($r('app.color.card_background'))
+
+              // 个人信息
+              this.SectionTitle('个人信息')
+              this.GenderSelector()
+              this.ItemDivider()
+
+              // 年龄
+              Row() {
+                Text('年龄')
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .width(100)
+
+                TextInput({ text: $$this.age, placeholder: '请输入年龄' })
+                  .layoutWeight(1)
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .backgroundColor(Color.Transparent)
+                  .type(InputType.Number)
+              }
+              .width('100%')
+              .height(52)
+              .padding({ left: 16, right: 16 })
+              .backgroundColor($r('app.color.card_background'))
+
+              // 身体数据
+              this.SectionTitle('身体数据')
+
+              // 身高
+              Row() {
+                Text('身高 (cm)')
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .width(100)
+
+                TextInput({ text: $$this.heightValue, placeholder: '请输入身高' })
+                  .layoutWeight(1)
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .backgroundColor(Color.Transparent)
+                  .type(InputType.Number)
+              }
+              .width('100%')
+              .height(52)
+              .padding({ left: 16, right: 16 })
+              .backgroundColor($r('app.color.card_background'))
+
+              this.ItemDivider()
+
+              // 体重
+              Row() {
+                Text('体重 (kg)')
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .width(100)
+
+                TextInput({ text: $$this.weightValue, placeholder: '请输入体重' })
+                  .layoutWeight(1)
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .backgroundColor(Color.Transparent)
+                  .type(InputType.Number)
+              }
+              .width('100%')
+              .height(52)
+              .padding({ left: 16, right: 16 })
+              .backgroundColor($r('app.color.card_background'))
+
+              this.ItemDivider()
+
+              // 目标体重
+              Row() {
+                Text('目标体重 (kg)')
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .width(100)
+
+                TextInput({ text: $$this.targetWeightValue, placeholder: '请输入目标体重' })
+                  .layoutWeight(1)
+                  .fontSize(15)
+                  .fontColor($r('app.color.text_primary'))
+                  .backgroundColor(Color.Transparent)
+                  .type(InputType.Number)
+              }
+              .width('100%')
+              .height(52)
+              .padding({ left: 16, right: 16 })
+              .backgroundColor($r('app.color.card_background'))
+
+              // 健身目标
+              this.SectionTitle('健身目标')
+              this.FitnessGoalSelector()
+
+              // 保存按钮
+              Button(this.isLoading ? '保存中...' : '保存')
+                .width('90%')
+                .height(46)
+                .fontSize(15)
+                .fontWeight(FontWeight.Medium)
+                .backgroundColor(this.isLoading ? $r('app.color.text_placeholder') : $r('app.color.brand_primary'))
+                .fontColor(Color.White)
+                .borderRadius(10)
+                .margin({ top: 32, bottom: 40 })
+                .enabled(!this.isLoading)
+                .onClick((): void => {
+                  this.saveUserInfo();
+                })
+            }
+            .width('100%')
           }
-          .width('100%')
+          .layoutWeight(1)
+          .backgroundColor($r('app.color.page_background'))
+          .align(Alignment.Top)
+        } else {
+          // 加载中状态
+          Column() {
+            LoadingProgress()
+              .width(40)
+              .height(40)
+              .color($r('app.color.brand_primary'))
+          }
+          .layoutWeight(1)
+          .justifyContent(FlexAlign.Center)
+          .backgroundColor($r('app.color.page_background'))
         }
-        .layoutWeight(1)
-        .backgroundColor($r('app.color.page_background'))
-        .align(Alignment.Top)
       }
       .width('100%')
       .height('100%')
@@ -261,30 +408,6 @@ export struct ProfileEditPage {
       .fontColor($r('app.color.text_hint'))
       .width('100%')
       .padding({ left: 16, top: 20, bottom: 8 })
-  }
-
-  @Builder
-  InputItem(label: string, value: string, onChange: (value: string) => void, placeholder: string, isNumber: boolean = false) {
-    Row() {
-      Text(label)
-        .fontSize(15)
-        .fontColor($r('app.color.text_primary'))
-        .width(100)
-
-      TextInput({ text: value, placeholder: placeholder })
-        .layoutWeight(1)
-        .fontSize(15)
-        .fontColor($r('app.color.text_primary'))
-        .backgroundColor(Color.Transparent)
-        .type(isNumber ? InputType.Number : InputType.Normal)
-        .onChange((value: string): void => {
-          onChange(value);
-        })
-    }
-    .width('100%')
-    .height(52)
-    .padding({ left: 16, right: 16 })
-    .backgroundColor($r('app.color.card_background'))
   }
 
   @Builder
