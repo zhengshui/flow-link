@@ -49,6 +49,14 @@
       }
     },
     {
+      "name": "FeedbackPage",
+      "pageSourceFile": "src/main/ets/pages/FeedbackPage.ets",
+      "buildFunction": "FeedbackPageBuilder",
+      "data": {
+        "description": "反馈中心页面"
+      }
+    },
+    {
       "name": "ExerciseDetailPage",
       "pageSourceFile": "src/main/ets/pages/ExerciseDetailPage.ets",
       "buildFunction": "ExerciseDetailPageBuilder",

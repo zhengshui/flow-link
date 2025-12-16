@@ -232,4 +232,39 @@ export class AuthApiService {
     const dayStr: string = day < 10 ? '0' + day.toString() : day.toString();
     return year.toString() + '-' + monthStr + '-' + dayStr;
   }
+
+  /**
+   * 提交用户反馈
+   * POST /feedback
+   */
+  static async submitFeedback(
+    content: string,
+    type: string = '建议',
+    contactInfo: string = ''
+  ): Promise<ResponseResult> {
+    try {
+      const requestData: Record<string, number | boolean | string | Object | undefined> = {
+        'content': content,
+        'type': type
+      };
+
+      if (contactInfo.length > 0) {
+        requestData['contactInfo'] = contactInfo;
+      }
+
+      const response: ResponseResult = await requestApiCall(
+        '/feedback',
+        http.RequestMethod.POST,
+        requestData
+      );
+
+      if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return AuthApiService.createErrorResponse(5001, '提交反馈失败: ' + JSON.stringify(error));
+    }
+  }
 }

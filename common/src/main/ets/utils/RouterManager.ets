@@ -118,6 +118,7 @@ export class NavRoutes {
   static readonly THEME_SETTINGS: string = 'ThemeSettingsPage';
   static readonly REMINDER_SETTINGS: string = 'ReminderSettingsPage';
   static readonly ABOUT: string = 'AboutPage';
+  static readonly FEEDBACK: string = 'FeedbackPage';
   static readonly EXERCISE_DETAIL: string = 'ExerciseDetailPage';
   static readonly TRAINING_SESSION: string = 'TrainingSessionPage';
   static readonly ACTION_SELECT: string = 'ActionSelectPage';
