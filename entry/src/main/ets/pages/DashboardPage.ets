@@ -20,7 +20,8 @@ import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
 @Component
 export struct DashboardPage {
-  @State todayRecord: TrainingRecordModel | null = null
+  @State todayRecords: TrainingRecordModel[] = []
+  @State currentRecordIndex: number = 0
   @State weekStats: DailyStatsModel[] = []
   @State weekTotalCount: number = 0
   @State weekTotalDuration: number = 0
@@ -55,7 +56,7 @@ export struct DashboardPage {
   async loadData(): Promise<void> {
     this.isLoading = true;
     // 重置所有状态为初始值，确保后续赋值能触发 UI 刷新
-    this.todayRecord = null;
+    this.todayRecords = [];
     this.weekStats = [];
     this.weekTotalCount = 0;
     this.weekTotalDuration = 0;
@@ -97,7 +98,7 @@ export struct DashboardPage {
   }
 
   /**
-   * 加载今天的训练记录
+   * 加载今天的训练记录（支持一天多练）
    */
   async loadTodayRecord(): Promise<void> {
     try {
@@ -113,31 +114,12 @@ export struct DashboardPage {
         const recordsArray: Object[] = apiData['records'] as Object[] ?? [];
         console.info('[DashboardPage] 获取到记录数量:', recordsArray.length);
 
-        if (recordsArray.length > 0) {
-          // 从 API 数据创建新的 TrainingRecordModel 实例，确保触发 UI 刷新
-          const recordData: Record<string, Object> = recordsArray[0] as Record<string, Object>;
-          const newRecord: TrainingRecordModel = new TrainingRecordModel(
-            recordData['id'] as string ?? '',
-            recordData['userId'] as number ?? 0,
-            recordData['title'] as string ?? '',
-            recordData['date'] as string ?? '',
-            recordData['startTime'] as string ?? '',
-            recordData['endTime'] as string ?? '',
-            recordData['duration'] as number ?? 0,
-            [],
-            recordData['totalWeight'] as number ?? 0,
-            recordData['totalSets'] as number ?? 0,
-            recordData['caloriesBurned'] as number ?? 0,
-            recordData['notes'] as string ?? '',
-            recordData['mood'] as string ?? '',
-            recordData['planId'] as number ?? 0,
-            recordData['createdAt'] as string ?? '',
-            recordData['updatedAt'] as string ?? ''
-          );
-          this.todayRecord = newRecord;
-          console.info('[DashboardPage] 今日训练数据已更新 - duration:', this.todayRecord.duration,
-            'totalSets:', this.todayRecord.totalSets, 'calories:', this.todayRecord.caloriesBurned);
+        // 加载所有今日训练记录，支持一天多练
+        const records: TrainingRecordModel[] = [];
+        for (let i = 0; i < recordsArray.length; i++) {
+          records.push(recordsArray[i] as TrainingRecordModel);
         }
+        this.todayRecords = records;
       }
     } catch (err) {
       console.error('加载今日训练失败:', JSON.stringify(err));
@@ -225,81 +207,49 @@ export struct DashboardPage {
           .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.text_primary'))
         Blank()
-        if (this.todayRecord !== null) {
-          Text(this.getMoodLabel(this.todayRecord.mood))
+        // 多条记录时显示当前索引
+        if (this.todayRecords.length > 1) {
+          Text((this.currentRecordIndex + 1).toString() + '/' + this.todayRecords.length.toString())
             .fontSize(12)
-            .fontColor(Color.White)
-            .backgroundColor(this.getMoodColor(this.todayRecord.mood))
-            .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-            .borderRadius(4)
+            .fontColor($r('app.color.text_secondary'))
         }
       }
       .width('100%')
 
-      if (this.todayRecord !== null) {
-        // 显示今日训练数据
-        Column({ space: 16 }) {
-          // 训练标题和时间
-          Row() {
-            Text(this.todayRecord.title)
-              .fontSize(18)
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_primary'))
-              .layoutWeight(1)
-              .maxLines(1)
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-            Text(this.formatTimeRange(this.todayRecord.startTime, this.todayRecord.endTime))
-              .fontSize(12)
-              .fontColor($r('app.color.text_hint'))
-              .flexShrink(0)
-          }
-          .width('100%')
-
-          // 数据卡片
-          Row({ space: 12 }) {
-            this.DataItem('时长', this.todayRecord.duration.toString() + '分钟', $r('app.color.color_success'))
-            this.DataItem('组数', this.todayRecord.totalSets.toString() + '组', $r('app.color.color_warning'))
-            this.DataItem('卡路里', this.todayRecord.caloriesBurned.toString(), $r('app.color.color_danger'))
-          }
-          .width('100%')
-          .justifyContent(FlexAlign.SpaceBetween)
-
-          // 继续训练按钮
-          Button('继续训练')
-            .width('100%')
-            .height(40)
-            .fontSize(14)
-            .fontWeight(FontWeight.Medium)
-            .backgroundColor($r('app.color.brand_primary'))
-            .borderRadius(8)
-            .onClick(() => {
-              if (this.todayRecord !== null) {
-                RouterManager.pushPath(NavRoutes.TRAINING_SESSION, { recordId: this.todayRecord.id });
-              }
-            })
+      if (this.todayRecords.length > 0) {
+        // 使用 Swiper 展示训练记录（支持一天多练滑动切换）
+        Swiper() {
+          ForEach(this.todayRecords, (record: TrainingRecordModel) => {
+            this.TrainingRecordContent(record)
+          })
         }
+        .index(this.currentRecordIndex)
+        .indicator(this.todayRecords.length > 1 ?
+          new DotIndicator()
+            .color($r('app.color.outline'))
+            .selectedColor($r('app.color.brand_primary'))
+            .itemWidth(6)
+            .itemHeight(6)
+            .selectedItemWidth(6)
+            .selectedItemHeight(6)
+          : false)
+        .loop(false)
+        .onChange((index: number) => {
+          this.currentRecordIndex = index;
+        })
         .width('100%')
-        .padding({ top: 12 })
       } else {
         // 无训练记录
-        Column({ space: 16 }) {
+        Column({ space: 8 }) {
           Text('今天还没有训练记录')
             .fontSize(14)
             .fontColor($r('app.color.text_hint'))
-            .margin({ top: 12 })
-
-          Button('开始今日训练')
-            .width('100%')
-            .height(40)
-            .fontSize(14)
-            .fontWeight(FontWeight.Medium)
-            .backgroundColor($r('app.color.brand_primary'))
-            .borderRadius(8)
-            .onClick(() => {
-              RouterManager.pushPath(NavRoutes.TRAINING_SESSION);
-            })
+          Text('点击下方按钮开始训练')
+            .fontSize(12)
+            .fontColor($r('app.color.text_placeholder'))
         }
         .width('100%')
+        .padding({ top: 16, bottom: 16 })
       }
     }
     .width('100%')
@@ -310,21 +260,79 @@ export struct DashboardPage {
   }
 
   /**
+   * 单条训练记录内容（Swiper 内部）
+   */
+  @Builder
+  TrainingRecordContent(record: TrainingRecordModel) {
+    Column({ space: 12 }) {
+      // 训练标题和时间
+      Row() {
+        Text(record.title)
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.text_primary'))
+          .layoutWeight(1)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+        Row({ space: 6 }) {
+          Text(this.formatTimeRange(record.startTime, record.endTime))
+            .fontSize(12)
+            .fontColor($r('app.color.text_hint'))
+
+          // 状态标签
+          if (record.mood !== null && record.mood !== '') {
+            Text(this.getMoodLabel(record.mood))
+              .fontSize(10)
+              .fontColor(Color.White)
+              .backgroundColor(this.getMoodColor(record.mood))
+              .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+              .borderRadius(4)
+          }
+        }
+        .flexShrink(0)
+      }
+      .width('100%')
+
+      // 数据展示
+      Row({ space: 12 }) {
+        this.DataItem('时长', record.duration.toString() + '分钟', $r('app.color.color_success'))
+        this.DataItem('组数', record.totalSets.toString() + '组', $r('app.color.color_warning'))
+        this.DataItem('卡路里', record.caloriesBurned.toString(), $r('app.color.color_danger'))
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+
+      // 继续训练按钮（简化样式）
+      Text('继续训练 >')
+        .fontSize(13)
+        .fontColor($r('app.color.brand_primary'))
+        .width('100%')
+        .textAlign(TextAlign.End)
+        .onClick(() => {
+          RouterManager.pushPath(NavRoutes.TRAINING_SESSION, { recordId: record.id });
+        })
+    }
+    .width('100%')
+    .padding({ top: 4 })
+  }
+
+  /**
    * 格式化时间范围（只显示时分）
    */
   formatTimeRange(startTime: string, endTime: string): string {
     const startParts: string[] = startTime.split(' ');
     const endParts: string[] = endTime.split(' ');
-    const startHHmm: string = startParts.length > 1 ? startParts[1].substring(0, 5) : startTime;
-    const endHHmm: string = endParts.length > 1 ? endParts[1].substring(0, 5) : endTime;
-    return startHHmm + '-' + endHHmm;
+    const startHHmmss: string = startParts.length > 1 ? startParts[1].substring(0, 8) : startTime;
+    const endHHmmss: string = endParts.length > 1 ? endParts[1].substring(0, 8) : endTime;
+    return startHHmmss + '-' + endHHmmss;
   }
 
   /**
    * 获取状态标签
    */
   getMoodLabel(mood: string): string {
-    return mood || '状态未设置';
+    return mood || '';
   }
 
   /**

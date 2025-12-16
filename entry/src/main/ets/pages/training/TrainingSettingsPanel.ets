@@ -55,7 +55,7 @@ export struct TrainingSettingsPanel {
               .fontSize(18)
               .fontColor(['#F54A45'])
 
-            Text('取消训练')
+            Text('删除训练')
               .fontSize(14)
               .fontColor('#F54A45')
           }

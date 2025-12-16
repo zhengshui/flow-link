@@ -528,7 +528,9 @@ export struct TrainingSessionPage {
     // 结束时间完整格式 (YYYY-MM-DD HH:mm:ss)
     record.endTime = this.formatDateTime(endDate);
 
-    record.duration = this.session.getDuration();
+    // 使用开始和结束时间直接计算训练时长（分钟）
+    const durationMs: number = endDate.getTime() - startDate.getTime() - this.session.pausedTime;
+    record.duration = Math.floor(durationMs / 1000 / 60);
     record.notes = this.session.notes;
     record.mood = this.session.mood;
     record.planId = this.session.planId;
@@ -815,7 +817,7 @@ export struct TrainingSessionPage {
     promptAction.showDialog({
       title: '取消训练',
       message: '确定要取消本次训练吗？所有训练数据将不会保存。',
-      buttons: [{ text: '继续训练', color: '#3370FF' }, { text: '取消训练', color: '#F54A45' }]
+      buttons: [{ text: '继续训练', color: '#3370FF' }, { text: '删除训练', color: '#F54A45' }]
     }).then((data: promptAction.ShowDialogSuccessResponse): void => {
       if (data.index === 1) {
         this.cancelTraining();
@@ -824,11 +826,34 @@ export struct TrainingSessionPage {
   }
 
   /**
-   * 取消训练
+   * 删除训练
+   * 如果存在已有记录（继续训练模式），则调用删除接口
    */
-  cancelTraining(): void {
+  async cancelTraining(): Promise<void> {
     // 停止计时器
     this.stopTimer();
+
+    // 如果存在已有记录，调用删除接口
+    if (this.existingRecordId.length > 0) {
+      try {
+        const res: ResponseResult = await TrainingApiService.deleteTrainingRecord(this.existingRecordId);
+        if (res.code === 0) {
+          toast('训练记录已删除');
+          // 设置刷新标志，通知相关页面刷新数据
+          AppStorage.setOrCreate<boolean>('needRefreshRecordPage', true);
+          AppStorage.setOrCreate<number>('refreshDashboardTimestamp', Date.now());
+          AppStorage.setOrCreate<boolean>('needRefreshStats', true);
+        } else {
+          toast(res.message ?? '删除记录失败');
+        }
+      } catch (err) {
+        console.error('删除训练记录失败:', JSON.stringify(err));
+        toast('删除失败');
+      }
+    } else {
+      toast('训练已取消');
+    }
+
     // 清除全局训练状态
     AppStorage.setOrCreate<boolean>('trainingMinimized', false);
     AppStorage.delete('trainingSessionData');
@@ -838,7 +863,6 @@ export struct TrainingSessionPage {
     AppStorage.delete('trainingPausedTime');
     AppStorage.delete('trainingPauseStartTime');
     // 返回上一页
-    toast('训练已取消');
     this.pathStack.pop();
   }
 

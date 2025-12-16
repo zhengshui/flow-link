@@ -46,14 +46,23 @@ export struct TrainingTopBar {
         .height(this.getUIContext().px2vp(this.params.topRectHeight))
 
       Row() {
-        TextInput({ text: this.params.title })
-          .layoutWeight(1)
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
-          .backgroundColor(Color.Transparent)
-          .padding({ left: 0, right: 8 })
-          .onChange((value: string): void => { this.callbacks.onTitleChange(value); })
+        Row({ space: 4 }) {
+          SymbolGlyph($r('sys.symbol.square_and_pencil'))
+            .fontSize(14)
+            .fontColor([$r('app.color.text_hint')])
+
+          TextInput({ text: this.params.title })
+            .layoutWeight(1)
+            .fontSize(14)
+            .fontWeight(FontWeight.Bold)
+            .fontColor($r('app.color.text_primary'))
+            .backgroundColor(Color.Transparent)
+            .padding({ left: 0, right: 0 })
+            .onChange((value: string): void => { this.callbacks.onTitleChange(value); })
+        }
+        .layoutWeight(1)
+        .alignItems(VerticalAlign.Center)
+        .padding({ right: 8 })
 
         Button('完成')
           .fontSize(14)
