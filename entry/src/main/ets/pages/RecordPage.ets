@@ -53,11 +53,16 @@ export struct RecordPage {
    * 生成日历格子数据
    */
   generateCalendarDays(): void {
+    // 先重置状态，确保后续赋值触发 UI 刷新
+    this.calendarDays = [];
+
     const days: CalendarDayModel[] = [];
     const today: Date = new Date();
     const todayYear: number = today.getFullYear();
     const todayMonth: number = today.getMonth() + 1;
     const todayDay: number = today.getDate();
+    // 今天的日期字符串，用于统一比较
+    const todayStr: string = `${todayYear}-${todayMonth.toString().padStart(2, '0')}-${todayDay.toString().padStart(2, '0')}`;
 
     // 当月第一天是星期几
     const firstDay: Date = new Date(this.currentYear, this.currentMonth - 1, 1);
@@ -75,13 +80,14 @@ export struct RecordPage {
       const prevMonth: number = this.currentMonth === 1 ? 12 : this.currentMonth - 1;
       const prevYear: number = this.currentMonth === 1 ? this.currentYear - 1 : this.currentYear;
       const dateStr: string = `${prevYear}-${prevMonth.toString().padStart(2, '0')}-${prevDay.toString().padStart(2, '0')}`;
-      days.push(new CalendarDayModel(prevDay, false, false, dateStr));
+      const isToday: boolean = dateStr === todayStr;
+      days.push(new CalendarDayModel(prevDay, false, isToday, dateStr));
     }
 
     // 填充当月的日期
     for (let d: number = 1; d <= daysInMonth; d++) {
       const dateStr: string = `${this.currentYear}-${this.currentMonth.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
-      const isToday: boolean = todayYear === this.currentYear && todayMonth === this.currentMonth && todayDay === d;
+      const isToday: boolean = dateStr === todayStr;
       days.push(new CalendarDayModel(d, true, isToday, dateStr));
     }
 
@@ -92,7 +98,8 @@ export struct RecordPage {
       const nextMonth: number = this.currentMonth === 12 ? 1 : this.currentMonth + 1;
       const nextYear: number = this.currentMonth === 12 ? this.currentYear + 1 : this.currentYear;
       const dateStr: string = `${nextYear}-${nextMonth.toString().padStart(2, '0')}-${nextDay.toString().padStart(2, '0')}`;
-      days.push(new CalendarDayModel(nextDay, false, false, dateStr));
+      const isToday: boolean = dateStr === todayStr;
+      days.push(new CalendarDayModel(nextDay, false, isToday, dateStr));
       nextDay++;
     }
 
@@ -189,9 +196,27 @@ export struct RecordPage {
   }
 
   /**
+   * 判断日期是否为未来日期
+   */
+  isFutureDate(dateStr: string): boolean {
+    const today: Date = new Date();
+    const todayYear: number = today.getFullYear();
+    const todayMonth: number = today.getMonth() + 1;
+    const todayDay: number = today.getDate();
+    const todayStr: string = `${todayYear}-${todayMonth.toString().padStart(2, '0')}-${todayDay.toString().padStart(2, '0')}`;
+    return dateStr > todayStr;
+  }
+
+  /**
    * 点击日期
    */
   onDayClick(day: CalendarDayModel): void {
+    // 检查是否为未来日期
+    if (this.isFutureDate(day.dateStr)) {
+      // 未来日期禁止操作
+      return;
+    }
+
     this.selectedDay = day;
     // 复制记录到独立数组
     this.selectedDayRecords = [...day.records];
@@ -203,7 +228,7 @@ export struct RecordPage {
       // 无训练记录，显示提示
       promptAction.showDialog({
         title: day.dateStr,
-        message: '今天还没有训练安排哦，快去训练吧~',
+        message: '这天还没有训练记录哦，快去训练吧~',
         buttons: [
           { text: '取消', color: '#646A73' },
           { text: '开始训练', color: '#3370FF' }

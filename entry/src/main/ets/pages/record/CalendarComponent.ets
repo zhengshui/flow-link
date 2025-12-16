@@ -143,18 +143,28 @@ export struct CalendarComponent {
 
   @Builder
   CalendarGrid(): void {
-    Column({ space: 4 }) {
-      // 6行日历格子
-      ForEach([0, 1, 2, 3, 4, 5], (rowIndex: number) => {
-        Row({ space: 4 }) {
-          ForEach([0, 1, 2, 3, 4, 5, 6], (colIndex: number) => {
-            this.DayCell(this.calendarDays[rowIndex * 7 + colIndex])
-          })
-        }
-        .width('100%')
-      })
+    // 确保 calendarDays 有数据才渲染
+    if (this.calendarDays.length === 42) {
+      Column({ space: 4 }) {
+        // 6行日历格子
+        ForEach([0, 1, 2, 3, 4, 5], (rowIndex: number) => {
+          Row({ space: 4 }) {
+            ForEach([0, 1, 2, 3, 4, 5, 6], (colIndex: number) => {
+              this.DayCell(this.calendarDays[rowIndex * 7 + colIndex])
+            }, (colIndex: number): string => {
+              // 使用日期字符串作为 key，确保月份切换时重新渲染
+              const dayIndex: number = rowIndex * 7 + colIndex;
+              return this.calendarDays[dayIndex].dateStr;
+            })
+          }
+          .width('100%')
+        }, (rowIndex: number): string => {
+          // 使用年月+行号作为 key
+          return `${this.currentYear}-${this.currentMonth}-row${rowIndex}`;
+        })
+      }
+      .width('100%')
     }
-    .width('100%')
   }
 
   @Builder
@@ -189,9 +199,10 @@ export struct CalendarComponent {
     .justifyContent(FlexAlign.Start)
     .padding({ top: 4 })
     .borderRadius(8)
-    .backgroundColor(day.isCurrentMonth && day.records.length > 0 ? $r('app.color.card_background') : Color.Transparent)
+    .backgroundColor(day.isCurrentMonth && day.records.length > 0 && !this.isFutureDate(day.dateStr) ? $r('app.color.card_background') : Color.Transparent)
+    .opacity(this.isFutureDate(day.dateStr) ? 0.4 : 1.0)
     .onClick(() => {
-      if (day.isCurrentMonth) {
+      if (day.isCurrentMonth && !this.isFutureDate(day.dateStr)) {
         this.onDayClick(day);
       }
     })
@@ -230,6 +241,18 @@ export struct CalendarComponent {
   }
 
   /**
+   * 判断日期是否为未来日期
+   */
+  private isFutureDate(dateStr: string): boolean {
+    const today: Date = new Date();
+    const todayYear: number = today.getFullYear();
+    const todayMonth: number = today.getMonth() + 1;
+    const todayDay: number = today.getDate();
+    const todayStr: string = `${todayYear}-${todayMonth.toString().padStart(2, '0')}-${todayDay.toString().padStart(2, '0')}`;
+    return dateStr > todayStr;
+  }
+
+  /**
    * 获取日期文字颜色
    */
   private getDayTextColor(day: CalendarDayModel): ResourceColor {
@@ -238,6 +261,10 @@ export struct CalendarComponent {
     }
     if (day.isToday) {
       return Color.White;
+    }
+    // 未来日期使用更淡的颜色
+    if (this.isFutureDate(day.dateStr)) {
+      return $r('app.color.text_hint');
     }
     return $r('app.color.text_primary');
   }
