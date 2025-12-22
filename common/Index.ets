@@ -16,9 +16,21 @@ export { StatsApiService } from './src/main/ets/services/StatsApiService'
 
 export { LoginData, UserInfoData } from './src/main/ets/model/AuthModel'
 export { ExerciseModel } from './src/main/ets/model/ExerciseModel'
-export { TrainingRecordModel } from './src/main/ets/model/TrainingRecordModel'
-export { PlanTemplateModel } from './src/main/ets/model/PlanTemplateModel'
-export { FitnessPlanModel } from './src/main/ets/model/FitnessPlanModel'
+export { TrainingRecordModel, CompletionStatusConst } from './src/main/ets/model/TrainingRecordModel'
+export {
+  PlanTemplateModel,
+  TrainingDayModel,
+  TrainingGoalConst,
+  DifficultyLevelConst,
+  SplitTypeConst,
+  EquipmentTypeConst
+} from './src/main/ets/model/PlanTemplateModel'
+export {
+  FitnessPlanModel,
+  PlanStatusConst,
+  PlanProgressModel,
+  PlanProgressItemModel
+} from './src/main/ets/model/FitnessPlanModel'
 export { TrainingStatsModel, DailyStatsModel, MuscleGroupStatsModel, StatsPeriodConst } from './src/main/ets/model/TrainingStatsModel'
 export { ActionModel, MuscleGroupModel, MuscleGroupConst } from './src/main/ets/model/ActionModel'
 export { TrainingSessionModel, SessionExerciseModel, TrainingSetModel, SetTypeConst } from './src/main/ets/model/TrainingSessionModel'

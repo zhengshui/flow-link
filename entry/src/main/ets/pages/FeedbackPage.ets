@@ -139,12 +139,13 @@ export struct FeedbackPage {
 
               Column() {
                 TextArea({ placeholder: '请详细描述您的问题或建议...' })
+                  .width('100%')
                   .fontSize(15)
                   .fontColor($r('app.color.text_primary'))
                   .placeholderColor($r('app.color.text_placeholder'))
                   .placeholderFont({ size: 15 })
-                  .backgroundColor(Color.Transparent)
-                  .padding(0)
+                  .backgroundColor($r('app.color.card_background'))
+                  .borderRadius(12)
                   .height(180)
                   .maxLength(this.maxContentLength)
                   .onChange((value: string) => {
@@ -163,9 +164,6 @@ export struct FeedbackPage {
                 .margin({ top: 8 })
               }
               .width('100%')
-              .padding(16)
-              .backgroundColor($r('app.color.card_background'))
-              .borderRadius(12)
             }
             .width('100%')
             .padding({ left: 20, right: 20 })

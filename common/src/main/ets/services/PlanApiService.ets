@@ -23,13 +23,18 @@ export class PlanApiService {
   }
   /**
    * 获取计划模板列表 (公开接口,无需认证)
-   * GET /templates?page=1&pageSize=20&goal=xxx&level=xxx
+   * GET /templates?page=1&pageSize=20&goal=xxx&level=xxx&splitType=xxx&equipment=xxx
    */
   static async getPlanTemplates(
     page: number = 1,
     pageSize: number = 20,
     goal: string = '',
-    level: string = ''
+    level: string = '',
+    splitType: string = '',
+    equipment: string = '',
+    durationWeeksMin: number = 0,
+    durationWeeksMax: number = 0,
+    isOfficial: boolean = true
   ): Promise<ResponseResult> {
     try {
       let url: string = `/templates?page=${page}&pageSize=${pageSize}`;
@@ -40,6 +45,19 @@ export class PlanApiService {
       if (level) {
         url += `&level=${level}`;
       }
+      if (splitType) {
+        url += `&splitType=${splitType}`;
+      }
+      if (equipment) {
+        url += `&equipment=${equipment}`;
+      }
+      if (durationWeeksMin > 0) {
+        url += `&durationWeeksMin=${durationWeeksMin}`;
+      }
+      if (durationWeeksMax > 0) {
+        url += `&durationWeeksMax=${durationWeeksMax}`;
+      }
+      url += `&isOfficial=${isOfficial}`;
 
       const response: ResponseResult = await requestApiCall(
         url,
@@ -97,6 +115,134 @@ export class PlanApiService {
       return response;
     } catch (error) {
       return PlanApiService.createErrorResponse(5002, '获取计划模板失败: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
+   * 创建个人模板
+   * POST /templates/custom
+   */
+  static async createCustomTemplate(template: PlanTemplateModel): Promise<ResponseResult> {
+    try {
+      const trainingDaysArray: Object[] = PlanApiService.serializeTrainingDays(template.trainingDays);
+
+      const requestData: Record<string, number | boolean | string | Object | undefined> = {
+        'name': template.name,
+        'description': template.description,
+        'goal': template.goal,
+        'splitType': template.splitType,
+        'level': template.level,
+        'equipment': template.equipment,
+        'durationWeeks': template.durationWeeks,
+        'trainingDaysPerWeek': template.trainingDaysPerWeek,
+        'trainingDays': trainingDaysArray,
+        'tags': template.tags,
+        'imageUrl': template.imageUrl
+      };
+
+      const response: ResponseResult = await requestApiCall(
+        '/templates/custom',
+        http.RequestMethod.POST,
+        requestData
+      );
+
+      if (response.code === 200 && response.data) {
+        const templateData: Record<string, Object> = response.data as Record<string, Object>;
+        const newTemplate: PlanTemplateModel = PlanApiService.parsePlanTemplate(templateData);
+        response.data = newTemplate;
+        response.code = 0;
+      } else if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return PlanApiService.createErrorResponse(5010, '创建个人模板失败: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
+   * 复制官方模板为个人模板
+   * POST /templates/{templateId}/duplicate
+   */
+  static async duplicateTemplate(templateId: string): Promise<ResponseResult> {
+    try {
+      const response: ResponseResult = await requestApiCall(
+        `/templates/${templateId}/duplicate`,
+        http.RequestMethod.POST
+      );
+
+      if (response.code === 200 && response.data) {
+        const templateData: Record<string, Object> = response.data as Record<string, Object>;
+        const newTemplate: PlanTemplateModel = PlanApiService.parsePlanTemplate(templateData);
+        response.data = newTemplate;
+        response.code = 0;
+      } else if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return PlanApiService.createErrorResponse(5011, '复制模板失败: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
+   * 更新个人模板
+   * PUT /templates/{templateId}
+   */
+  static async updateTemplate(templateId: string, template: PlanTemplateModel): Promise<ResponseResult> {
+    try {
+      const trainingDaysArray: Object[] = PlanApiService.serializeTrainingDays(template.trainingDays);
+
+      const requestData: Record<string, number | boolean | string | Object | undefined> = {
+        'name': template.name,
+        'description': template.description,
+        'goal': template.goal,
+        'splitType': template.splitType,
+        'level': template.level,
+        'equipment': template.equipment,
+        'durationWeeks': template.durationWeeks,
+        'trainingDaysPerWeek': template.trainingDaysPerWeek,
+        'trainingDays': trainingDaysArray,
+        'tags': template.tags,
+        'imageUrl': template.imageUrl
+      };
+
+      const response: ResponseResult = await requestApiCall(
+        `/templates/${templateId}`,
+        http.RequestMethod.PUT,
+        requestData
+      );
+
+      if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return PlanApiService.createErrorResponse(5012, '更新模板失败: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
+   * 删除个人模板
+   * DELETE /templates/{templateId}
+   */
+  static async deleteTemplate(templateId: string): Promise<ResponseResult> {
+    try {
+      const response: ResponseResult = await requestApiCall(
+        `/templates/${templateId}`,
+        http.RequestMethod.DELETE
+      );
+
+      if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return PlanApiService.createErrorResponse(5013, '删除模板失败: ' + JSON.stringify(error));
     }
   }
 
@@ -314,6 +460,106 @@ export class PlanApiService {
   }
 
   /**
+   * 获取计划进度摘要
+   * GET /plans/{planId}/progress
+   */
+  static async getPlanProgress(planId: string): Promise<ResponseResult> {
+    try {
+      const response: ResponseResult = await requestApiCall(
+        `/plans/${planId}/progress`,
+        http.RequestMethod.GET
+      );
+
+      if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return PlanApiService.createErrorResponse(5014, '获取计划进度失败: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
+   * 跳过计划日
+   * POST /plans/{planId}/skip-day
+   */
+  static async skipPlanDay(planId: string, dayNumber: number, reason: string = ''): Promise<ResponseResult> {
+    try {
+      const requestData: Record<string, number | boolean | string | Object | undefined> = {
+        'dayNumber': dayNumber
+      };
+
+      if (reason) {
+        requestData['reason'] = reason;
+      }
+
+      const response: ResponseResult = await requestApiCall(
+        `/plans/${planId}/skip-day`,
+        http.RequestMethod.POST,
+        requestData
+      );
+
+      if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return PlanApiService.createErrorResponse(5015, '跳过训练日失败: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
+   * 临时调整计划日动作
+   * POST /plans/{planId}/adjust-day
+   */
+  static async adjustPlanDay(
+    planId: string,
+    dayNumber: number,
+    exercises: ExerciseModel[],
+    notes: string = ''
+  ): Promise<ResponseResult> {
+    try {
+      const exercisesArray: Object[] = [];
+      for (let i: number = 0; i < exercises.length; i++) {
+        const exercise: ExerciseModel = exercises[i];
+        const exerciseData: Record<string, number | boolean | string | Object | undefined> = {
+          'name': exercise.name,
+          'sets': exercise.sets,
+          'reps': exercise.reps,
+          'weight': exercise.weight,
+          'restTime': exercise.restTime,
+          'muscleGroup': exercise.muscleGroup,
+          'notes': exercise.notes,
+          'duration': exercise.duration
+        };
+        exercisesArray.push(exerciseData);
+      }
+
+      const requestData: Record<string, number | boolean | string | Object | undefined> = {
+        'dayNumber': dayNumber,
+        'exercises': exercisesArray,
+        'notes': notes
+      };
+
+      const response: ResponseResult = await requestApiCall(
+        `/plans/${planId}/adjust-day`,
+        http.RequestMethod.POST,
+        requestData
+      );
+
+      if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return PlanApiService.createErrorResponse(5016, '调整训练日失败: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
    * 更新计划状态
    * PUT /plans/{planId}/status
    */
@@ -360,6 +606,45 @@ export class PlanApiService {
   }
 
   /**
+   * 序列化训练日程数据
+   */
+  private static serializeTrainingDays(trainingDays: TrainingDayModel[]): Object[] {
+    const trainingDaysArray: Object[] = [];
+    for (let i: number = 0; i < trainingDays.length; i++) {
+      const day: TrainingDayModel = trainingDays[i];
+      const exercisesArray: Object[] = [];
+
+      for (let j: number = 0; j < day.exercises.length; j++) {
+        const exercise: ExerciseModel = day.exercises[j];
+        const exerciseData: Record<string, number | boolean | string | Object | undefined> = {
+          'name': exercise.name,
+          'sets': exercise.sets,
+          'reps': exercise.reps,
+          'weight': exercise.weight,
+          'restTime': exercise.restTime,
+          'muscleGroup': exercise.muscleGroup,
+          'notes': exercise.notes,
+          'duration': exercise.duration
+        };
+        exercisesArray.push(exerciseData);
+      }
+
+      const dayData: Record<string, number | boolean | string | Object | undefined> = {
+        'dayNumber': day.dayNumber,
+        'dayName': day.dayName,
+        'isRestDay': day.isRestDay,
+        'exercises': exercisesArray,
+        'notes': day.notes,
+        'intensityHint': day.intensityHint,
+        'warmupTips': day.warmupTips,
+        'cooldownTips': day.cooldownTips
+      };
+      trainingDaysArray.push(dayData);
+    }
+    return trainingDaysArray;
+  }
+
+  /**
    * 解析计划模板数据
    */
   private static parsePlanTemplate(data: Record<string, Object>): PlanTemplateModel {
@@ -397,7 +682,12 @@ export class PlanApiService {
       data['imageUrl'] as string ?? '',
       data['author'] as string ?? '',
       tags,
-      data['createdAt'] as string ?? ''
+      data['createdAt'] as string ?? '',
+      data['splitType'] as string ?? '',
+      data['equipment'] as string ?? '',
+      data['recommendedIntensity'] as string ?? '',
+      data['isOfficial'] as boolean ?? true,
+      data['userId'] as number ?? 0
     );
 
     return template;
@@ -409,6 +699,11 @@ export class PlanApiService {
   private static parseFitnessPlan(data: Record<string, Object>): FitnessPlanModel {
     const trainingDaysData: Object[] = data['trainingDays'] as Object[] ?? [];
     const trainingDays: TrainingDayModel[] = PlanApiService.parseTrainingDays(trainingDaysData);
+
+    // 解析覆盖日程
+    const trainingDaysOverrideData: Object[] = data['trainingDaysOverride'] as Object[] ?? [];
+    const trainingDaysOverride: TrainingDayModel[] =
+      PlanApiService.parseTrainingDays(trainingDaysOverrideData);
 
     // 解析 ID
     let planId: number = 0;
@@ -427,6 +722,13 @@ export class PlanApiService {
     const completedDays: number[] = [];
     for (let i: number = 0; i < completedDaysData.length; i++) {
       completedDays.push(completedDaysData[i] as number);
+    }
+
+    // 解析 skippedDays
+    const skippedDaysData: Object[] = data['skippedDays'] as Object[] ?? [];
+    const skippedDays: number[] = [];
+    for (let i: number = 0; i < skippedDaysData.length; i++) {
+      skippedDays.push(skippedDaysData[i] as number);
     }
 
     const plan: FitnessPlanModel = new FitnessPlanModel(
@@ -448,7 +750,13 @@ export class PlanApiService {
       data['totalCompletedDays'] as number ?? 0,
       data['completionRate'] as number ?? 0,
       data['createdAt'] as string ?? '',
-      data['updatedAt'] as string ?? ''
+      data['updatedAt'] as string ?? '',
+      data['durationWeeksOverride'] as number ?? 0,
+      trainingDaysOverride,
+      skippedDays,
+      data['totalWeight'] as number ?? 0,
+      data['totalDuration'] as number ?? 0,
+      data['totalCalories'] as number ?? 0
     );
 
     return plan;
@@ -486,7 +794,10 @@ export class PlanApiService {
         dayData['dayName'] as string ?? '',
         dayData['isRestDay'] as boolean ?? false,
         exercises,
-        dayData['notes'] as string ?? ''
+        dayData['notes'] as string ?? '',
+        dayData['intensityHint'] as string ?? '',
+        dayData['warmupTips'] as string ?? '',
+        dayData['cooldownTips'] as string ?? ''
       );
       trainingDays.push(trainingDay);
     }

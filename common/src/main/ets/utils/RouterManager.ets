@@ -13,6 +13,10 @@ export interface NavRouteParams {
   recordId?: string;
   selectedDate?: string;
   copyFromRecord?: boolean;
+  planId?: number;
+  templateId?: number;
+  dayNumber?: number;
+  isEdit?: boolean;
 }
 
 /**
@@ -123,5 +127,10 @@ export class NavRoutes {
   static readonly TRAINING_SESSION: string = 'TrainingSessionPage';
   static readonly ACTION_SELECT: string = 'ActionSelectPage';
   static readonly ADD_TRAINING: string = 'AddTrainingPage';
+  // 计划相关路由
+  static readonly PLAN_CENTER: string = 'PlanCenterPage';
+  static readonly PLAN_DETAIL: string = 'PlanDetailPage';
+  static readonly TEMPLATE_DETAIL: string = 'TemplateDetailPage';
+  static readonly TEMPLATE_EDITOR: string = 'TemplateEditorPage';
 }
 

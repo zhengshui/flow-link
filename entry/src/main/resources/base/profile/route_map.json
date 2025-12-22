@@ -87,6 +87,38 @@
       "data": {
         "description": "添加训练页面"
       }
+    },
+    {
+      "name": "PlanCenterPage",
+      "pageSourceFile": "src/main/ets/pages/PlanCenterPage.ets",
+      "buildFunction": "PlanCenterPageBuilder",
+      "data": {
+        "description": "计划中心页面"
+      }
+    },
+    {
+      "name": "PlanDetailPage",
+      "pageSourceFile": "src/main/ets/pages/PlanDetailPage.ets",
+      "buildFunction": "PlanDetailPageBuilder",
+      "data": {
+        "description": "计划详情页面"
+      }
+    },
+    {
+      "name": "TemplateDetailPage",
+      "pageSourceFile": "src/main/ets/pages/TemplateDetailPage.ets",
+      "buildFunction": "TemplateDetailPageBuilder",
+      "data": {
+        "description": "模板详情页面"
+      }
+    },
+    {
+      "name": "TemplateEditorPage",
+      "pageSourceFile": "src/main/ets/pages/TemplateEditorPage.ets",
+      "buildFunction": "TemplateEditorPageBuilder",
+      "data": {
+        "description": "模板编辑页面"
+      }
     }
   ]
 }

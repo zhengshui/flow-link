@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "/Users/shui/.ohos/config/default_flow-link_sXFF8qO1B_LY3HGfqoxkPHNvgsztphQGG19rVTBnS4I=.cer",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B166F0E360FDE7213BD8516165054C68AA45AC8079150A336B857ED7E1A7AA2A2991C23C1560205",
-          "profile": "/Users/shui/.ohos/config/default_flow-link_sXFF8qO1B_LY3HGfqoxkPHNvgsztphQGG19rVTBnS4I=.p7b",
-          "signAlg": "SHA256withECDSA",
           "storeFile": "/Users/shui/.ohos/config/default_flow-link_sXFF8qO1B_LY3HGfqoxkPHNvgsztphQGG19rVTBnS4I=.p12",
-          "storePassword": "0000001B29E35AEB0E6EF37EF4E02E0295B2AE092E111272B3C164C03CF8DBA0B2985375BA7C3292F8FEF1"
+          "storePassword": "0000001BEA36C6E6DC90DE9F2ECA9A11E82530953F6A7BA4E82175ED5030B0C4CC9F2EA7B42B6F1855C5F5",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BA7B29A10FFF09C3893E1289D3ED2F15DCE64502F7872F9B4826D5D0160BEF96CF9D0B5D60560B5",
+          "signAlg": "SHA256withECDSA",
+          "profile": "/Users/shui/Documents/鸿蒙开发证书/fiteasy-releaseRelease.p7b",
+          "certpath": "/Users/shui/Documents/鸿蒙开发证书/fiteasy-release.cer"
         }
       }
     ],
@@ -46,7 +46,7 @@
         "buildOption": {
           "arkOptions": {
             "buildProfileFields": {
-              "BASE_URL": "https://api.example.com/api"
+              "BASE_URL": "http://47.107.56.29:8080/api"
             }
           }
         }
