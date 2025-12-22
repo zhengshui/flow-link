@@ -84,7 +84,7 @@ export class MuscleGroupConst {
   static readonly CALVES: string = 'calves'
   static readonly GLUTES: string = 'glutes'
   static readonly ABS: string = 'abs'
-
+  static readonly CARDIO: string = 'cardio'
   /**
    * 获取肌肉部位中文名称
    */
@@ -107,6 +107,8 @@ export class MuscleGroupConst {
       return '臀部';
     } else if (id === MuscleGroupConst.ABS) {
       return '腹肌';
+    }else if (id === MuscleGroupConst.CARDIO) {
+      return '有氧';
     }
     return '';
   }
