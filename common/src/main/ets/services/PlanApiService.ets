@@ -325,7 +325,7 @@ export class PlanApiService {
    * 基于模板创建健身计划
    * POST /plans/from-template
    */
-  static async createPlanFromTemplate(templateId: number, startDate: string, name: string = ''): Promise<ResponseResult> {
+  static async createPlanFromTemplate(templateId: string, startDate: string, name: string = ''): Promise<ResponseResult> {
     try {
       const requestData: Record<string, number | boolean | string | Object | undefined> = {
         'templateId': templateId,
@@ -652,15 +652,16 @@ export class PlanApiService {
     const trainingDays: TrainingDayModel[] = PlanApiService.parseTrainingDays(trainingDaysData);
 
     // 解析 ID
-    let templateId: number = 0;
-    const idValue: Object = data['id'] ?? 0;
-    if (typeof idValue === 'string') {
-      const parsedId: number = parseInt(idValue as string, 10);
-      if (!isNaN(parsedId)) {
-        templateId = parsedId;
+    let templateId: string = '';
+    const idValue: Object | undefined = data['id'];
+    if (idValue !== undefined && idValue !== null) {
+      if (typeof idValue === 'string') {
+        templateId = idValue as string;
+      } else if (typeof idValue === 'number') {
+        templateId = (idValue as number).toString();
+      } else {
+        templateId = idValue.toString();
       }
-    } else {
-      templateId = idValue as number;
     }
 
     // 解析 tags

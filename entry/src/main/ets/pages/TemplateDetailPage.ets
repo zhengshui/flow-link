@@ -25,14 +25,16 @@ struct TemplateDetailPage {
   @State isLoading: boolean = true;
   @State showDatePicker: boolean = false;
   @State startDate: Date = new Date();
-  private templateId: number = 0;
+  @StorageProp('topRectHeight') topRectHeight: number = 0;
+  @StorageProp('bottomRectHeight') bottomRectHeight: number = 0;
+  private templateId: string = '';
 
   aboutToAppear(): void {
     // 获取路由参数
     const params: NavRouteParams | undefined =
       RouterManager.getNavPathStack()?.getParamByName('TemplateDetailPage') as NavRouteParams | undefined;
-    if (params?.templateId) {
-      this.templateId = params.templateId;
+    if (params?.templateId !== undefined && params.templateId !== null) {
+      this.templateId = params.templateId.toString();
     }
     this.loadTemplateDetail();
   }
@@ -44,7 +46,7 @@ struct TemplateDetailPage {
     this.isLoading = true;
     this.template = null;
     try {
-      const res: ResponseResult = await PlanApiService.getPlanTemplate(this.templateId.toString());
+      const res: ResponseResult = await PlanApiService.getPlanTemplate(this.templateId);
       if (res.code === 0 && res.data) {
         this.template = res.data as PlanTemplateModel;
       }
@@ -113,54 +115,85 @@ struct TemplateDetailPage {
 
   build() {
     NavDestination() {
-      if (this.isLoading) {
-        Column() {
-          LoadingProgress()
-            .width(40)
-            .height(40)
-            .color($r('app.color.brand_primary'))
-        }
-        .width('100%')
-        .height('100%')
-        .justifyContent(FlexAlign.Center)
-      } else if (this.template !== null) {
-        Column() {
-          Scroll() {
-            Column({ space: 16 }) {
-              // 模板信息卡片
-              this.TemplateInfoCard()
+      Column() {
+        this.TopBar()
 
-              // 训练日程
-              this.TrainingDaysSection()
-            }
-            .width('100%')
-            .padding(16)
+        if (this.isLoading) {
+          Column() {
+            LoadingProgress()
+              .width(40)
+              .height(40)
+              .color($r('app.color.brand_primary'))
           }
+          .width('100%')
           .layoutWeight(1)
-          .align(Alignment.Top)
+          .justifyContent(FlexAlign.Center)
+        } else if (this.template !== null) {
+          Column() {
+            Scroll() {
+              Column({ space: 16 }) {
+                // 模板信息卡片
+                this.TemplateInfoCard()
 
-          // 底部操作栏
-          this.BottomActionBar()
+                // 训练日程
+                this.TrainingDaysSection()
+              }
+              .width('100%')
+              .padding(16)
+            }
+            .layoutWeight(1)
+            .align(Alignment.Top)
+
+            // 底部操作栏
+            this.BottomActionBar()
+          }
+          .width('100%')
+          .layoutWeight(1)
+        } else {
+          Column({ space: 12 }) {
+            Text('模板不存在')
+              .fontSize(15)
+              .fontColor($r('app.color.text_hint'))
+          }
+          .width('100%')
+          .layoutWeight(1)
+          .justifyContent(FlexAlign.Center)
         }
-        .width('100%')
-        .height('100%')
-      } else {
-        Column({ space: 12 }) {
-          Text('模板不存在')
-            .fontSize(15)
-            .fontColor($r('app.color.text_hint'))
-        }
-        .width('100%')
-        .height('100%')
-        .justifyContent(FlexAlign.Center)
       }
+      .width('100%')
+      .height('100%')
     }
-    .title(this.template?.name ?? '模板详情')
+    .hideTitleBar(true)
     .backgroundColor($r('app.color.page_background'))
     .onBackPressed(() => {
       RouterManager.pop();
       return true;
     })
+  }
+
+  @Builder
+  TopBar() {
+    Row() {
+      SymbolGlyph($r('sys.symbol.chevron_left'))
+        .fontSize(24)
+        .fontColor([$r('app.color.text_primary')])
+        .onClick(() => {
+          RouterManager.pop();
+        })
+
+      Text(this.template?.name ?? '模板详情')
+        .fontSize(18)
+        .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
+        .layoutWeight(1)
+        .textAlign(TextAlign.Center)
+
+      Column().width(24)
+    }
+    .width('100%')
+    .height(70)
+    .padding({ left: 16, right: 16, top: this.getUIContext().px2vp(this.topRectHeight) })
+    .backgroundColor($r('app.color.card_background'))
   }
 
   @Builder
@@ -344,36 +377,43 @@ struct TemplateDetailPage {
 
   @Builder
   BottomActionBar() {
-    Row({ space: 12 }) {
-      // 复制到我的模板（仅官方模板显示）
-      if (this.template?.isOfficial ?? false) {
-        Button('复制为个人模板')
+    Column({ space: 0 }) {
+      Row({ space: 12 }) {
+        // 复制到我的模板（仅官方模板显示）
+        if (this.template?.isOfficial ?? false) {
+          Button('复制为个人模板')
+            .layoutWeight(1)
+            .height(44)
+            .fontSize(14)
+            .fontColor($r('app.color.brand_primary'))
+            .backgroundColor($r('app.color.brand_primary_light'))
+            .borderRadius(10)
+            .onClick(() => {
+              this.duplicateTemplate();
+            })
+        }
+
+        Button('使用此模板')
           .layoutWeight(1)
           .height(44)
           .fontSize(14)
-          .fontColor($r('app.color.brand_primary'))
-          .backgroundColor($r('app.color.brand_primary_light'))
+          .fontWeight(FontWeight.Medium)
+          .backgroundColor($r('app.color.brand_primary'))
           .borderRadius(10)
           .onClick(() => {
-            this.duplicateTemplate();
+            this.showDatePicker = true;
+          })
+          .bindSheet($$this.showDatePicker, this.DatePickerSheet(), {
+            height: SheetSize.FIT_CONTENT,
+            backgroundColor: $r('app.color.card_background'),
+            dragBar: true
           })
       }
+      .width('100%')
 
-      Button('使用此模板')
-        .layoutWeight(1)
-        .height(44)
-        .fontSize(14)
-        .fontWeight(FontWeight.Medium)
-        .backgroundColor($r('app.color.brand_primary'))
-        .borderRadius(10)
-        .onClick(() => {
-          this.showDatePicker = true;
-        })
-        .bindSheet($$this.showDatePicker, this.DatePickerSheet(), {
-          height: SheetSize.FIT_CONTENT,
-          backgroundColor: $r('app.color.card_background'),
-          dragBar: true
-        })
+      Row()
+        .width('100%')
+        .height(this.getUIContext().px2vp(this.bottomRectHeight))
     }
     .width('100%')
     .padding({ left: 16, right: 16, top: 12, bottom: 12 })
@@ -441,4 +481,3 @@ struct TemplateDetailPage {
     return $r('app.color.text_hint');
   }
 }
-

@@ -14,7 +14,7 @@ export interface NavRouteParams {
   selectedDate?: string;
   copyFromRecord?: boolean;
   planId?: number;
-  templateId?: number;
+  templateId?: string | number;
   dayNumber?: number;
   isEdit?: boolean;
 }
@@ -133,4 +133,3 @@ export class NavRoutes {
   static readonly TEMPLATE_DETAIL: string = 'TemplateDetailPage';
   static readonly TEMPLATE_EDITOR: string = 'TemplateEditorPage';
 }
-

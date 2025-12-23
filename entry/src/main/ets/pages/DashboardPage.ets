@@ -32,9 +32,9 @@ export struct DashboardPage {
   @State officialTemplates: PlanTemplateModel[] = []
   @State personalTemplates: PlanTemplateModel[] = []
   @State templateTabIndex: number = 0
-  @State creatingTemplateId: number = 0
+  @State creatingTemplateId: string = ''
   @State isLoading: boolean = false
-  private readonly templateTabTitles: string[] = ['官方计划', '个人模板'];
+  private readonly templateTabTitles: string[] = ['官方计划'];
   @StorageProp('topRectHeight') topRectHeight: number = 0
   // 使用时间戳监听刷新，确保每次变化都能触发
   @StorageLink('refreshDashboardTimestamp') @Watch('onRefreshTimestampChange') refreshTimestamp: number = 0
@@ -231,6 +231,37 @@ export struct DashboardPage {
       return '官方模板 ' + this.officialTemplates.length.toString() + ' 个';
     }
     return '个人模板 ' + this.personalTemplates.length.toString() + ' 个';
+  }
+
+  private getTemplateAccentColor(): Resource {
+    return $r('app.color.brand_primary_light');
+  }
+
+  private splitTemplatesForGrid(templates: PlanTemplateModel[], columns: number): PlanTemplateModel[][] {
+    const rows: PlanTemplateModel[][] = [];
+    if (columns <= 0 || templates.length === 0) {
+      return rows;
+    }
+    let currentRow: PlanTemplateModel[] = [];
+    for (let i: number = 0; i < templates.length; i++) {
+      currentRow.push(templates[i]);
+      if (currentRow.length === columns) {
+        rows.push(currentRow);
+        currentRow = [];
+      }
+    }
+    if (currentRow.length > 0) {
+      rows.push(currentRow);
+    }
+    return rows;
+  }
+
+  private getPlaceholderArray(count: number): number[] {
+    const result: number[] = [];
+    for (let i: number = 0; i < count; i++) {
+      result.push(i);
+    }
+    return result;
   }
 
   build() {
@@ -940,9 +971,6 @@ export struct DashboardPage {
 
   @Builder
   TemplateTabsSection() {
-    // this.getTemplateCountText(),
-    // this.getTemplatesForCurrentTab(),
-    // this.templateTabIndex === 1
     Column({ space: 12 }) {
       Row() {
         Text('训练模板')
@@ -956,27 +984,34 @@ export struct DashboardPage {
       }
       .width('100%')
 
-      Row({ space: 8 }) {
-        ForEach(this.templateTabTitles, (title: string, index: number) => {
-          Text(title)
-            .fontSize(13)
-            .fontColor(this.templateTabIndex === index ? Color.White : $r('app.color.text_secondary'))
-            .backgroundColor(this.templateTabIndex === index ?
-              $r('app.color.brand_primary') : $r('app.color.card_background_secondary'))
-            .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-            .borderRadius(18)
-            .onClick(() => {
-              this.templateTabIndex = index;
-            })
-        }, (title: string): string => title)
-      }
-      .width('100%')
-
       if (this.officialTemplates.length > 0) {
-        Column({ space: 10 }) {
-          ForEach(this.officialTemplates, (template: PlanTemplateModel) => {
-            this.TemplateMiniCard(template, this.creatingTemplateId === template.id)
-          }, (template: PlanTemplateModel): string => template.id.toString())
+        Column({ space: 12 }) {
+          ForEach(this.splitTemplatesForGrid(this.officialTemplates, 3),
+            (rowTemplates: PlanTemplateModel[], rowIndex: number) => {
+            Row({ space: 12 }) {
+              ForEach(rowTemplates, (template: PlanTemplateModel, columnIndex: number) => {
+                Column() {
+                  this.TemplateMiniCard(template, rowIndex * 3 + columnIndex)
+                }
+                .layoutWeight(1)
+              }, (template: PlanTemplateModel, columnIndex: number): string => {
+                const idKey: string = template.id && template.id.length > 0 ? template.id : 'template';
+                return idKey + '_' + rowIndex.toString() + '_' + columnIndex.toString();
+              })
+
+              if (rowTemplates.length < 3) {
+                ForEach(this.getPlaceholderArray(3 - rowTemplates.length), (placeholderIndex: number) => {
+                  Blank()
+                    .layoutWeight(1)
+                }, (placeholderIndex: number): string => {
+                  return `placeholder_${rowIndex.toString()}_${placeholderIndex.toString()}`;
+                })
+              }
+            }
+            .width('100%')
+          }, (rowTemplates: PlanTemplateModel[], rowIndex: number): string => {
+            return 'template_row_' + rowIndex.toString();
+          })
         }
         .width('100%')
       } else {
@@ -1006,85 +1041,45 @@ export struct DashboardPage {
   }
 
   @Builder
-  TemplateMiniCard(template: PlanTemplateModel, isCreating: boolean) {
-    Column({ space: 8 }) {
-      Row() {
-        Text(template.name)
-          .fontSize(15)
-          .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
-          .layoutWeight(1)
-          .maxLines(1)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
+  TemplateMiniCard(template: PlanTemplateModel, index: number) {
+    Column() {
+      Row()
+        .width('100%')
+        .height(4)
+        .backgroundColor(this.getTemplateAccentColor())
+        .borderRadius({ topLeft: 12, topRight: 12 })
 
-        Row({ space: 6 }) {
-          Text(template.level)
-            .fontSize(10)
-            .fontColor(Color.White)
-            .backgroundColor(this.getLevelColor(template.level))
-            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-            .borderRadius(4)
-          if (template.isOfficial) {
-            Text('官方')
-              .fontSize(10)
-              .fontColor(Color.White)
-              .backgroundColor($r('app.color.brand_primary'))
-              .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-              .borderRadius(4)
-          }
+      Column({ space: 6 }) {
+        Row({ space: 8 }) {
+          Text(template.name)
+            .fontSize(15)
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary'))
+            .layoutWeight(1)
+        }
+        .width('100%')
+
+        if (template.description) {
+          Text(template.description)
+            .fontSize(12)
+            .fontColor($r('app.color.text_secondary'))
+            .maxLines(2)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .width('100%')
         }
       }
       .width('100%')
-
-      if (template.description) {
-        Text(template.description)
-          .fontSize(12)
-          .fontColor($r('app.color.text_secondary'))
-          .maxLines(1)
-          .textOverflow({ overflow: TextOverflow.Ellipsis })
-      }
-
-      Row({ space: 6 }) {
-        this.PlanMetaTag('#' + template.goal, false)
-        this.PlanMetaTag(template.durationWeeks.toString() + '周', false)
-        this.PlanMetaTag('每周' + template.trainingDaysPerWeek.toString() + '天', false)
-      }
-      .width('100%')
-
-      Row({ space: 10 }) {
-        Button('查看介绍')
-          .layoutWeight(1)
-          .height(34)
-          .fontSize(12)
-          .fontColor($r('app.color.text_primary'))
-          .backgroundColor($r('app.color.card_background'))
-          .borderRadius(8)
-          .onClick(() => {
-            this.viewTemplateDetail(template);
-          })
-
-        Button(isCreating ? '发起中...' : '发起计划')
-          .layoutWeight(1)
-          .height(34)
-          .fontSize(12)
-          .fontWeight(FontWeight.Medium)
-          .backgroundColor($r('app.color.brand_primary'))
-          .borderRadius(8)
-          .enabled(!isCreating)
-          .onClick(() => {
-            this.quickStartPlanFromTemplate(template);
-          })
-      }
-      .width('100%')
-
-      Text('直接发起默认以今天为开始日期，可在计划详情中调整。')
-        .fontSize(10)
-        .fontColor($r('app.color.text_hint'))
+      .padding({ left: 14, right: 14, top: 8, bottom: 12 })
     }
     .width('100%')
-    .padding(14)
     .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
+    .shadow({
+      radius: 6,
+      color: 'rgba(0, 0, 0, 0.06)',
+      offsetX: 0,
+      offsetY: 3
+    })
     .onClick(() => {
       this.viewTemplateDetail(template);
     })
@@ -1163,7 +1158,7 @@ export struct DashboardPage {
       console.error('直接发起计划失败:', JSON.stringify(err));
       toast('创建失败');
     } finally {
-      this.creatingTemplateId = 0;
+      this.creatingTemplateId = '';
     }
   }
 

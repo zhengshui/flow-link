@@ -23,7 +23,7 @@ struct TemplateEditorPage {
   @State isLoading: boolean = false;
   @State isSaving: boolean = false;
   private isEdit: boolean = false;
-  private templateId: number = 0;
+  private templateId: string = '';
 
   // 选项配置
   private goalOptions: string[] = ['增肌', '减脂', '力量提升', '耐力提升', '综合健身'];
@@ -35,8 +35,8 @@ struct TemplateEditorPage {
     // 获取路由参数
     const params: NavRouteParams | undefined =
       RouterManager.getNavPathStack()?.getParamByName('TemplateEditorPage') as NavRouteParams | undefined;
-    if (params?.templateId) {
-      this.templateId = params.templateId;
+    if (params?.templateId !== undefined && params.templateId !== null) {
+      this.templateId = params.templateId.toString();
       this.isEdit = params.isEdit ?? false;
       if (this.isEdit) {
         this.loadTemplateDetail();
@@ -83,7 +83,7 @@ struct TemplateEditorPage {
   async loadTemplateDetail(): Promise<void> {
     this.isLoading = true;
     try {
-      const res: ResponseResult = await PlanApiService.getPlanTemplate(this.templateId.toString());
+      const res: ResponseResult = await PlanApiService.getPlanTemplate(this.templateId);
       if (res.code === 0 && res.data) {
         this.template = res.data as PlanTemplateModel;
       }
@@ -109,7 +109,7 @@ struct TemplateEditorPage {
     try {
       let res: ResponseResult;
       if (this.isEdit) {
-        res = await PlanApiService.updateTemplate(this.templateId.toString(), this.template);
+        res = await PlanApiService.updateTemplate(this.templateId, this.template);
       } else {
         res = await PlanApiService.createCustomTemplate(this.template);
       }
@@ -453,4 +453,3 @@ struct TemplateEditorPage {
       })
   }
 }
-

@@ -40,7 +40,7 @@ export class TrainingDayModel {
  * 预设的训练计划模板
  */
 export class PlanTemplateModel {
-  id: number = 0                      // 模板ID
+  id: string = ''                     // 模板ID
   userId: number = 0                  // 用户ID（个人模板）
   name: string = ''                   // 模板名称（如：增肌计划、减脂计划）
   description: string = ''            // 模板描述
@@ -59,7 +59,7 @@ export class PlanTemplateModel {
   createdAt: string = ''              // 创建时间
 
   constructor(
-    id?: number,
+    id?: number | string,
     name?: string,
     description?: string,
     goal?: string,
@@ -77,7 +77,7 @@ export class PlanTemplateModel {
     isOfficial?: boolean,
     userId?: number
   ) {
-    if (id !== null && id !== undefined) this.id = id;
+    if (id !== null && id !== undefined) this.id = id.toString();
     if (name !== null && name !== undefined) this.name = name;
     if (description !== null && description !== undefined) this.description = description;
     if (goal !== null && goal !== undefined) this.goal = goal;
