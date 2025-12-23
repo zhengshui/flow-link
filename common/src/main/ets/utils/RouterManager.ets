@@ -13,7 +13,7 @@ export interface NavRouteParams {
   recordId?: string;
   selectedDate?: string;
   copyFromRecord?: boolean;
-  planId?: number;
+  planId?: string;
   templateId?: string | number;
   dayNumber?: number;
   isEdit?: boolean;
@@ -36,6 +36,26 @@ export class RouterManager {
    */
   static getNavPathStack(): NavPathStack | undefined {
     return AppStorage.get<NavPathStack>(NAV_PATH_STACK_KEY);
+  }
+
+  /**
+   * 获取指定页面的最新路由参数
+   */
+  static getLatestParamByName(pageName: string): NavRouteParams | undefined {
+    const pathStack: NavPathStack | undefined = RouterManager.getNavPathStack();
+    if (pathStack === undefined) {
+      console.error('[RouterManager] NavPathStack not initialized');
+      return undefined;
+    }
+    const rawParams: NavRouteParams | NavRouteParams[] | undefined =
+      pathStack.getParamByName(pageName) as NavRouteParams | NavRouteParams[] | undefined;
+    if (Array.isArray(rawParams)) {
+      if (rawParams.length === 0) {
+        return undefined;
+      }
+      return rawParams[rawParams.length - 1];
+    }
+    return rawParams;
   }
 
   /**

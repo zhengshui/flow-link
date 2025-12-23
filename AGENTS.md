@@ -50,4 +50,4 @@
   @StorageProp('bottomRectHeight') bottomRectHeight: number = 0
   ```
   Use these to pad layout and avoid content clipping on devices with notches or system bars.
-- 你的每一个回答都有先执行 ./hvigorwAssembleHap.sh ，看看有没有错误，有错误要修复，知道 ./hvigorwAssembleHap.sh 成功
+- 你的每一个回答结束后都有执行 ./hvigorwAssembleHap.sh ，看看有没有错误，有错误要修复，知道 ./hvigorwAssembleHap.sh 成功

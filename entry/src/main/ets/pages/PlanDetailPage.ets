@@ -26,22 +26,28 @@ struct PlanDetailPage {
   @State viewMode: 'week' | 'day' = 'week';
   @State selectedWeek: number = 1;
   @State selectedDayIndex: number = 0;
-  private planId: number = 0;
+  private planId: string = '';
 
   aboutToAppear(): void {
     // 获取路由参数
-    const params: NavRouteParams | undefined = RouterManager.getNavPathStack()?.getParamByName('PlanDetailPage') as
-      NavRouteParams | undefined;
-    if (params?.planId) {
-      this.planId = params.planId;
+    const params: NavRouteParams | undefined = RouterManager.getLatestParamByName(NavRoutes.PLAN_DETAIL);
+    const resolvedPlanId: string = this.resolvePlanId(params);
+    if (resolvedPlanId) {
+      this.planId = resolvedPlanId;
+      this.loadPlanDetail();
+    } else {
+      this.isLoading = false;
     }
-    this.loadPlanDetail();
   }
 
   /**
    * 加载计划详情
    */
   async loadPlanDetail(): Promise<void> {
+    if (this.planId === '') {
+      this.isLoading = false;
+      return;
+    }
     this.isLoading = true;
     this.plan = null;
     try {
@@ -56,6 +62,14 @@ struct PlanDetailPage {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  private resolvePlanId(params?: NavRouteParams): string {
+    if (params === undefined) {
+      return '';
+    }
+    const rawPlanId: string | undefined = params.planId as string | '';
+    return rawPlanId;
   }
 
   /**
@@ -483,4 +497,3 @@ struct PlanDetailPage {
     return $r('app.color.text_hint');
   }
 }
-

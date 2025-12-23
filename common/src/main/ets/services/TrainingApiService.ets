@@ -29,7 +29,7 @@ export class TrainingApiService {
     pageSize: number = 20,
     startDate: string = '',
     endDate: string = '',
-    planId: number = 0
+    planId: string = ''
   ): Promise<ResponseResult> {
     try {
       let url: string = `/training/records?page=${page}&pageSize=${pageSize}`;
@@ -40,7 +40,7 @@ export class TrainingApiService {
       if (endDate) {
         url += `&endDate=${endDate}`;
       }
-      if (planId > 0) {
+      if (planId) {
         url += `&planId=${planId}`;
       }
 
@@ -316,7 +316,7 @@ export class TrainingApiService {
     record.caloriesBurned = data['caloriesBurned'] as number ?? 0;
     record.notes = data['notes'] as string ?? '';
     record.mood = data['mood'] as string ?? '';
-    record.planId = data['planId'] as number ?? 0;
+    record.planId = data['planId'] as string ?? '';
     record.createdAt = data['createdAt'] as string ?? '';
     record.updatedAt = data['updatedAt'] as string ?? '';
 

@@ -9,7 +9,6 @@ import {
   PlanApiService,
   toast,
   RouterManager,
-  NavRoutes,
   NavRouteParams
 } from '@tbs/common';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
@@ -31,12 +30,11 @@ struct TemplateDetailPage {
 
   aboutToAppear(): void {
     // 获取路由参数
-    const params: NavRouteParams | undefined =
-      RouterManager.getNavPathStack()?.getParamByName('TemplateDetailPage') as NavRouteParams | undefined;
+    const params: NavRouteParams | undefined = RouterManager.getLatestParamByName('TemplateDetailPage');
     if (params?.templateId !== undefined && params.templateId !== null) {
       this.templateId = params.templateId.toString();
+      this.loadTemplateDetail();
     }
-    this.loadTemplateDetail();
   }
 
   /**
@@ -72,6 +70,7 @@ struct TemplateDetailPage {
         await PlanApiService.createPlanFromTemplate(this.template.id, dateStr);
       if (res.code === 0) {
         toast('计划创建成功');
+        AppStorage.setOrCreate<number>('refreshDashboardTimestamp', Date.now());
         RouterManager.pop();
       } else {
         toast('创建失败: ' + res.message);
@@ -79,27 +78,6 @@ struct TemplateDetailPage {
     } catch (err) {
       console.error('创建计划失败:', JSON.stringify(err));
       toast('创建失败');
-    }
-  }
-
-  /**
-   * 复制为个人模板
-   */
-  async duplicateTemplate(): Promise<void> {
-    if (this.template === null) {
-      return;
-    }
-
-    try {
-      const res: ResponseResult = await PlanApiService.duplicateTemplate(this.template.id.toString());
-      if (res.code === 0) {
-        toast('已复制到我的模板');
-      } else {
-        toast('复制失败');
-      }
-    } catch (err) {
-      console.error('复制模板失败:', JSON.stringify(err));
-      toast('复制失败');
     }
   }
 
@@ -135,7 +113,10 @@ struct TemplateDetailPage {
                 // 模板信息卡片
                 this.TemplateInfoCard()
 
-                // 训练日程
+                // 训练理念
+                this.PhilosophyCard()
+
+                // 训练安排
                 this.TrainingDaysSection()
               }
               .width('100%')
@@ -199,21 +180,23 @@ struct TemplateDetailPage {
   @Builder
   TemplateInfoCard() {
     Column({ space: 12 }) {
-      // 标题和标签
+      // 标题和等级
       Row() {
         Text(this.template?.name ?? '')
-          .fontSize(18)
+          .fontSize(20)
           .fontWeight(FontWeight.Medium)
           .fontColor($r('app.color.text_primary'))
           .layoutWeight(1)
 
         Row({ space: 6 }) {
-          Text(this.template?.level ?? '')
-            .fontSize(10)
-            .fontColor(Color.White)
-            .backgroundColor(this.getLevelColor(this.template?.level ?? ''))
-            .padding({ left: 8, right: 8, top: 3, bottom: 3 })
-            .borderRadius(4)
+          if (this.template?.level) {
+            Text(this.template.level)
+              .fontSize(10)
+              .fontColor(Color.White)
+              .backgroundColor(this.getLevelColor(this.template.level))
+              .padding({ left: 8, right: 8, top: 3, bottom: 3 })
+              .borderRadius(4)
+          }
 
           if (this.template?.isOfficial ?? false) {
             Text('官方')
@@ -227,14 +210,16 @@ struct TemplateDetailPage {
       }
       .width('100%')
 
-      // 描述
-      Text(this.template?.description ?? '')
-        .fontSize(14)
-        .fontColor($r('app.color.text_secondary'))
-        .width('100%')
+      if (this.template?.goal) {
+        Text(this.template.goal)
+          .fontSize(14)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.brand_primary'))
+          .width('100%')
+      }
 
       // 属性标签
-      Row({ space: 8 }) {
+      Flex({ wrap: FlexWrap.Wrap }) {
         if (this.template?.splitType) {
           this.InfoTag(this.template.splitType)
         }
@@ -242,17 +227,19 @@ struct TemplateDetailPage {
           this.InfoTag(this.template.equipment)
         }
         this.InfoTag((this.template?.durationWeeks ?? 0).toString() + '周')
-        this.InfoTag('每周' + (this.template?.trainingDaysPerWeek ?? 0).toString() + '天')
+        this.InfoTag('每周' + (this.template?.trainingDaysPerWeek ?? 0).toString() + '练')
+        if (this.template?.recommendedIntensity) {
+          this.InfoTag(this.template.recommendedIntensity)
+        }
       }
       .width('100%')
 
-      Divider()
-        .color($r('app.color.divider'))
-
-      // 统计信息
+      // 计划信息
       Row({ space: 16 }) {
-        this.StatItem('#' + (this.template?.goal ?? ''), '训练目标')
-        this.StatItem(this.template?.author ?? '', '作者')
+        if (this.template?.author) {
+          this.MetaItem('作者', this.template.author)
+        }
+        this.MetaItem('计划天数', this.getTrainingDays().length.toString() + '天')
       }
       .width('100%')
     }
@@ -269,35 +256,62 @@ struct TemplateDetailPage {
       .fontColor($r('app.color.text_secondary'))
       .backgroundColor($r('app.color.card_background_secondary'))
       .padding({ left: 10, right: 10, top: 5, bottom: 5 })
-      .borderRadius(4)
-      .margin({ bottom: 4 })
+      .borderRadius(6)
+      .margin({ right: 8, bottom: 8 })
   }
 
   @Builder
-  StatItem(value: string, label: string) {
-    Column({ space: 2 }) {
-      Text(value)
-        .fontSize(14)
-        .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.brand_primary'))
+  MetaItem(label: string, value: string) {
+    Column({ space: 4 }) {
       Text(label)
         .fontSize(11)
         .fontColor($r('app.color.text_hint'))
+      Text(value)
+        .fontSize(13)
+        .fontWeight(FontWeight.Medium)
+        .fontColor($r('app.color.text_primary'))
     }
     .layoutWeight(1)
     .alignItems(HorizontalAlign.Start)
   }
 
   @Builder
-  TrainingDaysSection() {
-    Column({ space: 12 }) {
-      Text('训练日程')
+  PhilosophyCard() {
+    Column({ space: 10 }) {
+      Text('训练理念')
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
         .fontColor($r('app.color.text_primary'))
-        .width('100%')
 
-      ForEach(this.template?.trainingDays ?? [], (day: TrainingDayModel) => {
+      Text(this.template?.description ?? '')
+        .fontSize(14)
+        .lineHeight(22)
+        .textAlign(TextAlign.Start)
+        .fontColor($r('app.color.text_secondary'))
+        .width('100%')
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor($r('app.color.card_background'))
+    .borderRadius(12)
+  }
+
+  @Builder
+  TrainingDaysSection() {
+    Column({ space: 12 }) {
+      Column({ space: 4 }) {
+        Text('训练安排')
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .fontColor($r('app.color.text_primary'))
+
+        Text(this.getScheduleSummary())
+          .fontSize(12)
+          .fontColor($r('app.color.text_hint'))
+      }
+      .width('100%')
+
+      ForEach(this.getTrainingDays(), (day: TrainingDayModel) => {
         this.TrainingDayCard(day)
       }, (day: TrainingDayModel): string => day.dayNumber.toString())
     }
@@ -321,51 +335,19 @@ struct TemplateDetailPage {
             .backgroundColor($r('app.color.card_background_secondary'))
             .padding({ left: 8, right: 8, top: 3, bottom: 3 })
             .borderRadius(4)
+        } else {
+          Text(this.getExerciseCount(day).toString() + '个动作')
+            .fontSize(11)
+            .fontColor($r('app.color.text_hint'))
         }
       }
       .width('100%')
 
       if (!day.isRestDay) {
-        // 训练项目
-        ForEach(day.exercises, (exercise: ExerciseModel, index: number) => {
-          Row() {
-            Text(exercise.name)
-              .fontSize(13)
-              .fontColor($r('app.color.text_secondary'))
-              .layoutWeight(1)
-            Text(exercise.sets.toString() + '组×' + exercise.reps.toString() + '次')
-              .fontSize(12)
-              .fontColor($r('app.color.text_hint'))
-            if (exercise.weight > 0) {
-              Text(' · ' + exercise.weight.toString() + 'kg')
-                .fontSize(12)
-                .fontColor($r('app.color.text_hint'))
-            }
-          }
-          .width('100%')
-          .padding({ top: 4, bottom: 4 })
-        }, (exercise: ExerciseModel, index: number): string => index.toString())
-
-        // 强度提示
-        if (day.intensityHint) {
-          Row({ space: 4 }) {
-            Text('强度:')
-              .fontSize(11)
-              .fontColor($r('app.color.text_hint'))
-            Text(day.intensityHint)
-              .fontSize(11)
-              .fontColor($r('app.color.color_warning'))
-          }
-          .width('100%')
-          .margin({ top: 4 })
-        }
-      }
-
-      // 备注
-      if (day.notes) {
-        Text(day.notes)
+        Text(this.getExerciseNames(day))
           .fontSize(12)
-          .fontColor($r('app.color.text_placeholder'))
+          .lineHeight(18)
+          .fontColor($r('app.color.text_secondary'))
           .width('100%')
       }
     }
@@ -378,22 +360,8 @@ struct TemplateDetailPage {
   @Builder
   BottomActionBar() {
     Column({ space: 0 }) {
-      Row({ space: 12 }) {
-        // 复制到我的模板（仅官方模板显示）
-        if (this.template?.isOfficial ?? false) {
-          Button('复制为个人模板')
-            .layoutWeight(1)
-            .height(44)
-            .fontSize(14)
-            .fontColor($r('app.color.brand_primary'))
-            .backgroundColor($r('app.color.brand_primary_light'))
-            .borderRadius(10)
-            .onClick(() => {
-              this.duplicateTemplate();
-            })
-        }
-
-        Button('使用此模板')
+      Row() {
+        Button('使用模板训练')
           .layoutWeight(1)
           .height(44)
           .fontSize(14)
@@ -479,5 +447,55 @@ struct TemplateDetailPage {
       return $r('app.color.color_danger');
     }
     return $r('app.color.text_hint');
+  }
+
+  getTrainingDays(): Array<TrainingDayModel> {
+    if (this.template === null || this.template.trainingDays === null || this.template.trainingDays === undefined) {
+      return [];
+    }
+    return this.template.trainingDays as Array<TrainingDayModel>;
+  }
+
+  getScheduleSummary(): string {
+    if (this.template === null) {
+      return '';
+    }
+    const durationWeeks: string = (this.template.durationWeeks ?? 0).toString() + '周';
+    const trainingDaysPerWeek: string = '每周' + (this.template.trainingDaysPerWeek ?? 0).toString() + '练';
+    const totalDays: number = this.getTrainingDays().length;
+    if (totalDays > 0) {
+      return durationWeeks + ' · ' + trainingDaysPerWeek + ' · ' + totalDays.toString() + '天循环';
+    }
+    return durationWeeks + ' · ' + trainingDaysPerWeek;
+  }
+
+  getExerciseCount(day: TrainingDayModel): number {
+    if (day.exercises === null || day.exercises === undefined) {
+      return 0;
+    }
+    return day.exercises.length;
+  }
+
+  getExerciseNames(day: TrainingDayModel): string {
+    const exercises: Array<ExerciseModel> = this.getExercises(day);
+    if (exercises.length === 0) {
+      return '无训练动作';
+    }
+    let names: string = '';
+    for (let i: number = 0; i < exercises.length; i += 1) {
+      if (i === 0) {
+        names = exercises[i].name;
+      } else {
+        names = names + ' · ' + exercises[i].name;
+      }
+    }
+    return names;
+  }
+
+  getExercises(day: TrainingDayModel): Array<ExerciseModel> {
+    if (day.exercises === null || day.exercises === undefined) {
+      return [];
+    }
+    return day.exercises;
   }
 }

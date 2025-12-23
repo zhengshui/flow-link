@@ -706,18 +706,6 @@ export class PlanApiService {
     const trainingDaysOverride: TrainingDayModel[] =
       PlanApiService.parseTrainingDays(trainingDaysOverrideData);
 
-    // 解析 ID
-    let planId: number = 0;
-    const idValue: Object = data['id'] ?? 0;
-    if (typeof idValue === 'string') {
-      const parsedId: number = parseInt(idValue as string, 10);
-      if (!isNaN(parsedId)) {
-        planId = parsedId;
-      }
-    } else {
-      planId = idValue as number;
-    }
-
     // 解析 completedDays
     const completedDaysData: Object[] = data['completedDays'] as Object[] ?? [];
     const completedDays: number[] = [];
@@ -733,7 +721,7 @@ export class PlanApiService {
     }
 
     const plan: FitnessPlanModel = new FitnessPlanModel(
-      planId,
+      data['id'] as string ?? '',
       0, // userId - 不需要前端处理
       data['templateId'] as number ?? 0,
       data['name'] as string ?? '',

@@ -128,7 +128,7 @@ export class TrainingSessionModel {
   mood: string = ''                   // 训练状态：优秀、良好、一般、疲劳
   notes: string = ''                  // 训练心得
   isRunning: boolean = false          // 是否正在计时
-  planId: number = 0                  // 关联的计划ID
+  planId: string = ''                  // 关联的计划ID
 
   constructor(
     title: string = '训练记录',
@@ -138,7 +138,7 @@ export class TrainingSessionModel {
     mood: string = '',
     notes: string = '',
     isRunning: boolean = false,
-    planId: number = 0
+    planId: string = ''
   ) {
     this.title = title;
     this.startTime = startTime;

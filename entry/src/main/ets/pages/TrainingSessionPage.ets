@@ -10,9 +10,12 @@ import {
   TrainingSetModel,
   SetTypeConst,
   toast,
+  PlanApiService,
   TrainingApiService,
   TrainingRecordModel,
   ExerciseModel,
+  FitnessPlanModel,
+  TrainingDayModel,
   NavRouteParams,
   NavRoutes
 } from '@tbs/common';
@@ -52,7 +55,7 @@ class TrainingSessionStorageData {
   mood: string = '';
   notes: string = '';
   isRunning: boolean = true;
-  planId: number = 0;
+  planId: string = '';
   exercises: string = '[]';
   existingRecordId: string = '';
   selectedDate: string = '';
@@ -148,7 +151,7 @@ export struct TrainingSessionPage {
           '',
           '',
           true,
-          0
+          ''
         );
 
         this.startTimer();
@@ -239,6 +242,176 @@ export struct TrainingSessionPage {
       record.planId
     );
 
+    this.startTimer();
+  }
+
+  /**
+   * 加载计划训练（从计划进入）
+   */
+  async loadPlanSession(planId: string, dayNumber: number): Promise<void> {
+    this.isLoadingRecord = true;
+    try {
+      const res: ResponseResult = await PlanApiService.getFitnessPlan(planId);
+      if (res.code === 0 && res.data) {
+        const plan: FitnessPlanModel = res.data as FitnessPlanModel;
+        const resolvedDayNumber: number = this.resolvePlanDayNumber(plan, dayNumber);
+        const planDay: TrainingDayModel | null = this.getPlanTrainingDay(plan, resolvedDayNumber);
+        if (planDay !== null) {
+          this.applyPlanTrainingDay(plan, planDay);
+          return;
+        }
+        toast('未找到计划训练日');
+        this.initPlanFallbackSession(planId);
+      } else {
+        toast(res.message ?? '加载计划失败');
+        this.initPlanFallbackSession(planId);
+      }
+    } catch (err) {
+      console.error('加载计划失败:', JSON.stringify(err));
+      toast('加载计划失败');
+      this.initPlanFallbackSession(planId);
+    } finally {
+      this.isLoadingRecord = false;
+    }
+  }
+
+  private resolvePlanDayNumber(plan: FitnessPlanModel, dayNumber: number): number {
+    let resolvedDayNumber: number = dayNumber;
+    if (resolvedDayNumber <= 0) {
+      resolvedDayNumber = plan.currentDay > 0 ? plan.currentDay : 1;
+      if (resolvedDayNumber <= 0 && plan.completedDays.length > 0) {
+        resolvedDayNumber = plan.completedDays[plan.completedDays.length - 1] + 1;
+      }
+    }
+    const totalDays: number = this.getPlanTotalDays(plan);
+    if (totalDays > 0 && resolvedDayNumber > totalDays) {
+      resolvedDayNumber = totalDays;
+    }
+    if (resolvedDayNumber < 1) {
+      resolvedDayNumber = 1;
+    }
+    return resolvedDayNumber;
+  }
+
+  private getPlanTotalDays(plan: FitnessPlanModel): number {
+    if (plan.trainingDaysOverride.length > 0) {
+      return plan.trainingDaysOverride.length;
+    }
+    if (plan.trainingDays.length > 0) {
+      return plan.trainingDays.length;
+    }
+    if (plan.durationWeeks > 0 && plan.trainingDaysPerWeek > 0) {
+      return plan.durationWeeks * plan.trainingDaysPerWeek;
+    }
+    if (plan.trainingDaysPerWeek > 0) {
+      return plan.trainingDaysPerWeek;
+    }
+    return 0;
+  }
+
+  private getPlanTrainingDay(plan: FitnessPlanModel, dayNumber: number): TrainingDayModel | null {
+    let day: TrainingDayModel | null = null;
+    if (plan.trainingDaysOverride.length > 0) {
+      day = this.findTrainingDayByNumber(plan.trainingDaysOverride, dayNumber);
+    }
+    if (day === null) {
+      day = this.findTrainingDayByNumber(plan.trainingDays, dayNumber);
+    }
+    if (day === null && plan.trainingDaysOverride.length > 0) {
+      day = plan.trainingDaysOverride[0];
+    }
+    if (day === null && plan.trainingDays.length > 0) {
+      day = plan.trainingDays[0];
+    }
+    return day;
+  }
+
+  private findTrainingDayByNumber(days: TrainingDayModel[], dayNumber: number): TrainingDayModel | null {
+    for (let i: number = 0; i < days.length; i++) {
+      if (days[i].dayNumber === dayNumber) {
+        return days[i];
+      }
+    }
+    return null;
+  }
+
+  private applyPlanTrainingDay(plan: FitnessPlanModel, planDay: TrainingDayModel): void {
+    const exercises: SessionExerciseModel[] = this.buildPlanExercises(planDay.exercises);
+    const title: string = this.getPlanSessionTitle(plan, planDay);
+    this.session = new TrainingSessionModel(
+      title,
+      this.calculateStartTime(),
+      0,
+      exercises,
+      '',
+      '',
+      true,
+      plan.id
+    );
+    this.existingRecordId = '';
+    this.pauseStartTime = 0;
+    this.startTimer();
+    if (planDay.isRestDay) {
+      toast('今日为休息日，可自由训练');
+    } else {
+      toast('已加载计划动作');
+    }
+  }
+
+  private buildPlanExercises(exercises: ExerciseModel[]): SessionExerciseModel[] {
+    const sessionExercises: SessionExerciseModel[] = [];
+    for (let i: number = 0; i < exercises.length; i++) {
+      const exercise: ExerciseModel = exercises[i];
+      if (exercise.name.length === 0) {
+        continue;
+      }
+      const targetSets: number = exercise.sets > 0 ? exercise.sets : 4;
+      const targetReps: number = exercise.reps > 0 ? exercise.reps : 8;
+      const actionId: string = exercise.id > 0 ? exercise.id.toString() : '';
+      const sessionEx: SessionExerciseModel = new SessionExerciseModel(
+        actionId,
+        exercise.name,
+        exercise.muscleGroup,
+        [],
+        0,
+        targetSets,
+        targetReps,
+        exercise.notes,
+        ''
+      );
+      const weight: number = exercise.weight > 0 ? exercise.weight : 0;
+      const setCount: number = targetSets > 0 ? targetSets : 1;
+      for (let s: number = 0; s < setCount; s++) {
+        sessionEx.addSet(SetTypeConst.WORKING, weight, targetReps);
+      }
+      sessionExercises.push(sessionEx);
+    }
+    return sessionExercises;
+  }
+
+  private getPlanSessionTitle(plan: FitnessPlanModel, planDay: TrainingDayModel): string {
+    if (planDay.dayName.length > 0) {
+      return planDay.dayName;
+    }
+    if (plan.name.length > 0) {
+      return plan.name;
+    }
+    return '训练记录';
+  }
+
+  private initPlanFallbackSession(planId: string): void {
+    this.session = new TrainingSessionModel(
+      '训练记录',
+      this.calculateStartTime(),
+      0,
+      [],
+      '',
+      '',
+      true,
+      planId
+    );
+    this.existingRecordId = '';
+    this.pauseStartTime = 0;
     this.startTimer();
   }
 
@@ -910,7 +1083,7 @@ export struct TrainingSessionPage {
                 .width(48)
                 .height(48)
                 .color($r('app.color.brand_primary'))
-              Text('加载训练记录中...')
+              Text('加载训练中...')
                 .fontSize(14)
                 .fontColor($r('app.color.text_hint'))
             }
@@ -1032,6 +1205,13 @@ export struct TrainingSessionPage {
         // 检查复制到今天
         if (params.copyFromRecord === true) {
           this.loadCopiedActions()
+          return
+        }
+
+        // 检查计划训练
+        if (params.planId) {
+          const dayNumber: number = params.dayNumber !== undefined ? params.dayNumber : 0;
+          this.loadPlanSession(params.planId, dayNumber);
           return
         }
 

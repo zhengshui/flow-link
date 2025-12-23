@@ -5,7 +5,7 @@ import { TrainingDayModel } from './PlanTemplateModel';
  * 用户基于模板创建或自定义的训练计划
  */
 export class FitnessPlanModel {
-  id: number = 0                      // 计划ID
+  id: string = ''                      // 计划ID
   userId: number = 0                  // 用户ID
   templateId: number = 0              // 关联的模板ID（0表示自定义计划）
   name: string = ''                   // 计划名称
@@ -32,7 +32,7 @@ export class FitnessPlanModel {
   updatedAt: string = ''              // 更新时间
 
   constructor(
-    id?: number,
+    id?: string,
     userId?: number,
     templateId?: number,
     name?: string,
@@ -135,7 +135,7 @@ export class PlanStatusConst {
  * 计划进度摘要模型
  */
 export class PlanProgressModel {
-  planId: number = 0
+  planId: string = ''
   totalDays: number = 0
   completedDays: number = 0
   skippedDays: number = 0
@@ -148,7 +148,7 @@ export class PlanProgressModel {
   totalCalories: number = 0
 
   constructor(
-    planId?: number,
+    planId?: string,
     totalDays?: number,
     completedDays?: number,
     skippedDays?: number,
@@ -180,7 +180,7 @@ export class PlanProgressModel {
  * 计划进度列表项模型
  */
 export class PlanProgressItemModel {
-  planId: number = 0
+  planId: string = ''
   name: string = ''
   status: string = ''
   completionRate: number = 0
@@ -189,7 +189,7 @@ export class PlanProgressItemModel {
   endDate: string = ''
 
   constructor(
-    planId?: number,
+    planId?: string,
     name?: string,
     status?: string,
     completionRate?: number,

@@ -1240,7 +1240,7 @@ Authorization: Bearer {access_token}
   caloriesBurned: number          // 消耗卡路里
   notes: string                   // 训练备注
   mood: string                    // 训练状态（优秀/良好/一般/疲劳）
-  planId: number                  // 关联计划ID（0表示无计划）
+  planId: string                  // 关联计划ID（0表示无计划）
   planDayId: number               // 关联计划日ID（可选）
   completionStatus: string        // 完成状态（完成/部分/跳过）
   createdAt: string               // 创建时间
@@ -1358,7 +1358,7 @@ Authorization: Bearer {access_token}
 ### PlanStats (计划统计)
 ```typescript
 {
-  planId: number                  // 计划ID
+  planId: string                  // 计划ID
   planName: string                // 计划名称
   completionRate: number          // 完成率
   completedDays: number           // 完成天数

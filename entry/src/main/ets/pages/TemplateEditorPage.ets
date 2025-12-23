@@ -33,8 +33,7 @@ struct TemplateEditorPage {
 
   aboutToAppear(): void {
     // 获取路由参数
-    const params: NavRouteParams | undefined =
-      RouterManager.getNavPathStack()?.getParamByName('TemplateEditorPage') as NavRouteParams | undefined;
+    const params: NavRouteParams | undefined = RouterManager.getLatestParamByName('TemplateEditorPage');
     if (params?.templateId !== undefined && params.templateId !== null) {
       this.templateId = params.templateId.toString();
       this.isEdit = params.isEdit ?? false;

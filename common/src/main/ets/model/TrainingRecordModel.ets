@@ -18,7 +18,7 @@ export class TrainingRecordModel {
   caloriesBurned: number = 0          // 消耗卡路里（估算值）
   notes: string = ''                  // 训练备注
   mood: string = ''                   // 训练状态（优秀/良好/一般/疲劳）
-  planId: number = 0                  // 关联的计划ID（0表示无计划）
+  planId: string = ''                  // 关联的计划ID（0表示无计划）
   planDayId: number = 0               // 关联计划日ID
   completionStatus: string = ''       // 完成状态（完成/部分/跳过）
   createdAt: string = ''              // 创建时间戳
@@ -38,7 +38,7 @@ export class TrainingRecordModel {
     caloriesBurned?: number,
     notes?: string,
     mood?: string,
-    planId?: number,
+    planId?: string,
     createdAt?: string,
     updatedAt?: string,
     planDayId?: number,
