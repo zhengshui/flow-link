@@ -428,13 +428,13 @@ export class PlanApiService {
    * 标记训练日为已完成
    * POST /plans/{planId}/complete-day
    */
-  static async completePlanDay(planId: string, dayNumber: number, recordId: number = 0): Promise<ResponseResult> {
+  static async completePlanDay(planId: string, dayNumber: number, recordId: string = ''): Promise<ResponseResult> {
     try {
       const requestData: Record<string, number | boolean | string | Object | undefined> = {
         'dayNumber': dayNumber
       };
 
-      if (recordId > 0) {
+      if (recordId.length > 0) {
         requestData['recordId'] = recordId;
       }
 
@@ -456,6 +456,37 @@ export class PlanApiService {
       return response;
     } catch (error) {
       return PlanApiService.createErrorResponse(5007, '标记完成失败: ' + JSON.stringify(error));
+    }
+  }
+
+  /**
+   * 取消训练日完成状态
+   * POST /plans/{planId}/uncomplete-day
+   */
+  static async uncompletePlanDay(planId: string, dayNumber: number): Promise<ResponseResult> {
+    try {
+      const requestData: Record<string, number | boolean | string | Object | undefined> = {
+        'dayNumber': dayNumber
+      };
+
+      const response: ResponseResult = await requestApiCall(
+        `/plans/${planId}/uncomplete-day`,
+        http.RequestMethod.POST,
+        requestData
+      );
+
+      if (response.code === 200 && response.data) {
+        const planData: Record<string, Object> = response.data as Record<string, Object>;
+        const plan: FitnessPlanModel = PlanApiService.parseFitnessPlan(planData);
+        response.data = plan;
+        response.code = 0;
+      } else if (response.code === 200) {
+        response.code = 0;
+      }
+
+      return response;
+    } catch (error) {
+      return PlanApiService.createErrorResponse(5017, '取消完成状态失败: ' + JSON.stringify(error));
     }
   }
 

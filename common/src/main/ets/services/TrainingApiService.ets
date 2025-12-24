@@ -132,15 +132,16 @@ export class TrainingApiService {
         'caloriesBurned': record.caloriesBurned,
         'notes': record.notes,
         'mood': record.mood,
-        'planId': record.planId
+        'planId': record.planId,
+        'planDayId': record.planDayId
       };
 
       // 转换训练项目（只添加有效的动作）
       const exercisesArray: Object[] = [];
       for (let i: number = 0; i < record.exercises.length; i++) {
         const exercise: ExerciseModel = record.exercises[i];
-        // 确保动作名称不为空且有完成的组数
-        if (exercise.name.length > 0 && exercise.sets > 0) {
+        // 确保动作名称不为空
+        if (exercise.name.length > 0) {
           const exerciseData: Record<string, number | boolean | string | Object | undefined> = {
             'name': exercise.name,
             'sets': exercise.sets,
@@ -149,7 +150,8 @@ export class TrainingApiService {
             'restTime': exercise.restTime,
             'muscleGroup': exercise.muscleGroup.length > 0 ? exercise.muscleGroup : '其他',
             'notes': exercise.notes,
-            'duration': exercise.duration
+            'duration': exercise.duration,
+            'setsData': exercise.setsData
           };
           exercisesArray.push(exerciseData);
         }
@@ -200,15 +202,16 @@ export class TrainingApiService {
         'caloriesBurned': record.caloriesBurned,
         'notes': record.notes,
         'mood': record.mood,
-        'planId': record.planId
+        'planId': record.planId,
+        'planDayId': record.planDayId
       };
 
       // 转换训练项目（只添加有效的动作）
       const exercisesArray: Object[] = [];
       for (let i: number = 0; i < record.exercises.length; i++) {
         const exercise: ExerciseModel = record.exercises[i];
-        // 确保动作名称不为空且有完成的组数
-        if (exercise.name.length > 0 && exercise.sets > 0) {
+        // 确保动作名称不为空
+        if (exercise.name.length > 0) {
           const exerciseData: Record<string, number | boolean | string | Object | undefined> = {
             'name': exercise.name,
             'sets': exercise.sets,
@@ -217,7 +220,8 @@ export class TrainingApiService {
             'restTime': exercise.restTime,
             'muscleGroup': exercise.muscleGroup.length > 0 ? exercise.muscleGroup : '其他',
             'notes': exercise.notes,
-            'duration': exercise.duration
+            'duration': exercise.duration,
+            'setsData': exercise.setsData
           };
           exercisesArray.push(exerciseData);
         }
@@ -284,7 +288,8 @@ export class TrainingApiService {
         exData['restTime'] as number ?? 0,
         exData['muscleGroup'] as string ?? '',
         exData['notes'] as string ?? '',
-        exData['duration'] as number ?? 0
+        exData['duration'] as number ?? 0,
+        exData['setsData'] as Object[] ?? []
       );
       exercises.push(exercise);
     }
@@ -317,6 +322,7 @@ export class TrainingApiService {
     record.notes = data['notes'] as string ?? '';
     record.mood = data['mood'] as string ?? '';
     record.planId = data['planId'] as string ?? '';
+    record.planDayId = data['planDayId'] as number ?? 0;
     record.createdAt = data['createdAt'] as string ?? '';
     record.updatedAt = data['updatedAt'] as string ?? '';
 

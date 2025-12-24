@@ -12,6 +12,7 @@ export class ExerciseModel {
   muscleGroup: string = ''            // 目标肌群（如：胸、背、腿、肩、臂、核心）
   notes: string = ''                  // 备注
   duration: number = 0                // 训练时长（分钟）
+  setsData: Array<Object> = []        // 详细组数据（包含每组的重量、次数、完成状态等）
 
   constructor(
     id?: number,
@@ -22,7 +23,8 @@ export class ExerciseModel {
     restTime?: number,
     muscleGroup?: string,
     notes?: string,
-    duration?: number
+    duration?: number,
+    setsData?: Array<Object>
   ) {
     if (id !== null && id !== undefined) this.id = id;
     if (name !== null && name !== undefined) this.name = name;
@@ -33,6 +35,7 @@ export class ExerciseModel {
     if (muscleGroup !== null && muscleGroup !== undefined) this.muscleGroup = muscleGroup;
     if (notes !== null && notes !== undefined) this.notes = notes;
     if (duration !== null && duration !== undefined) this.duration = duration;
+    if (setsData !== null && setsData !== undefined) this.setsData = setsData;
   }
 }
 

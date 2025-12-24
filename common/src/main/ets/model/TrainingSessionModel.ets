@@ -208,6 +208,17 @@ export class TrainingSessionModel {
   }
 
   /**
+   * 获取总组数（包括未完成的）
+   */
+  getTotalSetsCount(): number {
+    let total: number = 0;
+    for (let i: number = 0; i < this.exercises.length; i++) {
+      total += this.exercises[i].sets.length;
+    }
+    return total;
+  }
+
+  /**
    * 获取总容量
    */
   getTotalVolume(): number {

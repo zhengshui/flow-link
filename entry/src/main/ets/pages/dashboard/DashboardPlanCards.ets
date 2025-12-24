@@ -12,11 +12,6 @@ export struct DashboardTodayPlanSection {
 
   build(): void {
     Column({ space: 10 }) {
-      Text('今日安排')
-        .fontSize(16)
-        .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
-
       if (this.hasTodayDay()) {
         Column({ space: 6 }) {
           Row() {
@@ -30,11 +25,20 @@ export struct DashboardTodayPlanSection {
           }
           .width('100%')
 
-          Row() {
+          Row({ space: 8 }) {
             Text(this.getTodayDayName())
               .fontSize(18)
               .fontWeight(FontWeight.Medium)
               .fontColor($r('app.color.brand_primary'))
+
+            if (this.isTodayCompleted()) {
+              Text('已完成')
+                .fontSize(10)
+                .fontColor(Color.White)
+                .backgroundColor($r('app.color.color_success'))
+                .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+                .borderRadius(4)
+            }
           }
           .width('100%')
         }
@@ -52,13 +56,20 @@ export struct DashboardTodayPlanSection {
       }
     }
     .width('100%')
-    .padding(16)
+    .padding(8)
     .backgroundColor($r('app.color.card_background'))
     .borderRadius(12)
   }
 
   private hasTodayDay(): boolean {
     return this.todayDay !== null;
+  }
+
+  private isTodayCompleted(): boolean {
+    if (this.todayDay === null) {
+      return false;
+    }
+    return this.plan.completedDays.indexOf(this.todayDay.dayNumber) !== -1;
   }
 
   private getTodayDayName(): string {

@@ -9,7 +9,8 @@ import {
   PlanApiService,
   toast,
   RouterManager,
-  NavRouteParams
+  NavRouteParams,
+  PlanStatusConst
 } from '@tbs/common';
 import { ResponseResult } from '@tbs/common/src/main/ets/http/response';
 
@@ -53,6 +54,52 @@ struct TemplateDetailPage {
       toast('加载失败');
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  /**
+   * 处理创建计划点击
+   */
+  async handleCreatePlanClick(): Promise<void> {
+    try {
+      // 查询是否有进行中的计划
+      const res: ResponseResult = await PlanApiService.getFitnessPlans(1, 1, PlanStatusConst.ACTIVE);
+      if (res.code === 0 && res.data) {
+        const data = res.data as Record<string, Object>;
+        const total = data['total'] as number;
+
+        if (total > 0) {
+          // 有进行中的计划，弹窗提示
+          AlertDialog.show({
+            title: '提示',
+            message: '当前已有正在进行的计划，使用新模板将覆盖原有计划。是否继续？',
+            autoCancel: true,
+            alignment: DialogAlignment.Bottom,
+            offset: { dx: 0, dy: -20 },
+            primaryButton: {
+              value: '取消',
+              action: () => {
+                // Cancelled
+              }
+            },
+            secondaryButton: {
+              value: '继续',
+              fontColor: $r('app.color.brand_primary'),
+              action: () => {
+                this.showDatePicker = true;
+              }
+            }
+          });
+        } else {
+          // 无进行中的计划，直接显示日期选择
+          this.showDatePicker = true;
+        }
+      } else {
+        this.showDatePicker = true;
+      }
+    } catch (err) {
+      console.error('检查计划失败:', JSON.stringify(err));
+      this.showDatePicker = true;
     }
   }
 
@@ -369,7 +416,7 @@ struct TemplateDetailPage {
           .backgroundColor($r('app.color.brand_primary'))
           .borderRadius(10)
           .onClick(() => {
-            this.showDatePicker = true;
+            this.handleCreatePlanClick();
           })
           .bindSheet($$this.showDatePicker, this.DatePickerSheet(), {
             height: SheetSize.FIT_CONTENT,

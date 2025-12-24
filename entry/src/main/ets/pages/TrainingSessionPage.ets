@@ -60,6 +60,7 @@ class TrainingSessionStorageData {
   existingRecordId: string = '';
   selectedDate: string = '';
   pauseStartTime: number = 0;
+  currentPlanDayNumber: number = 0;
 }
 
 /**
@@ -85,6 +86,7 @@ export struct TrainingSessionPage {
   @State isLoadingRecord: boolean = false
   @State existingRecordId: string = ''
   @State selectedDate: string = '' // 用户选择的训练日期（从日历传入，格式 YYYY-MM-DD）
+  @State currentPlanDayNumber: number = 0 // 当前计划训练日序号
   @State showTimeEditDialog: boolean = false
   @State editHours: string = '0'
   @State editMinutes: string = '0'
@@ -211,16 +213,31 @@ export struct TrainingSessionPage {
         ''
       );
 
-      // 根据记录的组数创建训练组（已完成状态）
-      for (let s: number = 0; s < ex.sets; s++) {
-        const set: TrainingSetModel = new TrainingSetModel(
-          SetTypeConst.WORKING,
-          ex.weight,
-          ex.reps,
-          true, // 已完成
-          ''
-        );
-        sessionEx.sets.push(set);
+      // 如果有详细组数据，优先使用详细数据恢复
+      if (ex.setsData && ex.setsData.length > 0) {
+        for (let j: number = 0; j < ex.setsData.length; j++) {
+          const setData: Record<string, Object> = ex.setsData[j] as Record<string, Object>;
+          const set: TrainingSetModel = new TrainingSetModel(
+            setData['setType'] as string ?? SetTypeConst.WORKING,
+            setData['weight'] as number ?? 0,
+            setData['reps'] as number ?? 0,
+            setData['isCompleted'] as boolean ?? false,
+            setData['note'] as string ?? ''
+          );
+          sessionEx.sets.push(set);
+        }
+      } else {
+        // 兼容旧数据：根据记录的组数创建训练组（默认为未完成）
+        for (let s: number = 0; s < ex.sets; s++) {
+          const set: TrainingSetModel = new TrainingSetModel(
+            SetTypeConst.WORKING,
+            ex.weight,
+            ex.reps,
+            false, // 默认为未完成
+            ''
+          );
+          sessionEx.sets.push(set);
+        }
       }
 
       exercises.push(sessionEx);
@@ -255,6 +272,33 @@ export struct TrainingSessionPage {
       if (res.code === 0 && res.data) {
         const plan: FitnessPlanModel = res.data as FitnessPlanModel;
         const resolvedDayNumber: number = this.resolvePlanDayNumber(plan, dayNumber);
+        this.currentPlanDayNumber = resolvedDayNumber;
+
+        // 检查该计划日是否已有训练记录
+        try {
+          const recordRes: ResponseResult = await TrainingApiService.getTrainingRecords(1, 50, '', '', planId);
+          if (recordRes.code === 0 && recordRes.data) {
+            const dataMap: Record<string, Object> = recordRes.data as Record<string, Object>;
+            const records: TrainingRecordModel[] = dataMap['records'] as TrainingRecordModel[];
+            // 查找匹配当前天数的记录
+            let foundRecord: TrainingRecordModel | undefined = undefined;
+            for (let i: number = 0; i < records.length; i++) {
+              if (records[i].planDayId === resolvedDayNumber) {
+                foundRecord = records[i];
+                break;
+              }
+            }
+
+            if (foundRecord !== undefined) {
+              this.existingRecordId = foundRecord.id;
+              this.loadExistingRecord(foundRecord.id);
+              return;
+            }
+          }
+        } catch (e) {
+          console.error('检查现有记录失败:', JSON.stringify(e));
+        }
+
         const planDay: TrainingDayModel | null = this.getPlanTrainingDay(plan, resolvedDayNumber);
         if (planDay !== null) {
           this.applyPlanTrainingDay(plan, planDay);
@@ -629,10 +673,6 @@ export struct TrainingSessionPage {
       toast('请至少添加一个训练动作');
       return;
     }
-    if (this.session.getTotalCompletedSets() === 0) {
-      toast('请至少完成一组训练');
-      return;
-    }
     this.showFinishDialog();
   }
 
@@ -665,6 +705,21 @@ export struct TrainingSessionPage {
 
       if (res.code === 0) {
         toast(this.existingRecordId.length > 0 ? '训练记录更新成功' : '训练记录保存成功');
+        
+        // 如果是计划训练，更新计划状态
+        if (this.session.planId.length > 0 && this.currentPlanDayNumber > 0) {
+          try {
+            let recordId: string = this.existingRecordId;
+            if (recordId.length === 0 && res.data) {
+              const newRecord: TrainingRecordModel = res.data as TrainingRecordModel;
+              recordId = newRecord.id;
+            }
+            await PlanApiService.completePlanDay(this.session.planId, this.currentPlanDayNumber, recordId);
+          } catch (e) {
+            console.error('更新计划状态失败:', JSON.stringify(e));
+          }
+        }
+
         // 设置刷新时间戳，通知相关页面刷新数据
         const refreshTs: number = Date.now();
         AppStorage.setOrCreate<boolean>('needRefreshRecordPage', true);
@@ -701,53 +756,63 @@ export struct TrainingSessionPage {
     // 结束时间完整格式 (YYYY-MM-DD HH:mm:ss)
     record.endTime = this.formatDateTime(endDate);
 
-    // 使用开始和结束时间直接计算训练时长（分钟）
+    // 使用开始和结束时间直接计算训练时长（分钟），最小值为1分钟
     const durationMs: number = endDate.getTime() - startDate.getTime() - this.session.pausedTime;
-    record.duration = Math.floor(durationMs / 1000 / 60);
+    const calculatedDuration: number = Math.floor(durationMs / 1000 / 60);
+    record.duration = calculatedDuration > 0 ? calculatedDuration : 1;
     record.notes = this.session.notes;
     record.mood = this.session.mood;
     record.planId = this.session.planId;
+    record.planDayId = this.currentPlanDayNumber;
 
     const exercises: ExerciseModel[] = [];
     for (let i: number = 0; i < this.session.exercises.length; i++) {
       const sessionEx: SessionExerciseModel = this.session.exercises[i];
 
-      // 只统计已勾选完成的组
-      let completedSets: number = 0;
+      // 统计所有组的数据，以保留动作组安排
+      let totalSetsCount: number = sessionEx.sets.length;
       let totalReps: number = 0;
       let totalWeight: number = 0;
+      const setsData: Object[] = [];
 
       for (let j: number = 0; j < sessionEx.sets.length; j++) {
-        // 只计算勾选完成的组
-        if (sessionEx.sets[j].isCompleted) {
-          completedSets++;
-          totalReps += sessionEx.sets[j].reps;
-          totalWeight += sessionEx.sets[j].weight;
-        }
+        totalReps += sessionEx.sets[j].reps;
+        totalWeight += sessionEx.sets[j].weight;
+        
+        const setDetail: Record<string, Object> = {
+          'setType': sessionEx.sets[j].setType,
+          'weight': sessionEx.sets[j].weight,
+          'reps': sessionEx.sets[j].reps,
+          'isCompleted': sessionEx.sets[j].isCompleted,
+          'note': sessionEx.sets[j].note
+        };
+        setsData.push(setDetail);
       }
 
-      // 只添加有完成组且动作名称有效的动作
-      if (completedSets > 0 && sessionEx.actionName.length > 0) {
-        const avgReps: number = completedSets > 0 ? Math.floor(totalReps / completedSets) : 0;
-        const avgWeight: number = completedSets > 0 ? Math.floor(totalWeight / completedSets) : 0;
+      // 只添加动作名称有效的动作（即使没有完成组，也保留以便下次训练）
+      if (sessionEx.actionName.length > 0) {
+        const avgReps: number = totalSetsCount > 0 ? Math.floor(totalReps / totalSetsCount) : 0;
+        const avgWeight: number = totalSetsCount > 0 ? Math.floor(totalWeight / totalSetsCount) : 0;
 
         exercises.push(new ExerciseModel(
           0,
           sessionEx.actionName,
-          completedSets,
+          totalSetsCount,
           avgReps,
           avgWeight,
           0,
           sessionEx.muscleGroup.length > 0 ? sessionEx.muscleGroup : '其他',
           sessionEx.note,
-          0
+          0,
+          setsData
         ));
       }
     }
 
     record.exercises = exercises;
-    record.totalSets = this.session.getTotalCompletedSets();
-    record.totalWeight = this.session.getTotalVolume();
+    // 保存总组数和总重量（基于所有已添加的组，实现100%保存）
+    record.totalSets = this.session.getTotalSetsCount();
+    record.totalWeight = record.calculateTotalWeight();
     record.caloriesBurned = Math.floor(record.totalWeight * 0.1);
     return record;
   }
@@ -833,6 +898,7 @@ export struct TrainingSessionPage {
     sessionData.existingRecordId = this.existingRecordId;
     sessionData.selectedDate = this.selectedDate;
     sessionData.pauseStartTime = this.pauseStartTime;
+    sessionData.currentPlanDayNumber = this.currentPlanDayNumber;
     AppStorage.setOrCreate<string>('trainingSessionData', JSON.stringify(sessionData));
   }
 
@@ -899,6 +965,7 @@ export struct TrainingSessionPage {
       this.existingRecordId = sessionData.existingRecordId;
       this.selectedDate = sessionData.selectedDate;
       this.pauseStartTime = sessionData.pauseStartTime;
+      this.currentPlanDayNumber = sessionData.currentPlanDayNumber || 0;
 
       // 清除全局存储的会话数据
       AppStorage.delete('trainingSessionData');
@@ -1012,6 +1079,16 @@ export struct TrainingSessionPage {
         const res: ResponseResult = await TrainingApiService.deleteTrainingRecord(this.existingRecordId);
         if (res.code === 0) {
           toast('训练记录已删除');
+
+          // 如果是计划训练，更新计划状态
+          if (this.session.planId.length > 0 && this.currentPlanDayNumber > 0) {
+            try {
+              await PlanApiService.uncompletePlanDay(this.session.planId, this.currentPlanDayNumber);
+            } catch (e) {
+              console.error('取消计划完成状态失败:', JSON.stringify(e));
+            }
+          }
+
           // 设置刷新标志，通知相关页面刷新数据
           AppStorage.setOrCreate<boolean>('needRefreshRecordPage', true);
           AppStorage.setOrCreate<number>('refreshDashboardTimestamp', Date.now());
